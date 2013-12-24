@@ -62,15 +62,17 @@ public final class NetworkService {
 		// timeout: get connections from connection pool
 		ConnManagerParams.setTimeout(httpParams, 1000);
 		// timeout: connect to the server
-		HttpConnectionParams.setConnectionTimeout(httpParams, DEFAULT_SOCKET_TIMEOUT);
+		HttpConnectionParams.setConnectionTimeout(httpParams,
+				DEFAULT_SOCKET_TIMEOUT);
 		// timeout: transfer data from server
 		HttpConnectionParams.setSoTimeout(httpParams, DEFAULT_SOCKET_TIMEOUT);
 
 		// set max connections per host
-		ConnManagerParams.setMaxConnectionsPerRoute(httpParams, new ConnPerRouteBean(
-		        DEFAULT_HOST_CONNECTIONS));
+		ConnManagerParams.setMaxConnectionsPerRoute(httpParams,
+				new ConnPerRouteBean(DEFAULT_HOST_CONNECTIONS));
 		// set max total connections
-		ConnManagerParams.setMaxTotalConnections(httpParams, DEFAULT_MAX_CONNECTIONS);
+		ConnManagerParams.setMaxTotalConnections(httpParams,
+				DEFAULT_MAX_CONNECTIONS);
 
 		// use expect-continue handshake
 		HttpProtocolParams.setUseExpectContinue(httpParams, true);
@@ -89,41 +91,50 @@ public final class NetworkService {
 		// disable Nagle algorithm
 		HttpConnectionParams.setTcpNoDelay(httpParams, true);
 
-		HttpConnectionParams.setSocketBufferSize(httpParams, DEFAULT_SOCKET_BUFFER_SIZE);
+		HttpConnectionParams.setSocketBufferSize(httpParams,
+				DEFAULT_SOCKET_BUFFER_SIZE);
 
 		// scheme: http and https
 		SchemeRegistry schemeRegistry = new SchemeRegistry();
-		schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-		schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+		schemeRegistry.register(new Scheme("http", PlainSocketFactory
+				.getSocketFactory(), 80));
+		schemeRegistry.register(new Scheme("https", SSLSocketFactory
+				.getSocketFactory(), 443));
 
-		ClientConnectionManager manager = new ThreadSafeClientConnManager(httpParams,
-		        schemeRegistry);
+		ClientConnectionManager manager = new ThreadSafeClientConnManager(
+				httpParams, schemeRegistry);
 		HTTP_CLIENT = new DefaultHttpClient(manager, httpParams);
 	}
 
 	/** The commands queue. */
-	private static final BlockingQueue<Runnable> COMMANDS = new ArrayBlockingQueue<Runnable>(200);
+	private static final BlockingQueue<Runnable> COMMANDS = new ArrayBlockingQueue<Runnable>(
+			200);
 	/** The thread pool. */
-	private static final ThreadPoolExecutor EXECUTOR = new ThreadPoolExecutor(2, 2, 15 * 60,
-	        TimeUnit.SECONDS, COMMANDS);
+	private static final ThreadPoolExecutor EXECUTOR = new ThreadPoolExecutor(
+			2, 2, 15 * 60, TimeUnit.SECONDS, COMMANDS);
 
 	/**
 	 * Read the HTTP response's content.
 	 * 
-	 * @param response The HTTP response.
+	 * @param response
+	 *            The HTTP response.
 	 * @return The response's content.
-	 * @throws IOException If an I/O error occurs.
-	 * @throws IllegalStateException If the response is in illegal state.
-	 * @throws UnsupportedEncodingException If the device doesn't support UTF-8
-	 *         encode.
+	 * @throws IOException
+	 *             If an I/O error occurs.
+	 * @throws IllegalStateException
+	 *             If the response is in illegal state.
+	 * @throws UnsupportedEncodingException
+	 *             If the device doesn't support UTF-8 encode.
 	 * @author Luo Yinzhuo
 	 */
-	private static String getContent(HttpResponse response) throws UnsupportedEncodingException,
-	        IllegalStateException, IOException {
+	private static String getContent(HttpResponse response)
+			throws UnsupportedEncodingException, IllegalStateException,
+			IOException {
 		StringBuffer sb = new StringBuffer();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity()
-		        .getContent(), "UTF-8"));
-		for (String temp = reader.readLine(); temp != null; temp = reader.readLine()) {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				response.getEntity().getContent(), "UTF-8"));
+		for (String temp = reader.readLine(); temp != null; temp = reader
+				.readLine()) {
 			sb.append(temp);
 		}
 		reader.close();
@@ -137,10 +148,19 @@ public final class NetworkService {
 	 * @author Luo Yinzhuo
 	 */
 	public interface ColumnInfoListRequestListener {
+
+		/**
+		 * Called when the column info list request creation is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onColumnInfoListRequestFailed();
+
 		/**
 		 * Called when the column info list request execution is successful.
 		 * 
-		 * @param columnInfos The list of {@link ColumnInfo} from server.
+		 * @param columnInfos
+		 *            The list of {@link ColumnInfo} from server.
 		 * @author Luo Yinzhuo
 		 */
 		public void onColumnInfoListResponseSuccess(List<ColumnInfo> columnInfos);
@@ -169,12 +189,15 @@ public final class NetworkService {
 		/**
 		 * Construct a new instance.
 		 * 
-		 * @param serverURL The server URL.
-		 * @param UUID The device's UUID.
-		 * @param listener The request listener.
+		 * @param serverURL
+		 *            The server URL.
+		 * @param UUID
+		 *            The device's UUID.
+		 * @param listener
+		 *            The request listener.
 		 */
 		private ColumnInfoListCommand(String serverURL, String UUID,
-		        ColumnInfoListRequestListener listener) {
+				ColumnInfoListRequestListener listener) {
 			mServerURL = serverURL;
 			mUUID = UUID;
 			mListener = listener;
@@ -187,29 +210,43 @@ public final class NetworkService {
 
 		@Override
 		public void run() {
+			HttpPost request;
 			try {
-				HttpPost request = RequestFactory.createColumnListRequest(mServerURL, mUUID);
+				request = RequestFactory.createColumnListRequest(mServerURL,
+						mUUID);
+			} catch (Exception e) {
+				e.printStackTrace();
+				mListener.onColumnInfoListRequestFailed();
+				return;
+			}
+
+			String content;
+			try {
 				HttpResponse response = HTTP_CLIENT.execute(request);
-				String content = NetworkService.getContent(response);
+				content = NetworkService.getContent(response);
+			} catch (IOException e) {
+				e.printStackTrace();
+				mListener.onColumnInfoListResponseFailed();
+				return;
+			}
+
+			try {
 				JSONObject jsonResponse = new JSONObject(content);
 				if (jsonResponse.getInt(KEY_XCODE) == 0) {
-					JSONArray jsonColumnInfo = jsonResponse.getJSONArray(KEY_XDATA);
+					JSONArray jsonColumnInfo = jsonResponse
+							.getJSONArray(KEY_XDATA);
 					List<ColumnInfo> columnInfos = new ArrayList<ColumnInfo>();
 					for (int i = 0; i < jsonColumnInfo.length(); i++) {
-						columnInfos.add(ColumnInfo.parse(jsonColumnInfo.getJSONObject(i)));
+						columnInfos.add(ColumnInfo.parse(jsonColumnInfo
+								.getJSONObject(i)));
 					}
 					mListener.onColumnInfoListResponseSuccess(columnInfos);
 					return;
 				}
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} catch (ClientProtocolException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
+			Log.e("ColumnInfoListCommand", content);
 			mListener.onColumnInfoListResponseFailed();
 		}
 	}
@@ -217,13 +254,16 @@ public final class NetworkService {
 	/**
 	 * Get the whole column info list.
 	 * 
-	 * @param serverURL The server URL.
-	 * @param UUID The device's UUID.
-	 * @param listener The request listener.
+	 * @param serverURL
+	 *            The server URL.
+	 * @param UUID
+	 *            The device's UUID.
+	 * @param listener
+	 *            The request listener.
 	 * @author Luo Yinzhuo
 	 */
 	public static void getColumnInfoList(String serverURL, String UUID,
-	        ColumnInfoListRequestListener listener) {
+			ColumnInfoListRequestListener listener) {
 		EXECUTOR.execute(new ColumnInfoListCommand(serverURL, UUID, listener));
 	}
 
@@ -235,12 +275,23 @@ public final class NetworkService {
 	 */
 	public interface NewsListRequestListener {
 		/**
-		 * Called when the news list request execution is successful.
+		 * Called when the news list request creation is failed.
 		 * 
-		 * @param columnInfos The list of {@link NewsInfo} from server.
 		 * @author Luo Yinzhuo
 		 */
-		public void onNewsListResponseSuccess(List<NewsInfo> newsInfos);
+		public void onNewsListRequestFailed();
+
+		/**
+		 * Called when the news list request execution is successful.
+		 * 
+		 * @param columnInfos
+		 *            The list of {@link NewsInfo} from server.
+		 * @param childColumnInfos
+		 *            The list of child {@link ColumnInfo} from server.
+		 * @author Luo Yinzhuo
+		 */
+		public void onNewsListResponseSuccess(List<NewsInfo> newsInfos,
+				List<ColumnInfo> childColumnInfos);
 
 		/**
 		 * Called when the news list request execution is failed.
@@ -260,25 +311,23 @@ public final class NetworkService {
 		private final String mServerURL;
 		/** The column ID. */
 		private final String mColumnID;
-		/** The child column flag. */
-		private final boolean mChildColumn;
 		/** The request listener. */
 		private final NewsListRequestListener mListener;
 
 		/**
 		 * Construct a new instance.
 		 * 
-		 * @param serverURL The server URL.
-		 * @param columnID The column ID.
-		 * @param childColumn True if the column is a child column, otherwise
-		 *        false.
-		 * @param listener The request listener.
+		 * @param serverURL
+		 *            The server URL.
+		 * @param columnID
+		 *            The column ID.
+		 * @param listener
+		 *            The request listener.
 		 */
-		private NewsListCommand(String serverURL, String columnID, boolean childColumn,
-		        NewsListRequestListener listener) {
+		private NewsListCommand(String serverURL, String columnID,
+				NewsListRequestListener listener) {
 			mServerURL = serverURL;
 			mColumnID = columnID;
-			mChildColumn = childColumn;
 			mListener = listener;
 		}
 
@@ -291,33 +340,55 @@ public final class NetworkService {
 
 		@Override
 		public void run() {
+			HttpPost request;
 			try {
-				HttpPost request = RequestFactory.createNewsListRequest(mServerURL, mColumnID);
+				request = RequestFactory.createNewsListRequest(mServerURL,
+						mColumnID);
+			} catch (Exception e) {
+				e.printStackTrace();
+				mListener.onNewsListRequestFailed();
+				return;
+			}
+
+			String content;
+			try {
 				HttpResponse response = HTTP_CLIENT.execute(request);
-				String content = NetworkService.getContent(response);
-				JSONObject jsonResponse = new JSONObject(content);
-				if (jsonResponse.getInt(KEY_XCODE) == 0) {
-					JSONArray jsonNewsInfo = jsonResponse.getJSONArray(KEY_XDATA);
-					List<NewsInfo> newsInfos = new ArrayList<NewsInfo>();
-					for (int i = 0; i < jsonNewsInfo.length(); i++) {
-						newsInfos.add(NewsInfo.parse(jsonNewsInfo.getJSONObject(i)));
-					}
-					
-					if (!mChildColumn) {
-						JSONArray jsonChildColumnInfo = jsonResponse.getJSONArray(KEY_CHILD_COLUMNS);
-					}
-					mListener.onNewsListResponseSuccess(newsInfos);
-					return;
-				}
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} catch (ClientProtocolException e) {
-				e.printStackTrace();
+				content = NetworkService.getContent(response);
 			} catch (IOException e) {
 				e.printStackTrace();
+				mListener.onNewsListResponseFailed();
+				return;
+			}
+
+			try {
+				JSONObject jsonResponse = new JSONObject(content);
+				if (jsonResponse.getInt(KEY_XCODE) == 0) {
+					JSONArray jsonNewsInfo = jsonResponse
+							.getJSONArray(KEY_XDATA);
+					List<NewsInfo> newsInfos = new ArrayList<NewsInfo>();
+					for (int i = 0; i < jsonNewsInfo.length(); i++) {
+						newsInfos.add(NewsInfo.parse(jsonNewsInfo
+								.getJSONObject(i)));
+					}
+
+					List<ColumnInfo> childColumnInfos = new ArrayList<ColumnInfo>();
+					if (jsonResponse.has(KEY_CHILD_COLUMNS)) {
+						JSONArray jsonChildColumnInfo = jsonResponse
+								.getJSONArray(KEY_CHILD_COLUMNS);
+						for (int i = 0; i < jsonChildColumnInfo.length(); i++) {
+							childColumnInfos
+									.add(ColumnInfo.parse(jsonChildColumnInfo
+											.getJSONObject(i)));
+						}
+					}
+					mListener.onNewsListResponseSuccess(newsInfos,
+							childColumnInfos);
+					return;
+				}
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
+			Log.e("NewsListCommand", content);
 			mListener.onNewsListResponseFailed();
 		}
 	}
@@ -325,14 +396,16 @@ public final class NetworkService {
 	/**
 	 * Get the news list.
 	 * 
-	 * @param serverURL The server URL.
-	 * @param columnID The column's ID.
-	 * @param childColumn True if the column is a child column, otherwise false.
-	 * @param listener The request listener.
+	 * @param serverURL
+	 *            The server URL.
+	 * @param columnID
+	 *            The column's ID.
+	 * @param listener
+	 *            The request listener.
 	 * @author Luo Yinzhuo
 	 */
-	public static void getNewsList(String serverURL, String columnID, boolean childColumn,
-	        NewsListRequestListener listener) {
-		EXECUTOR.execute(new NewsListCommand(serverURL, columnID, childColumn, listener));
+	public static void getNewsList(String serverURL, String columnID,
+			NewsListRequestListener listener) {
+		EXECUTOR.execute(new NewsListCommand(serverURL, columnID, listener));
 	}
 }

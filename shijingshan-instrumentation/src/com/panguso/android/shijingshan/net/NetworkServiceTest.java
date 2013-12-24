@@ -2,6 +2,10 @@ package com.panguso.android.shijingshan.net;
 
 import java.util.List;
 
+import junit.framework.Assert;
+
+import org.json.JSONArray;
+
 import com.panguso.android.shijingshan.column.ColumnInfo;
 import com.panguso.android.shijingshan.net.NetworkService.ColumnInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.NewsListRequestListener;
@@ -25,6 +29,15 @@ public class NetworkServiceTest extends AndroidTestCase {
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
 		NetworkService.getColumnInfoList(SERVER_URL, UUID, new ColumnInfoListRequestListener() {
+
+			@Override
+			public void onColumnInfoListRequestFailed() {
+				assertTrue("Create Column Info List Request Failed!", false);
+				// Let main thread finish.
+				synchronized (LOCK) {
+					LOCK.notify();
+				}
+			}
 
 			@Override
 			public void onColumnInfoListResponseSuccess(List<ColumnInfo> columnInfos) {
@@ -66,10 +79,19 @@ public class NetworkServiceTest extends AndroidTestCase {
 		final String COLUMN_ID = "100";
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
-		NetworkService.getNewsList(SERVER_URL, COLUMN_ID,  false, new NewsListRequestListener() {
+		NetworkService.getNewsList(SERVER_URL, COLUMN_ID, new NewsListRequestListener() {
 
 			@Override
-			public void onNewsListResponseSuccess(List<NewsInfo> newsInfos) {
+			public void onNewsListRequestFailed() {
+				assertTrue("Create News Info List Request Failed!", false);
+				// Let main thread finish.
+				synchronized (LOCK) {
+					LOCK.notify();
+				}				
+			}
+
+			@Override
+			public void onNewsListResponseSuccess(List<NewsInfo> newsInfos, List<ColumnInfo> childColumnInfos) {
 				assertNotNull("News info is empty!", newsInfos);
 				assertTrue("News info is empty!", newsInfos.size() > 0);
 				// Let main thread finish.

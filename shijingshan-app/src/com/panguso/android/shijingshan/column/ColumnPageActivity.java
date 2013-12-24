@@ -126,6 +126,11 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 
 	/** The list of column info. */
 	private final List<ColumnInfo> mColumnInfos = new ArrayList<ColumnInfo>();
+	
+	@Override
+	public void onColumnInfoListRequestFailed() {
+		// TODO Auto-generated method stub
+	}
 
 	@Override
 	public void onColumnInfoListResponseSuccess(final List<ColumnInfo> columnInfos) {

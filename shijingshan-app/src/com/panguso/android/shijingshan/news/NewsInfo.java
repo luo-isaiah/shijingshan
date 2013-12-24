@@ -19,24 +19,30 @@ public class NewsInfo {
 	/** The image URL. */
 	private final String mImageURL;
 	/** The news URL. */
-	private final String mURL;
+	private final String mNewsURL;
 	/** The add time. */
 	private final String mTime;
 
 	/**
 	 * Construct a new instance.
 	 * 
-	 * @param ID The news ID.
-	 * @param title The title.
-	 * @param imageURL The image URL.
-	 * @param URL The article URL.
-	 * @param time The add time.
+	 * @param ID
+	 *            The news ID.
+	 * @param title
+	 *            The title.
+	 * @param imageURL
+	 *            The image URL.
+	 * @param URL
+	 *            The article URL.
+	 * @param time
+	 *            The add time.
 	 */
-	private NewsInfo(String ID, String title, String imageURL, String URL, String time) {
+	private NewsInfo(String ID, String title, String imageURL, String URL,
+			String time) {
 		mID = ID;
 		mTitle = title;
 		mImageURL = imageURL;
-		mURL = URL;
+		mNewsURL = URL;
 		mTime = time;
 	}
 
@@ -54,15 +60,37 @@ public class NewsInfo {
 	/**
 	 * Parse a news info from its JSON format.
 	 * 
-	 * @param json The news info in JSON format.
+	 * @param json
+	 *            The news info in JSON format.
 	 * @return The news info.
-	 * @throws JSONException If the news info has error.
+	 * @throws JSONException
+	 *             If the news info has error.
 	 * @author Luo Yinzhuo
 	 */
 	public static NewsInfo parse(JSONObject json) throws JSONException {
-		return new NewsInfo(json.getString(KEY_NEWS_ID), json.getString(KEY_TITLE),
-		        json.getString(KEY_IMAGE_URL), json.getString(KEY_URL),
-		        json.getString(KEY_ADD_TIME));
+		return new NewsInfo(json.getString(KEY_NEWS_ID),
+				json.getString(KEY_TITLE), json.getString(KEY_IMAGE_URL),
+				json.getString(KEY_URL), json.getString(KEY_ADD_TIME));
+	}
+
+	/**
+	 * Get the news ID.
+	 * 
+	 * @return The news ID.
+	 * @author Luo Yinzhuo
+	 */
+	public String getID() {
+		return mID;
+	}
+
+	/**
+	 * Get the {@link News} based on the {@link NewsInfo}.
+	 * 
+	 * @return The {@link News}.
+	 * @author Luo Yinzhuo
+	 */
+	public News getNews() {
+		return new News(mID, mTitle, mImageURL, mNewsURL, mTime);
 	}
 
 }
