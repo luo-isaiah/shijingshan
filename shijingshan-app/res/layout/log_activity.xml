@@ -113,7 +113,8 @@
                 android:background="@drawable/underline_button_background"
                 android:text="@string/log_find_password"
                 android:textColor="@color/log_underline_button_text"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:visibility="invisible" />"
 
             <com.panguso.android.shijingshan.widget.UnderlineButton
                 android:id="@+id/register"

@@ -25,6 +25,8 @@
     <!-- news page activity -->
     <color name="news_page_title_bar_background">#FFFFFF</color>
     <color name="news_page_title_bar_title">#007DFF</color>
+    <color name="news_image_text">#FFFFFF</color>
+    <color name="news_no_image_text">#000000</color>
     
     <!-- log activity -->
     <color name="log_background">#FFFFFF</color>
