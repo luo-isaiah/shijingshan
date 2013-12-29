@@ -147,7 +147,7 @@ public class Column {
 	/**
 	 * Invoked by {@link ColumnPage} to draw the column on it.
 	 * 
-	 * @param canvas The {@link Canvas}.
+	 * @param canvas The {@link ColumnPageView}'s canvas.
 	 * @param rect The column rectangle.
 	 * @param editing True if the column page is editing, otherwise false.
 	 */
@@ -244,4 +244,8 @@ final class AddColumn extends Column {
 		}
 		return SINGLE_INSTANCE;
 	}
+
+	@Override
+    public void onSingleTapUp(Context context) {
+    }
 }

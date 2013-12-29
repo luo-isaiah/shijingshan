@@ -25,6 +25,8 @@ import android.os.Bundle;
 public class NewsPageActivity extends Activity implements OnBackListener, NewsListRequestListener {
 	/** The title bar. */
 	private NewsPageTitleBar mTitleBar;
+	/** The news page view. */
+	private NewsPageView mNewsPageView;
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,9 @@ public class NewsPageActivity extends Activity implements OnBackListener, NewsLi
 	    
 	    Intent intent = getIntent();
 	    mTitleBar.setTitle(intent.getStringExtra(Column.KEY_NAME));
+	    
+	    mNewsPageView = (NewsPageView) findViewById(R.id.news_page);
+	    
 	    final String columnID = intent.getStringExtra(Column.KEY_ID);
 	    NetworkService.getNewsList(getResources().getString(R.string.server_url), columnID, this);
     }
@@ -51,15 +56,18 @@ public class NewsPageActivity extends Activity implements OnBackListener, NewsLi
 	}
 
 	@Override
-	public void onNewsListResponseSuccess(List<NewsInfo> newsInfos, List<ColumnInfo> childColumnInfos) {
-		// TODO Auto-generated method stub
-		
+	public void onNewsListResponseSuccess(final List<NewsInfo> newsInfos, List<ColumnInfo> childColumnInfos) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				mNewsPageView.initialize(createNewsPages(newsInfos), 0);
+			}
+		});
 	}
 
 	@Override
-	public void onNewsListResponseFailed() {
-		// TODO Auto-generated method stub
-		
+	public void onNewsListResponseFailed(String columnID) {
+		NetworkService.getNewsList(getResources().getString(R.string.server_url), columnID, this);		
 	}
 	
 	/** The news map. */
@@ -72,7 +80,7 @@ public class NewsPageActivity extends Activity implements OnBackListener, NewsLi
 	 * @return The list of {@link NewsPage} with current column.
 	 * @author Luo Yinzhuo
 	 */
-	private List<NewsPage> createNewsPage(List<NewsInfo> newsInfos) {
+	private List<NewsPage> createNewsPages(List<NewsInfo> newsInfos) {
 		List<NewsPage> newsPages = new ArrayList<NewsPage>();
 		NewsPage page = new NewsPage();
 		newsPages.add(page);
@@ -88,7 +96,11 @@ public class NewsPageActivity extends Activity implements OnBackListener, NewsLi
 				mNewsMap.put(id, news);
 			}
 			
-			
+			if (!page.addNews(news)) {
+				page = new NewsPage();
+				newsPages.add(page);
+				page.addNews(news);
+			}
 		}
 		return newsPages;
 	}

@@ -36,7 +36,8 @@ import android.widget.ImageButton;
  * @author Luo Yinzhuo
  * @date 2013-8-7
  */
-public class ColumnPageActivity extends Activity implements ColumnInfoListRequestListener, OnClickListener {
+public class ColumnPageActivity extends Activity implements ColumnInfoListRequestListener,
+        OnClickListener {
 	/** The key to get last user's logged in data. */
 	private static final String KEY_LAST_USER = "last_user";
 	/** The key to get the last displayed {@link ColumnPage}'s data. */
@@ -63,7 +64,7 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 		mSetting.setOnClickListener(this);
 		mSubscribe = (ImageButton) findViewById(R.id.subscribe);
 		mNotice = (ImageButton) findViewById(R.id.notice);
-		
+
 		mColumnPageView = (ColumnPageView) findViewById(R.id.column_page);
 
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
@@ -91,10 +92,10 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 	protected void onDestroy() {
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 		try {
-	        mColumnPageView.save(sharedPreferences, UserManager.getUserName() + KEY_COLUMN_PAGES);
-        } catch (JSONException e) {
-	        e.printStackTrace();
-        }
+			mColumnPageView.save(sharedPreferences, UserManager.getUserName() + KEY_COLUMN_PAGES);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 		super.onDestroy();
 	}
 
@@ -109,11 +110,11 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 		        + KEY_COLUMN_PAGES, "");
 		if (columnPages.length() > 0) {
 			try {
-	            mColumnPageView.initialize(columnPages);
-	            // TODO: dismiss the waiting dialog.
-            } catch (JSONException e) {
-	            e.printStackTrace();
-            }
+				mColumnPageView.initialize(columnPages);
+				// TODO: dismiss the waiting dialog.
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		} else {
 			if (mColumnInfos.isEmpty()) {
 				NetworkService.getColumnInfoList(getResources().getString(R.string.server_url),
@@ -126,10 +127,10 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 
 	/** The list of column info. */
 	private final List<ColumnInfo> mColumnInfos = new ArrayList<ColumnInfo>();
-	
+
 	@Override
 	public void onColumnInfoListRequestFailed() {
-		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -147,7 +148,8 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 	@Override
 	public void onColumnInfoListResponseFailed() {
 		// TODO change the dialog to let the user to retry.
-
+		NetworkService.getColumnInfoList(getResources().getString(R.string.server_url),
+		        ((Application) getApplication()).getUUID(), this);
 	}
 
 	/**
@@ -184,7 +186,7 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 	}
 
 	@Override
-    public void onClick(View v) {
+	public void onClick(View v) {
 		switch (v.getId()) {
 			case R.id.log:
 				Intent intent = new Intent(this, LogActivity.class);
@@ -196,6 +198,6 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 			default:
 				break;
 		}
-    }
+	}
 
 }

@@ -93,4 +93,9 @@ public class NewsInfo {
 		return new News(mID, mTitle, mImageURL, mNewsURL, mTime);
 	}
 
+	@Override
+    public String toString() {
+	    return "NewsInfo [mID=" + mID + ", mTitle=" + mTitle + ", mImageURL=" + mImageURL
+	            + ", mNewsURL=" + mNewsURL + ", mTime=" + mTime + "]";
+    }
 }

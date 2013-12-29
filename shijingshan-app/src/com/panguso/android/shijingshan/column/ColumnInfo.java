@@ -31,15 +31,15 @@ public final class ColumnInfo {
 		// ren cai fu wu
 		COLUMN_ICON_MAP.put("103", R.drawable.column_rcfw);
 		// tou zi xuan chuan
-//		COLUMN_ICON_MAP.put("104", R.drawable.column_tzxc);
+		COLUMN_ICON_MAP.put("104", R.drawable.column_tzxc);
 		// cai gou zhao biao
-//		COLUMN_ICON_MAP.put("105", R.drawable.column_cgzb);
+		COLUMN_ICON_MAP.put("105", R.drawable.column_cgzb);
 		// yi jian fan kui
-//		COLUMN_ICON_MAP.put("106", R.drawable.column_yjfk);
+		COLUMN_ICON_MAP.put("106", R.drawable.column_yjfk);
 		// ling dao xin xiang
 		COLUMN_ICON_MAP.put("107", R.drawable.column_ldxx);
 		// ban shi zhi nan
-//		COLUMN_ICON_MAP.put("108", R.drawable.column_bszn);
+		COLUMN_ICON_MAP.put("108", R.drawable.column_bszn);
 	}
 
 	/** The column ID. */

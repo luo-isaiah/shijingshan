@@ -33,42 +33,42 @@ public class ColumnPageView extends View {
 	 * Construct a new instance.
 	 * 
 	 * @param context
-	 *            The context.
+	 *        The context.
 	 * @param attrs
-	 *            The attributes.
+	 *        The attributes.
 	 */
 	public ColumnPageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		mColumnPageManager = new ColumnPageManager();
-		mGestureDetector = new GestureDetector(context, mColumnPageManager);
+		this.mColumnPageManager = new ColumnPageManager();
+		this.mGestureDetector = new GestureDetector(context, this.mColumnPageManager);
 	}
 
 	/**
 	 * Initialize the {@link ColumnPageManager}.
 	 * 
 	 * @param columnPages
-	 *            The list of {@link ColumnPage}.
+	 *        The list of {@link ColumnPage}.
 	 * @param columnPagePosition
-	 *            The initial column page position.
+	 *        The initial column page position.
 	 * @author Luo Yinzhuo
 	 */
 	public void initialize(List<ColumnPage> columnPages, int columnPagePosition) {
-		mColumnPageManager.initialize(columnPages, columnPagePosition);
-		invalidate();
+		this.mColumnPageManager.initialize(columnPages, columnPagePosition);
+		this.invalidate();
 	}
 
 	/**
 	 * Initialize the {@link ColumnPageManager}.
 	 * 
 	 * @param json
-	 *            The column pages data in JSON format.
+	 *        The column pages data in JSON format.
 	 * @throws JSONException
-	 *             If error occurs in JSON format.
+	 *         If error occurs in JSON format.
 	 * @author Luo Yinzhuo
 	 */
 	public void initialize(String json) throws JSONException {
-		mColumnPageManager.initialize(json);
-		invalidate();
+		this.mColumnPageManager.initialize(json);
+		this.invalidate();
 	}
 
 	/**
@@ -76,27 +76,26 @@ public class ColumnPageView extends View {
 	 * {@link SharedPreferences}.
 	 * 
 	 * @param sharedPreferences
-	 *            The {@link SharedPreferences}.
+	 *        The {@link SharedPreferences}.
 	 * @param key
-	 *            The key to store.
+	 *        The key to store.
 	 * @throws JSONException
-	 *             If error occurs in JSON format.
+	 *         If error occurs in JSON format.
 	 * @author Luo Yinzhuo
 	 */
-	public void save(SharedPreferences sharedPreferences, String key)
-			throws JSONException {
-		mColumnPageManager.save(sharedPreferences, key);
+	public void save(SharedPreferences sharedPreferences, String key) throws JSONException {
+		this.mColumnPageManager.save(sharedPreferences, key);
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		mColumnPageManager.draw(canvas);
+		this.mColumnPageManager.draw(canvas);
 	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		return mGestureDetector.onTouchEvent(event)
-				|| mColumnPageManager.onTouchEvent(event);
+		return this.mGestureDetector.onTouchEvent(event)
+		        || this.mColumnPageManager.onTouchEvent(event);
 	}
 
 	/**
@@ -109,19 +108,19 @@ public class ColumnPageView extends View {
 		 * Invoked when a column is pressing down.
 		 * 
 		 * @param event
-		 *            The down event.
+		 *        The down event.
 		 * @param column
-		 *            The column being pressed.
+		 *        The column being pressed.
 		 * @param page
-		 *            The column page.
+		 *        The column page.
 		 * @param takePosition
-		 *            The position which the column takes.
+		 *        The position which the column takes.
 		 * @param rect
-		 *            The rectangle which the column takes.
+		 *        The rectangle which the column takes.
 		 * @author Luo Yinzhuo
 		 */
-		public void onDown(MotionEvent event, Column column, ColumnPage page,
-				int takePosition, RectF rectF);
+		public void onDown(MotionEvent event, Column column, ColumnPage page, int takePosition,
+		        RectF rectF);
 
 	}
 
@@ -130,8 +129,7 @@ public class ColumnPageView extends View {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	private class ColumnPageManager implements OnGestureListener,
-			OnPressDownColumnListener {
+	private class ColumnPageManager implements OnGestureListener, OnPressDownColumnListener {
 		/** The column page list. */
 		private final List<ColumnPage> mColumnPages = new ArrayList<ColumnPage>();
 		/** The column page position manager. */
@@ -143,18 +141,16 @@ public class ColumnPageView extends View {
 		 * Initialize itself from a list of {@link ColumnPage}s.
 		 * 
 		 * @param columnPages
-		 *            The list of {@link ColumnPage}s.
+		 *        The list of {@link ColumnPage}s.
 		 * @param columnPagePosition
-		 *            The initial column page position.
+		 *        The initial column page position.
 		 * @author Luo Yinzhuo
 		 */
-		public void initialize(List<ColumnPage> columnPages,
-				int columnPagePosition) {
-			mColumnPages.clear();
-			mColumnPages.addAll(columnPages);
-			mColumnPagePositionManager
-					.setColumnPagePosition(columnPagePosition);
-			mMode = MODE_EXPLORE;
+		public void initialize(List<ColumnPage> columnPages, int columnPagePosition) {
+			this.mColumnPages.clear();
+			this.mColumnPages.addAll(columnPages);
+			this.mColumnPagePositionManager.setColumnPagePosition(columnPagePosition);
+			this.mMode = MODE_EXPLORE;
 		}
 
 		/** The key to store current column page position. */
@@ -166,18 +162,18 @@ public class ColumnPageView extends View {
 		 * Initialize itself from a JSON format data.
 		 * 
 		 * @param json
-		 *            The JSON format data.
+		 *        The JSON format data.
 		 * @throws JSONException
-		 *             If error occurs in JSON format.
+		 *         If error occurs in JSON format.
 		 * @author Luo Yinzhuo
 		 */
 		public void initialize(String json) throws JSONException {
 			JSONObject root = new JSONObject(json);
 			JSONArray columnPages = root.getJSONArray(KEY_COLUMN_PAGES);
-			mColumnPages.clear();
+			this.mColumnPages.clear();
 			for (int i = 0; i < columnPages.length(); i++) {
-				mColumnPages.add(ColumnPage.parse(getContext(), columnPages
-						.get(i).toString()));
+				this.mColumnPages.add(ColumnPage.parse(ColumnPageView.this.getContext(),
+				        columnPages.get(i).toString()));
 			}
 		}
 
@@ -186,22 +182,21 @@ public class ColumnPageView extends View {
 		 * {@link SharedPreferences}.
 		 * 
 		 * @param sharedPreferences
-		 *            The {@link SharedPreferences}.
+		 *        The {@link SharedPreferences}.
 		 * @param key
-		 *            The key to store.
+		 *        The key to store.
 		 * @throws JSONException
-		 *             If error occurs in JSON format.
+		 *         If error occurs in JSON format.
 		 * @author Luo Yinzhuo
 		 */
-		public void save(SharedPreferences sharedPreferences, String key)
-				throws JSONException {
-			final int columnPagePosition = (int) Math
-					.floor(mColumnPagePositionManager.getColumnPagePosition() + 0.5f);
+		public void save(SharedPreferences sharedPreferences, String key) throws JSONException {
+			final int columnPagePosition = (int) Math.floor(this.mColumnPagePositionManager
+			        .getColumnPagePosition() + 0.5f);
 			JSONObject root = new JSONObject();
 			root.put(KEY_COLUMN_PAGE_POSITION, columnPagePosition);
 
 			JSONArray columnPages = new JSONArray();
-			for (ColumnPage page : mColumnPages) {
+			for (ColumnPage page : this.mColumnPages) {
 				columnPages.put(new JSONArray(page.getJson()));
 			}
 			root.put(KEY_COLUMN_PAGES, columnPages);
@@ -222,98 +217,98 @@ public class ColumnPageView extends View {
 		 * Draw the column pages to the canvas.
 		 * 
 		 * @param canvas
-		 *            The {@link ColumnPageView}'s canvas.
+		 *        The {@link ColumnPageView}'s canvas.
 		 * @author Luo Yinzhuo
 		 */
 		public void draw(Canvas canvas) {
-			final float columnPagePosition = mColumnPagePositionManager
-					.getColumnPagePosition();
-			final int jumpIndex = mPressDownColumn.isEmpty() ? ColumnPage.MAX_COLUMN_SIZE
-					: mPressDownColumn.getTakePosition();
-			final boolean editing = mMode == MODE_EDIT;
+			final float columnPagePosition = this.mColumnPagePositionManager
+			        .getColumnPagePosition();
+			final int jumpIndex = this.mPressDownColumn.isEmpty() ? ColumnPage.MAX_COLUMN_SIZE
+			        : this.mPressDownColumn.getTakePosition();
+			final boolean editing = this.mMode == MODE_EDIT;
 			boolean redraw = false;
 
-			if (mColumnPages.size() > 0) {
+			if (this.mColumnPages.size() > 0) {
 				final int left = (int) Math.floor(columnPagePosition);
-				float offsetX = (left - columnPagePosition) * getWidth();
+				float offsetX = (left - columnPagePosition) * ColumnPageView.this.getWidth();
 				canvas.save();
 				canvas.translate(offsetX, 0);
 
-				if (left >= 0 && left < mColumnPages.size()) {
-					ColumnPage leftPage = mColumnPages.get(left);
-					leftPage.draw(canvas, offsetX, getWidth(), jumpIndex,
-							editing);
+				if (left >= 0 && left < this.mColumnPages.size()) {
+					ColumnPage leftPage = this.mColumnPages.get(left);
+					leftPage.draw(canvas, offsetX, ColumnPageView.this.getWidth(), jumpIndex,
+					        editing);
 					redraw |= leftPage.hasColumnAnimation();
 				}
 
 				final int right = left + 1;
-				if (right < mColumnPages.size()) {
-					ColumnPage rightPage = mColumnPages.get(right);
-					canvas.translate(getWidth(), 0);
-					rightPage.draw(canvas, offsetX + getWidth(), getWidth(),
-							jumpIndex, editing);
+				if (right < this.mColumnPages.size()) {
+					ColumnPage rightPage = this.mColumnPages.get(right);
+					canvas.translate(ColumnPageView.this.getWidth(), 0);
+					rightPage.draw(canvas, offsetX + ColumnPageView.this.getWidth(),
+					        ColumnPageView.this.getWidth(), jumpIndex, editing);
 					redraw |= rightPage.hasColumnAnimation();
 				}
 
 				canvas.restore();
 			}
 
-			if (!mPressDownColumn.isEmpty()) {
-				mPressDownColumn.draw(canvas);
+			if (!this.mPressDownColumn.isEmpty()) {
+				this.mPressDownColumn.draw(canvas);
 			}
 
-			if (redraw || mColumnPagePositionManager.hasAnimation()) {
-				invalidate();
-			}
 			// Check whether there are any column page animation or column
 			// animation to draw again.
+			if (redraw || this.mColumnPagePositionManager.hasAnimation()) {
+				ColumnPageView.this.invalidate();
+			}
 		}
 
-/**		 * Recover the lose of the {@link GestureDetector#onTouchEvent(MotionEvent).
+/**
+ 		 * Recover the lose of the {@link GestureDetector#onTouchEvent(MotionEvent).
 		 * 
 		 * @return True if the animation resumes, otherwise false.
 		 * @author Luo Yinzhuo
 		 */
 		public boolean onTouchEvent(MotionEvent event) {
 			switch (event.getAction()) {
-			case MotionEvent.ACTION_MOVE:
-				if (!mPressDownColumn.isEmpty()
-						&& mPressDownColumn.isLongPress()) {
-					mPressDownColumn.onScroll(event);
-					invalidate();
-				}
-				break;
-			case MotionEvent.ACTION_UP:
-				boolean redraw = false;
-				if (!mPressDownColumn.isEmpty()) {
-					mPressDownColumn.release();
-					redraw = true;
-				}
+				case MotionEvent.ACTION_MOVE:
+					if (!this.mPressDownColumn.isEmpty() && this.mPressDownColumn.isLongPress()) {
+						this.mPressDownColumn.onScroll(event);
+						ColumnPageView.this.invalidate();
+					}
+					break;
+				case MotionEvent.ACTION_UP:
+					boolean redraw = false;
+					if (!this.mPressDownColumn.isEmpty()) {
+						this.mPressDownColumn.release();
+						redraw = true;
+					}
 
-				if (mMode == MODE_EDIT) {
-					// Remove the empty column page.
-					for (int i = 0; i < mColumnPages.size() - 1; i++) {
-						ColumnPage page = mColumnPages.get(i);
-						if (page.isEmpty()) {
-							mColumnPages.remove(page);
-							mColumnPagePositionManager.onRemovePage(i);
-							i--;
+					if (this.mMode == MODE_EDIT) {
+						// Remove the empty column page.
+						for (int i = 0; i < this.mColumnPages.size() - 1; i++) {
+							ColumnPage page = this.mColumnPages.get(i);
+							if (page.isEmpty()) {
+								this.mColumnPages.remove(page);
+								this.mColumnPagePositionManager.onRemovePage(i);
+								i--;
+							}
+						}
+
+						// Add an extra empty column page at the end.
+						if (!this.mColumnPages.get(this.mColumnPages.size() - 1).isEmpty()) {
+							this.mColumnPages.add(new ColumnPage());
 						}
 					}
 
-					// Add an extra empty column page at the end.
-					if (!mColumnPages.get(mColumnPages.size() - 1).isEmpty()) {
-						mColumnPages.add(new ColumnPage());
+					redraw |= this.mColumnPagePositionManager.resume();
+					if (redraw) {
+						ColumnPageView.this.invalidate();
 					}
-				}
-
-				redraw |= mColumnPagePositionManager.resume();
-				if (redraw) {
-					invalidate();
-				}
-				break;
-			default:
-				break;
+					break;
+				default:
+					break;
 			}
 			return true;
 		}
@@ -338,50 +333,46 @@ public class ColumnPageView extends View {
 			 * Start animation.
 			 * 
 			 * @param direction
-			 *            True to animate to the left page, otherwise false.
+			 *        True to animate to the left page, otherwise false.
 			 * @param bouncing
-			 *            True to have bounce effect when need, otherwise false.
+			 *        True to have bounce effect when need, otherwise false.
 			 * @author Luo Yinzhuo
 			 */
 			public void animate(boolean direction, boolean bouncing) {
-				if (mColumnPageAnimation == null) {
-					mColumnPageAnimation = new ColumnPageAnimation(direction,
-							bouncing);
+				if (this.mColumnPageAnimation == null) {
+					this.mColumnPageAnimation = new ColumnPageAnimation(direction, bouncing);
 				} else {
-					mColumnPageAnimation.animate(direction, bouncing);
+					this.mColumnPageAnimation.animate(direction, bouncing);
 				}
-				mDirection = direction;
+				this.mDirection = direction;
 			}
 
 			/**
 			 * Scroll the column page.
 			 * 
 			 * @param distanceX
-			 *            The scroll distance along X axis.
+			 *        The scroll distance along X axis.
 			 * @author Luo Yinzhuo
 			 */
 			public void scroll(float distanceX) {
 				final float leftBorder = -BOUNCING;
 				final float leftEdge = 0;
-				final float rightEdge = mColumnPages.size() > 0 ? mColumnPages
-						.size() - 1 : 0;
+				final float rightEdge = ColumnPageManager.this.mColumnPages.size() > 0 ? ColumnPageManager.this.mColumnPages
+				        .size() - 1 : 0;
 				final float rightBorder = rightEdge + BOUNCING;
 				float estimateColumnPagePosition;
-				if (mColumnPagePosition < leftEdge
-						|| mColumnPagePosition > rightEdge) {
-					estimateColumnPagePosition = mColumnPagePosition
-							+ distanceX / getWidth() * BOUNCING;
+				if (this.mColumnPagePosition < leftEdge || this.mColumnPagePosition > rightEdge) {
+					estimateColumnPagePosition = this.mColumnPagePosition + distanceX
+					        / ColumnPageView.this.getWidth() * BOUNCING;
 				} else {
-					estimateColumnPagePosition = mColumnPagePosition
-							+ distanceX / getWidth();
+					estimateColumnPagePosition = this.mColumnPagePosition + distanceX
+					        / ColumnPageView.this.getWidth();
 				}
 
 				if (distanceX > 0) {
-					mColumnPagePosition = Math.max(estimateColumnPagePosition,
-							leftBorder);
+					this.mColumnPagePosition = Math.max(estimateColumnPagePosition, leftBorder);
 				} else {
-					mColumnPagePosition = Math.min(estimateColumnPagePosition,
-							rightBorder);
+					this.mColumnPagePosition = Math.min(estimateColumnPagePosition, rightBorder);
 				}
 			}
 
@@ -391,9 +382,8 @@ public class ColumnPageView extends View {
 			 * @author Luo Yinzhuo
 			 */
 			public void pause() {
-				mColumnPagePosition = mColumnPageAnimation
-						.getColumnPagePosition();
-				mColumnPageAnimation = null;
+				this.mColumnPagePosition = this.mColumnPageAnimation.getColumnPagePosition();
+				this.mColumnPageAnimation = null;
 			}
 
 			/**
@@ -403,10 +393,9 @@ public class ColumnPageView extends View {
 			 * @author Luo Yinzhuo
 			 */
 			public boolean resume() {
-				if (mColumnPagePosition != Math
-						.floor(mColumnPagePosition + 0.5f)) {
-					mColumnPageAnimation = new ColumnPageAnimation(
-							(int) Math.floor(mColumnPagePosition + 0.5f));
+				if (this.mColumnPagePosition != Math.floor(this.mColumnPagePosition + 0.5f)) {
+					this.mColumnPageAnimation = new ColumnPageAnimation(
+					        (int) Math.floor(this.mColumnPagePosition + 0.5f));
 					return true;
 				} else {
 					return false;
@@ -414,13 +403,13 @@ public class ColumnPageView extends View {
 			}
 
 			/**
-			 * Check if the mColumnPageAnimation exist.
+			 * Check if the column page animation exist.
 			 * 
-			 * @return True if the mColumnPageAnimation exist, otherwise false.
+			 * @return True if the column page animation exist, otherwise false.
 			 * @author Luo Yinzhuo
 			 */
 			public boolean hasAnimation() {
-				return mColumnPageAnimation != null;
+				return this.mColumnPageAnimation != null;
 			}
 
 			/**
@@ -431,16 +420,16 @@ public class ColumnPageView extends View {
 			 * @author Luo Yinzhuo
 			 */
 			public boolean getAnimationDirection() {
-				return mDirection;
+				return this.mDirection;
 			}
 
 			/**
-			 * Invoked when the mColumnPageAnimation is finished.
+			 * Invoked when the column page animation is finished.
 			 * 
 			 * @author Luo Yinzhuo
 			 */
 			void onAnimationFinished() {
-				mColumnPageAnimation = null;
+				this.mColumnPageAnimation = null;
 			}
 
 			/**
@@ -471,34 +460,31 @@ public class ColumnPageView extends View {
 				/**
 				 * Construct a new instance.
 				 * 
-				 * @param direction
-				 *            True to animate to the left page, otherwise to the
-				 *            right page.
-				 * @param bouncing
-				 *            True to add bounce effect if need, otherwise
-				 *            false.
+				 * @param direction True to animate to the left page, otherwise
+				 *        to the right page.
+				 * @param bouncing True to add bounce effect if need, otherwise
+				 *        false.
 				 */
 				public ColumnPageAnimation(boolean direction, boolean bouncing) {
-					mStartTime = System.currentTimeMillis();
-					mStartPagePosition = mColumnPagePosition;
-					mDuration = DURATION_BASE;
+					this.mStartTime = System.currentTimeMillis();
+					this.mStartPagePosition = ColumnPagePositionManager.this.mColumnPagePosition;
+					this.mDuration = DURATION_BASE;
 					if (direction) {
-						mTargetPagePosition = (int) Math
-								.floor(mStartPagePosition + 0.5f) - 1;
-						if (mTargetPagePosition < 0) {
-							mTargetPagePosition = 0;
+						this.mTargetPagePosition = (int) Math.floor(this.mStartPagePosition + 0.5f) - 1;
+						if (this.mTargetPagePosition < 0) {
+							this.mTargetPagePosition = 0;
 							if (bouncing) {
-								mBouncing = BOUNCE_LEFT;
+								this.mBouncing = BOUNCE_LEFT;
 							}
 						}
 					} else {
-						mTargetPagePosition = (int) Math
-								.floor(mStartPagePosition + 0.5f) + 1;
-						final int maxColumnPagePosition = mColumnPages.size() - 1;
-						if (mTargetPagePosition > maxColumnPagePosition) {
-							mTargetPagePosition = maxColumnPagePosition;
+						this.mTargetPagePosition = (int) Math.floor(this.mStartPagePosition + 0.5f) + 1;
+						final int maxColumnPagePosition = ColumnPageManager.this.mColumnPages
+						        .size() - 1;
+						if (this.mTargetPagePosition > maxColumnPagePosition) {
+							this.mTargetPagePosition = maxColumnPagePosition;
 							if (bouncing) {
-								mBouncing = BOUNCE_RIGHT;
+								this.mBouncing = BOUNCE_RIGHT;
 							}
 						}
 					}
@@ -507,47 +493,47 @@ public class ColumnPageView extends View {
 				/**
 				 * Construct a new instance.
 				 * 
-				 * @param targetPagePosition
-				 *            The target page position.
+				 * @param targetPagePosition The target page position.
 				 */
 				public ColumnPageAnimation(int targetPagePosition) {
-					mStartTime = System.currentTimeMillis();
-					mStartPagePosition = mColumnPagePosition;
-					mDuration = (long) (DURATION_BASE * Math
-							.abs(mTargetPagePosition - mStartPagePosition));
-					mTargetPagePosition = targetPagePosition;
+					this.mStartTime = System.currentTimeMillis();
+					this.mStartPagePosition = ColumnPagePositionManager.this.mColumnPagePosition;
+					this.mDuration = (long) (DURATION_BASE * Math.abs(this.mTargetPagePosition
+					        - this.mStartPagePosition));
+					this.mTargetPagePosition = targetPagePosition;
 				}
 
 				/**
 				 * Append one more animate action based on the original one.
 				 * 
 				 * @param direction
-				 *            The new animate action direction, True to animate
-				 *            to the left page, otherwise to the right page.
+				 *        The new animate action direction, True to animate
+				 *        to the left page, otherwise to the right page.
 				 * @param bouncing
-				 *            True to add bounce effect if need, otherwise
-				 *            false.
+				 *        True to add bounce effect if need, otherwise
+				 *        false.
 				 * @author Luo Yinzhuo
 				 */
 				public void animate(boolean direction, boolean bouncing) {
-					mStartTime = System.currentTimeMillis();
-					mStartPagePosition = mColumnPagePosition;
-					mDuration = DURATION_BASE;
+					this.mStartTime = System.currentTimeMillis();
+					this.mStartPagePosition = ColumnPagePositionManager.this.mColumnPagePosition;
+					this.mDuration = DURATION_BASE;
 					if (direction) {
-						mTargetPagePosition--;
-						if (mTargetPagePosition < 0) {
-							mTargetPagePosition = 0;
+						this.mTargetPagePosition--;
+						if (this.mTargetPagePosition < 0) {
+							this.mTargetPagePosition = 0;
 							if (bouncing) {
-								mBouncing = BOUNCE_LEFT;
+								this.mBouncing = BOUNCE_LEFT;
 							}
 						}
 					} else {
-						mTargetPagePosition++;
-						final int maxColumnPagePosition = mColumnPages.size() - 1;
-						if (mTargetPagePosition > maxColumnPagePosition) {
-							mTargetPagePosition = maxColumnPagePosition;
+						this.mTargetPagePosition++;
+						final int maxColumnPagePosition = ColumnPageManager.this.mColumnPages
+						        .size() - 1;
+						if (this.mTargetPagePosition > maxColumnPagePosition) {
+							this.mTargetPagePosition = maxColumnPagePosition;
 							if (bouncing) {
-								mBouncing = BOUNCE_RIGHT;
+								this.mBouncing = BOUNCE_RIGHT;
 							}
 						}
 					}
@@ -560,41 +546,31 @@ public class ColumnPageView extends View {
 				 * @author Luo Yinzhuo
 				 */
 				public float getColumnPagePosition() {
-					long passTime = System.currentTimeMillis() - mStartTime;
-					if (passTime >= mDuration) {
-						onAnimationFinished();
-						return mTargetPagePosition;
+					long passTime = System.currentTimeMillis() - this.mStartTime;
+					if (passTime >= this.mDuration) {
+						ColumnPagePositionManager.this.onAnimationFinished();
+						return this.mTargetPagePosition;
 					} else {
 						float estimateColumnPagePosition;
-						if (mBouncing == BOUNCE_RIGHT) {
-							estimateColumnPagePosition = (mTargetPagePosition
-									+ 2 * BOUNCING - mStartPagePosition)
-									* passTime
-									/ mDuration
-									+ mStartPagePosition;
-							if (estimateColumnPagePosition > mTargetPagePosition
-									+ BOUNCING) {
+						if (this.mBouncing == BOUNCE_RIGHT) {
+							estimateColumnPagePosition = (this.mTargetPagePosition + 2 * BOUNCING - this.mStartPagePosition)
+							        * passTime / this.mDuration + this.mStartPagePosition;
+							if (estimateColumnPagePosition > this.mTargetPagePosition + BOUNCING) {
 								estimateColumnPagePosition = 2
-										* (mTargetPagePosition + BOUNCING)
-										- estimateColumnPagePosition;
+								        * (this.mTargetPagePosition + BOUNCING)
+								        - estimateColumnPagePosition;
 							}
-						} else if (mBouncing == BOUNCE_LEFT) {
-							estimateColumnPagePosition = (mTargetPagePosition
-									- 2 * BOUNCING - mStartPagePosition)
-									* passTime
-									/ mDuration
-									+ mStartPagePosition;
-							if (estimateColumnPagePosition < mTargetPagePosition
-									- BOUNCING) {
+						} else if (this.mBouncing == BOUNCE_LEFT) {
+							estimateColumnPagePosition = (this.mTargetPagePosition - 2 * BOUNCING - this.mStartPagePosition)
+							        * passTime / this.mDuration + this.mStartPagePosition;
+							if (estimateColumnPagePosition < this.mTargetPagePosition - BOUNCING) {
 								estimateColumnPagePosition = 2
-										* (mTargetPagePosition - BOUNCING)
-										- estimateColumnPagePosition;
+								        * (this.mTargetPagePosition - BOUNCING)
+								        - estimateColumnPagePosition;
 							}
 						} else {
-							estimateColumnPagePosition = (mTargetPagePosition - mStartPagePosition)
-									* passTime
-									/ mDuration
-									+ mStartPagePosition;
+							estimateColumnPagePosition = (this.mTargetPagePosition - this.mStartPagePosition)
+							        * passTime / this.mDuration + this.mStartPagePosition;
 						}
 						return estimateColumnPagePosition;
 					}
@@ -604,12 +580,12 @@ public class ColumnPageView extends View {
 				 * Invoked when a {@link ColumnPage} has been removed.
 				 * 
 				 * @param i
-				 *            The removed page's index.
+				 *        The removed page's index.
 				 * @author Luo Yinzhuo
 				 */
 				public void onRemovePage(int i) {
-					if (mTargetPagePosition >= i) {
-						mTargetPagePosition -= 1;
+					if (this.mTargetPagePosition >= i) {
+						this.mTargetPagePosition -= 1;
 					}
 				}
 			}
@@ -624,11 +600,11 @@ public class ColumnPageView extends View {
 			 * Set the column page position.
 			 * 
 			 * @param columnPagePosition
-			 *            The new column page position.
+			 *        The new column page position.
 			 * @author Luo Yinzhuo
 			 */
 			public void setColumnPagePosition(int columnPagePosition) {
-				mColumnPagePosition = columnPagePosition;
+				this.mColumnPagePosition = columnPagePosition;
 			}
 
 			/**
@@ -638,27 +614,26 @@ public class ColumnPageView extends View {
 			 * @author Luo Yinzhuo
 			 */
 			public float getColumnPagePosition() {
-				if (mColumnPageAnimation != null) {
-					mColumnPagePosition = mColumnPageAnimation
-							.getColumnPagePosition();
+				if (this.mColumnPageAnimation != null) {
+					this.mColumnPagePosition = this.mColumnPageAnimation.getColumnPagePosition();
 				}
-				return mColumnPagePosition;
+				return this.mColumnPagePosition;
 			}
 
 			/**
 			 * Invoked when a {@link ColumnPage} has been removed.
 			 * 
 			 * @param i
-			 *            The removed page's index.
+			 *        The removed page's index.
 			 * @author Luo Yinzhuo
 			 */
 			public void onRemovePage(int i) {
-				if (mColumnPagePosition >= i) {
-					mColumnPagePosition -= 1;
+				if (this.mColumnPagePosition >= i) {
+					this.mColumnPagePosition -= 1;
 				}
 
-				if (mColumnPageAnimation != null) {
-					mColumnPageAnimation.onRemovePage(i);
+				if (this.mColumnPageAnimation != null) {
+					this.mColumnPageAnimation.onRemovePage(i);
 				}
 			}
 		}
@@ -684,21 +659,20 @@ public class ColumnPageView extends View {
 			 * Extract a pressed down {@link Column} from a {@link ColumnPage}.
 			 * 
 			 * @param column
-			 *            The column.
+			 *        The column.
 			 * @param page
-			 *            The column page.
+			 *        The column page.
 			 * @param takePosition
-			 *            The taking position.
+			 *        The taking position.
 			 * @param rectF
-			 *            The taking area.
+			 *        The taking area.
 			 */
-			public void extract(Column column, ColumnPage page,
-					int takePosition, RectF rectF) {
-				mColumn = column;
-				mColumnPage = page;
-				mTakePosition = takePosition;
-				mRectF = rectF;
-				mLongPress = false;
+			public void extract(Column column, ColumnPage page, int takePosition, RectF rectF) {
+				this.mColumn = column;
+				this.mColumnPage = page;
+				this.mTakePosition = takePosition;
+				this.mRectF = rectF;
+				this.mLongPress = false;
 			}
 
 			/**
@@ -707,22 +681,22 @@ public class ColumnPageView extends View {
 			 * @author Luo Yinzhuo
 			 */
 			public void release() {
-				if (mColumnPage.isFull()) {
-					Column excess = mColumnPage.removeExcessColumn();
-					ColumnPage nextPage = mColumnPages.get(mColumnPages
-							.indexOf(mColumnPage) + 1);
+				if (this.mColumnPage.isFull()) {
+					Column excess = this.mColumnPage.removeExcessColumn();
+					ColumnPage nextPage = ColumnPageManager.this.mColumnPages
+					        .get(ColumnPageManager.this.mColumnPages.indexOf(this.mColumnPage) + 1);
 					while (nextPage.isFull()) {
 						Column temp = nextPage.removeExcessColumn();
 						nextPage.addColumn(0, excess);
-						nextPage = mColumnPages.get(mColumnPages
-								.indexOf(nextPage) + 1);
+						nextPage = ColumnPageManager.this.mColumnPages
+						        .get(ColumnPageManager.this.mColumnPages.indexOf(nextPage) + 1);
 						excess = temp;
 					}
 					nextPage.addColumn(0, excess);
 				}
 
-				mColumnPage.addColumn(mTakePosition, mColumn, mRectF);
-				mColumn = null;
+				this.mColumnPage.addColumn(this.mTakePosition, this.mColumn, this.mRectF);
+				this.mColumn = null;
 			}
 
 			/**
@@ -732,7 +706,7 @@ public class ColumnPageView extends View {
 			 * @author Luo Yinzhuo
 			 */
 			public boolean isEmpty() {
-				return mColumn == null;
+				return this.mColumn == null;
 			}
 
 			/**
@@ -742,27 +716,27 @@ public class ColumnPageView extends View {
 			 * @author Luo Yinzhuo
 			 */
 			public int getTakePosition() {
-				return mTakePosition;
+				return this.mTakePosition;
 			}
 
 			/**
 			 * Draw the press down column.
 			 * 
 			 * @param canvas
-			 *            The canvas.
+			 *        The canvas.
 			 * @author Luo Yinzhuo
 			 */
 			public void draw(Canvas canvas) {
-				RectF rectF = new RectF(mRectF);
-				if (mLongPress) {
+				RectF rectF = new RectF(this.mRectF);
+				if (this.mLongPress) {
 					final float size = rectF.width() * 1.1f;
 					final float centerX = rectF.centerX();
 					final float centerY = rectF.centerY();
-					rectF.set(centerX - size / 2, centerY - size / 2, centerX
-							+ size / 2, centerY + size / 2);
+					rectF.set(centerX - size / 2, centerY - size / 2, centerX + size / 2, centerY
+					        + size / 2);
 				}
 
-				mColumn.draw(canvas, rectF, false);
+				this.mColumn.draw(canvas, rectF, false);
 			}
 
 			/** The last motion event's x coordinate. */
@@ -774,13 +748,13 @@ public class ColumnPageView extends View {
 			 * Invoked when the column being long pressed.
 			 * 
 			 * @param event
-			 *            The long press down event.
+			 *        The long press down event.
 			 * @author Luo Yinzhuo
 			 */
 			public void onLongPress(MotionEvent event) {
-				mLongPress = true;
-				mLastMotionX = event.getX();
-				mLastMotionY = event.getY();
+				this.mLongPress = true;
+				this.mLastMotionX = event.getX();
+				this.mLastMotionY = event.getY();
 			}
 
 			/**
@@ -790,7 +764,7 @@ public class ColumnPageView extends View {
 			 * @author Luo Yinzhuo
 			 */
 			public boolean isLongPress() {
-				return mLongPress;
+				return this.mLongPress;
 			}
 
 			/**
@@ -800,7 +774,7 @@ public class ColumnPageView extends View {
 			 * @author Luo Yinzhuo
 			 */
 			public void onSingleTapUp() {
-				mColumn.onSingleTapUp(getContext());
+				this.mColumn.onSingleTapUp(ColumnPageView.this.getContext());
 			}
 
 			/** The switch page scale. */
@@ -814,30 +788,30 @@ public class ColumnPageView extends View {
 			 * Invoked when the column being long pressed and scrolled.
 			 * 
 			 * @param event
-			 *            The move events after the long press down event.
+			 *        The move events after the long press down event.
 			 * @author Luo Yinzhuo
 			 */
 			public void onScroll(MotionEvent event) {
-				final float distanceX = event.getX() - mLastMotionX;
-				final float distanceY = event.getY() - mLastMotionY;
-				mRectF.offset(distanceX, distanceY);
+				final float distanceX = event.getX() - this.mLastMotionX;
+				final float distanceY = event.getY() - this.mLastMotionY;
+				this.mRectF.offset(distanceX, distanceY);
 
-				mLastMotionX = event.getX();
-				mLastMotionY = event.getY();
+				this.mLastMotionX = event.getX();
+				this.mLastMotionY = event.getY();
 
-				if (switchPage(distanceX)) {
+				if (this.switchPage(distanceX)) {
 					return;
 				}
 
-				if (mColumnPage.isReleasePosition(mTakePosition, mRectF)) {
-					final int takePosition = mColumnPage
-							.getTakePosition(mRectF);
+				if (this.mColumnPage.isReleasePosition(this.mTakePosition, this.mRectF)) {
+					final int takePosition = this.mColumnPage.getTakePosition(this.mRectF);
 
-					if (takePosition != mTakePosition) {
-						mColumnPage
-								.onReleasePosition(mTakePosition, getWidth());
-						mColumnPage.onTakePosition(takePosition, getWidth());
-						mTakePosition = takePosition;
+					if (takePosition != this.mTakePosition) {
+						this.mColumnPage.onReleasePosition(this.mTakePosition,
+						        ColumnPageView.this.getWidth());
+						this.mColumnPage.onTakePosition(takePosition,
+						        ColumnPageView.this.getWidth());
+						this.mTakePosition = takePosition;
 					}
 				}
 			}
@@ -849,50 +823,55 @@ public class ColumnPageView extends View {
 			 */
 			private boolean switchPage(float distanceX) {
 				final long switchPageInterval = System.currentTimeMillis()
-						- mLastSwitchPageTime;
+				        - this.mLastSwitchPageTime;
 
 				if (switchPageInterval < MIN_SWITCH_PAGE_INTERVAL) {
 					return true;
 				}
 
-				if (mLastMotionX < SWITCH_PAGE_SCALE * getWidth()
-						&& distanceX < 0) {
-					if (mColumnPagePositionManager.hasAnimation()
-							&& mColumnPagePositionManager
-									.getAnimationDirection()) {
+				if (this.mLastMotionX < SWITCH_PAGE_SCALE * ColumnPageView.this.getWidth()
+				        && distanceX < 0) {
+					if (ColumnPageManager.this.mColumnPagePositionManager.hasAnimation()
+					        && ColumnPageManager.this.mColumnPagePositionManager
+					                .getAnimationDirection()) {
 						return true;
 					}
 
-					final int leftPage = mColumnPages.indexOf(mColumnPage) - 1;
+					final int leftPage = ColumnPageManager.this.mColumnPages
+					        .indexOf(this.mColumnPage) - 1;
 					if (leftPage >= 0) {
-						mColumnPage
-								.onReleasePosition(mTakePosition, getWidth());
-						mColumnPage = mColumnPages.get(leftPage);
-						mTakePosition = ColumnPage.MAX_COLUMN_SIZE - 1;
-						mColumnPage.onTakePosition(mTakePosition, getWidth());
-						mColumnPagePositionManager.animate(true, false);
-						mLastSwitchPageTime = System.currentTimeMillis();
-						invalidate();
+						this.mColumnPage.onReleasePosition(this.mTakePosition,
+						        ColumnPageView.this.getWidth());
+						this.mColumnPage = ColumnPageManager.this.mColumnPages.get(leftPage);
+						this.mTakePosition = ColumnPage.MAX_COLUMN_SIZE - 1;
+						this.mColumnPage.onTakePosition(this.mTakePosition,
+						        ColumnPageView.this.getWidth());
+						ColumnPageManager.this.mColumnPagePositionManager.animate(true, false);
+						this.mLastSwitchPageTime = System.currentTimeMillis();
+						ColumnPageView.this.invalidate();
 					}
 					return true;
-				} else if (mLastMotionX > (1 - SWITCH_PAGE_SCALE) * getWidth()
-						&& distanceX > 0) {
-					if (mColumnPagePositionManager.hasAnimation()
-							&& !mColumnPagePositionManager
-									.getAnimationDirection()) {
+				} else if (this.mLastMotionX > (1 - SWITCH_PAGE_SCALE)
+				        * ColumnPageView.this.getWidth()
+				        && distanceX > 0) {
+					if (ColumnPageManager.this.mColumnPagePositionManager.hasAnimation()
+					        && !ColumnPageManager.this.mColumnPagePositionManager
+					                .getAnimationDirection()) {
 						return true;
 					}
 
-					final int rightPage = mColumnPages.indexOf(mColumnPage) + 1;
-					if (rightPage < mColumnPages.size()) {
-						mColumnPage
-								.onReleasePosition(mTakePosition, getWidth());
-						mColumnPage = mColumnPages.get(rightPage);
-						mTakePosition = ColumnPage.MAX_COLUMN_SIZE - 1;
-						mColumnPage.onTakePosition(mTakePosition, getWidth());
-						mColumnPagePositionManager.animate(false, false);
-						mLastSwitchPageTime = System.currentTimeMillis();
-						invalidate();
+					final int rightPage = ColumnPageManager.this.mColumnPages
+					        .indexOf(this.mColumnPage) + 1;
+					if (rightPage < ColumnPageManager.this.mColumnPages.size()) {
+						this.mColumnPage.onReleasePosition(this.mTakePosition,
+						        ColumnPageView.this.getWidth());
+						this.mColumnPage = ColumnPageManager.this.mColumnPages.get(rightPage);
+						this.mTakePosition = ColumnPage.MAX_COLUMN_SIZE - 1;
+						this.mColumnPage.onTakePosition(this.mTakePosition,
+						        ColumnPageView.this.getWidth());
+						ColumnPageManager.this.mColumnPagePositionManager.animate(false, false);
+						this.mLastSwitchPageTime = System.currentTimeMillis();
+						ColumnPageView.this.invalidate();
 					}
 					return true;
 				}
@@ -907,67 +886,66 @@ public class ColumnPageView extends View {
 		private boolean mDeleteColumn = false;
 
 		@Override
-		public void onDown(MotionEvent event, Column column, ColumnPage page,
-				int takePosition, RectF rectF) {
+		public void onDown(MotionEvent event, Column column, ColumnPage page, int takePosition,
+		        RectF rectF) {
 			final float relativeX = event.getX() - rectF.right;
 			final float relativeY = event.getY() - rectF.top;
 
-			if (mMode == MODE_EDIT && column.isDelete(relativeX, relativeY)) {
+			if (this.mMode == MODE_EDIT && column.isDelete(relativeX, relativeY)) {
 				if (page.isEmpty()) {
-					int pageIndex = mColumnPages.indexOf(page);
-					mColumnPages.remove(page);
-					mColumnPagePositionManager.onRemovePage(pageIndex);
+					int pageIndex = this.mColumnPages.indexOf(page);
+					this.mColumnPages.remove(page);
+					this.mColumnPagePositionManager.onRemovePage(pageIndex);
 
 					if (pageIndex == 0) {
-						mColumnPagePositionManager.animate(false, false);
+						this.mColumnPagePositionManager.animate(false, false);
 					} else {
-						mColumnPagePositionManager.animate(true, false);
+						this.mColumnPagePositionManager.animate(true, false);
 					}
 				} else {
-					page.onReleasePosition(takePosition, getWidth());
+					page.onReleasePosition(takePosition, ColumnPageView.this.getWidth());
 				}
-				mDeleteColumn = true;
+				this.mDeleteColumn = true;
 			} else {
-				mPressDownColumn.extract(column, page, takePosition, rectF);
+				this.mPressDownColumn.extract(column, page, takePosition, rectF);
 			}
-			invalidate();
+			ColumnPageView.this.invalidate();
 		}
 
 		@Override
 		public boolean onDown(MotionEvent e) {
-			mDeleteColumn = false;
+			this.mDeleteColumn = false;
 
-			if (mColumnPagePositionManager.hasAnimation()) {
-				mColumnPagePositionManager.pause();
+			if (this.mColumnPagePositionManager.hasAnimation()) {
+				this.mColumnPagePositionManager.pause();
 			} else {
-				final float columnPagePosition = mColumnPagePositionManager
-						.getColumnPagePosition();
+				final float columnPagePosition = this.mColumnPagePositionManager
+				        .getColumnPagePosition();
 				final int page = (int) Math.floor(columnPagePosition + 0.5f);
-				if (!mColumnPages.isEmpty()) {
-					mColumnPages.get(page).onDown(e, this);
+				if (!this.mColumnPages.isEmpty()) {
+					this.mColumnPages.get(page).onDown(e, this);
 				}
 			}
 			return true;
 		}
 
 		@Override
-		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-				float velocityY) {
+		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 			boolean redraw = false;
-			if (!mPressDownColumn.isEmpty()) {
-				mPressDownColumn.release();
+			if (!this.mPressDownColumn.isEmpty()) {
+				this.mPressDownColumn.release();
 				redraw = true;
 			}
 
 			if (Math.abs(velocityX) > 500) {
-				mColumnPagePositionManager.animate(velocityX > 0, true);
+				this.mColumnPagePositionManager.animate(velocityX > 0, true);
 				redraw = true;
 			} else {
-				redraw |= mColumnPagePositionManager.resume();
+				redraw |= this.mColumnPagePositionManager.resume();
 			}
 
 			if (redraw) {
-				invalidate();
+				ColumnPageView.this.invalidate();
 			}
 			return true;
 		}
@@ -979,56 +957,55 @@ public class ColumnPageView extends View {
 		@Override
 		public boolean onSingleTapUp(MotionEvent e) {
 			boolean redraw = false;
-			if (!mPressDownColumn.isEmpty()) {
-				if (mMode == MODE_EXPLORE) {
-					mPressDownColumn.onSingleTapUp();
+			if (!this.mPressDownColumn.isEmpty()) {
+				if (this.mMode == MODE_EXPLORE) {
+					this.mPressDownColumn.onSingleTapUp();
 				}
-				mPressDownColumn.release();
+				this.mPressDownColumn.release();
 				redraw = true;
 			}
 
-			if (mMode == MODE_EDIT && !mDeleteColumn) {
-				for (int i = 0; i < mColumnPages.size(); i++) {
-					ColumnPage page = mColumnPages.get(i);
+			if (this.mMode == MODE_EDIT && !this.mDeleteColumn) {
+				for (int i = 0; i < this.mColumnPages.size(); i++) {
+					ColumnPage page = this.mColumnPages.get(i);
 					if (page.isEmpty()) {
-						mColumnPages.remove(page);
-						mColumnPagePositionManager.onRemovePage(i);
+						this.mColumnPages.remove(page);
+						this.mColumnPagePositionManager.onRemovePage(i);
 						i--;
 					}
 				}
-				mMode = MODE_EXPLORE;
+				this.mMode = MODE_EXPLORE;
 				redraw = true;
 			}
 
-			redraw |= mColumnPagePositionManager.resume();
+			redraw |= this.mColumnPagePositionManager.resume();
 			if (redraw) {
-				invalidate();
+				ColumnPageView.this.invalidate();
 			}
 			return true;
 		}
 
 		@Override
-		public boolean onScroll(MotionEvent e1, MotionEvent e2,
-				float distanceX, float distanceY) {
-			if (!mPressDownColumn.isEmpty() && !mPressDownColumn.isLongPress()) {
-				mPressDownColumn.release();
+		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+			if (!this.mPressDownColumn.isEmpty() && !this.mPressDownColumn.isLongPress()) {
+				this.mPressDownColumn.release();
 			}
 
-			mColumnPagePositionManager.scroll(distanceX);
-			invalidate();
+			this.mColumnPagePositionManager.scroll(distanceX);
+			ColumnPageView.this.invalidate();
 			return true;
 		}
 
 		@Override
 		public void onLongPress(MotionEvent event) {
-			if (!mPressDownColumn.isEmpty()) {
-				mPressDownColumn.onLongPress(event);
+			if (!this.mPressDownColumn.isEmpty()) {
+				this.mPressDownColumn.onLongPress(event);
 
-				if (mMode != MODE_EDIT) {
-					mColumnPages.add(new ColumnPage());
-					mMode = MODE_EDIT;
+				if (this.mMode != MODE_EDIT) {
+					this.mColumnPages.add(new ColumnPage());
+					this.mMode = MODE_EDIT;
 				}
-				invalidate();
+				ColumnPageView.this.invalidate();
 			}
 		}
 	}
