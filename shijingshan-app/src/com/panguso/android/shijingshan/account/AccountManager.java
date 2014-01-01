@@ -1,16 +1,16 @@
-package com.panguso.android.shijingshan.user;
+package com.panguso.android.shijingshan.account;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Manage current {@link User} state.
+ * Manage current {@link Account} state.
  * 
  * @author Luo Yinzhuo
  */
-public final class UserManager {
-	/** Initialized user, because no user has logged in. */
-	private static User USER = NoUser.getInstance();
+public final class AccountManager {
+	/** Initialized account, because no account has logged in. */
+	private static Account ACCOUNT = NoAccount.getInstance();
 	/** The login time. */
 	private static long LOGIN_TIME = 0;
 	/** The login state. */
@@ -33,7 +33,7 @@ public final class UserManager {
 	 * @author Luo Yinzhuo
 	 */
 	public static String getUserName() {
-		return USER.getName();
+		return ACCOUNT.getName();
 	}
 
 	/** The key to store last login user's name. */
@@ -55,7 +55,7 @@ public final class UserManager {
 		JSONObject login = new JSONObject(json);
 		final String name = login.getString(KEY_NAME);
 		if (name.length() != 0) {
-			USER = new User(name, login.getString(KEY_PASSWORD));
+			ACCOUNT = new Account(name, login.getString(KEY_PASSWORD));
 			LOGIN_TIME = login.getLong(KEY_TIME);
 			LOGIN = !needReLogin();
 		}
@@ -76,29 +76,29 @@ public final class UserManager {
 }
 
 /**
- * Specific for no user login state.
+ * Specific for no account login state.
  * 
  * @author Luo Yinzhuo
  */
-final class NoUser extends User {
+final class NoAccount extends Account {
 
 	/** The single instance. */
-	private static final NoUser SINGLE_INSTANCE = new NoUser();
+	private static final NoAccount SINGLE_INSTANCE = new NoAccount();
 
 	/**
 	 * Construct a new instance.
 	 */
-	private NoUser() {
+	private NoAccount() {
 		super("", "");
 	}
 
 	/**
-	 * Get the single {@link NoUser} instance.
+	 * Get the single {@link NoAccount} instance.
 	 * 
-	 * @return The single {@link NoUser} instance.
+	 * @return The single {@link NoAccount} instance.
 	 * @author Luo Yinzhuo
 	 */
-	static final NoUser getInstance() {
+	static final NoAccount getInstance() {
 		return SINGLE_INSTANCE;
 	}
 }

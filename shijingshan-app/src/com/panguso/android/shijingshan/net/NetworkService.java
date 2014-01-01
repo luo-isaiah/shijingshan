@@ -185,8 +185,8 @@ public final class NetworkService {
 	private static class ColumnInfoListCommand implements Runnable {
 		/** The server URL. */
 		private final String mServerURL;
-		/** The device's UUID. */
-		private final String mUUID;
+		/** The account name. */
+		private final String mAccount;
 		/** The request listener. */
 		private final ColumnInfoListRequestListener mListener;
 
@@ -195,15 +195,15 @@ public final class NetworkService {
 		 * 
 		 * @param serverURL
 		 *        The server URL.
-		 * @param UUID
-		 *        The device's UUID.
+		 * @param account
+		 *        The account name.
 		 * @param listener
 		 *        The request listener.
 		 */
-		private ColumnInfoListCommand(String serverURL, String UUID,
+		private ColumnInfoListCommand(String serverURL, String account,
 		        ColumnInfoListRequestListener listener) {
 			mServerURL = serverURL;
-			mUUID = UUID;
+			mAccount = account;
 			mListener = listener;
 		}
 
@@ -216,7 +216,7 @@ public final class NetworkService {
 		public void run() {
 			HttpPost request;
 			try {
-				request = RequestFactory.createColumnListRequest(mServerURL, mUUID);
+				request = RequestFactory.createColumnListRequest(mServerURL, mAccount);
 			} catch (Exception e) {
 				e.printStackTrace();
 				mListener.onColumnInfoListRequestFailed();
@@ -257,15 +257,15 @@ public final class NetworkService {
 	 * 
 	 * @param serverURL
 	 *        The server URL.
-	 * @param UUID
-	 *        The device's UUID.
+	 * @param account
+	 *        The account name.
 	 * @param listener
 	 *        The request listener.
 	 * @author Luo Yinzhuo
 	 */
-	public static void getColumnInfoList(String serverURL, String UUID,
+	public static void getColumnInfoList(String serverURL, String account,
 	        ColumnInfoListRequestListener listener) {
-		EXECUTOR.execute(new ColumnInfoListCommand(serverURL, UUID, listener));
+		EXECUTOR.execute(new ColumnInfoListCommand(serverURL, account, listener));
 	}
 
 	/**

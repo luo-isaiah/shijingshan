@@ -25,25 +25,28 @@ public final class RequestFactory {
 
 	/** The deviceToken. */
 	private static final String DEVICE_TOKEN = "deviceToken";
+	
+	/** The account. */
+	private static final String ACCOUNT = "account";
 
 	/**
 	 * Create a column list request.
 	 * 
 	 * @param serverURL The server URL.
-	 * @param UUID The device's UUID.
+	 * @param account The account name.
 	 * @return The column list request.
 	 * @throws UnsupportedEncodingException If device doesn't support UTF-8
 	 *         encode.
 	 * @throws JSONException If an error occurs when create JSON parameters.
 	 * @author Luo Yinzhuo
 	 */
-	static HttpPost createColumnListRequest(String serverURL, String UUID)
+	static HttpPost createColumnListRequest(String serverURL, String account)
 	        throws UnsupportedEncodingException, JSONException {
 		HttpPost post = new HttpPost(serverURL);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair(TRANS_CODE, "201"));
 		JSONObject param = new JSONObject();
-		param.put(DEVICE_TOKEN, UUID);
+		param.put(ACCOUNT, account);
 		params.add(new BasicNameValuePair(PARAM, param.toString()));
 		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
 		return post;

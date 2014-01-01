@@ -1,15 +1,15 @@
-package com.panguso.android.shijingshan.user;
+package com.panguso.android.shijingshan.account;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Represent a user.
+ * Represent an account.
  * 
  * @author Luo Yinzhuo
  */
-public class User {
-	/** The user name. */
+public class Account {
+	/** The account name. */
 	private final String mName;
 	/** The password. */
 	private final String mPassword;
@@ -17,18 +17,18 @@ public class User {
 	/**
 	 * Construct a new instance.
 	 * 
-	 * @param name The user name.
+	 * @param name The account name.
 	 * @param password The password.
 	 */
-	public User(String name, String password) {
+	public Account(String name, String password) {
 		mName = name;
 		mPassword = password;
 	}
 
 	/**
-	 * Get the user's name.
+	 * Get the account's name.
 	 * 
-	 * @return The user's name.
+	 * @return The account's name.
 	 * @author Luo Yinzhuo
 	 */
 	public final String getName() {
@@ -36,45 +36,45 @@ public class User {
 	}
 
 	/**
-	 * Get the user's password.
+	 * Get the account's password.
 	 * 
-	 * @return The user's password.
+	 * @return The account's password.
 	 * @author Luo Yinzhuo
 	 */
 	public final String getPassword() {
 		return mPassword;
 	}
 
-	/** The key to record user's name. */
+	/** The key to record account's name. */
 	private static final String KEY_NAME = "name";
-	/** The key to record user's password. */
+	/** The key to record account's password. */
 	private static final String KEY_PASSWORD = "password";
 
 	/**
-	 * Get the user's data in JSON format.
+	 * Get the account's data in JSON format.
 	 * 
-	 * @return The user's data in JSON format.
+	 * @return The account's data in JSON format.
 	 * @throws JSONException If the format is failed.
 	 * @author Luo Yinzhuo
 	 */
 	public final String getJson() throws JSONException {
-		JSONObject user = new JSONObject();
-		user.put(KEY_NAME, mName);
-		user.put(KEY_PASSWORD, mPassword);
-		return user.toString();
+		JSONObject account = new JSONObject();
+		account.put(KEY_NAME, mName);
+		account.put(KEY_PASSWORD, mPassword);
+		return account.toString();
 	}
 
 	/**
-	 * Construct a {@link User} from its data in JSON format.
+	 * Construct a {@link Account} from its data in JSON format.
 	 * 
-	 * @param json The user's data in JSON format.
-	 * @return The user.
+	 * @param json The account's data in JSON format.
+	 * @return The {@link Account}.
 	 * @throws JSONException If there are error in JSON data.
 	 * @author Luo Yinzhuo
 	 */
-	public static User parse(String json) throws JSONException {
-		JSONObject user = new JSONObject(json);
-		return new User(user.getString(KEY_NAME), user.getString(KEY_PASSWORD));
+	public static Account parse(String json) throws JSONException {
+		JSONObject account = new JSONObject(json);
+		return new Account(account.getString(KEY_NAME), account.getString(KEY_PASSWORD));
 	}
 
 	@Override

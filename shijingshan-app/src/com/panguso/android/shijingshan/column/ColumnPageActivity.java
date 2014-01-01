@@ -16,11 +16,11 @@ import org.json.JSONException;
 
 import com.panguso.android.shijingshan.Application;
 import com.panguso.android.shijingshan.R;
+import com.panguso.android.shijingshan.account.AccountManager;
 import com.panguso.android.shijingshan.log.LogActivity;
 import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.ColumnInfoListRequestListener;
 import com.panguso.android.shijingshan.setting.SettingActivity;
-import com.panguso.android.shijingshan.user.UserManager;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -38,8 +38,8 @@ import android.widget.ImageButton;
  */
 public class ColumnPageActivity extends Activity implements ColumnInfoListRequestListener,
         OnClickListener {
-	/** The key to get last user's logged in data. */
-	private static final String KEY_LAST_USER = "last_user";
+	/** The key to get last logged account in {@link SharedPreferences} data. */
+	private static final String KEY_LAST_ACCOUNT = "last_account";
 	/** The key to get the last displayed {@link ColumnPage}'s data. */
 	private static final String KEY_COLUMN_PAGES = "_column_page";
 
@@ -68,18 +68,18 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 		mColumnPageView = (ColumnPageView) findViewById(R.id.column_page);
 
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-		// First, get the last logged in user's info.
-		String lastUserLogin = sharedPreferences.getString(KEY_LAST_USER, "");
-		if (lastUserLogin.length() > 0) {
+		// First, get the last logged in account's info.
+		String lastAccountLogin = sharedPreferences.getString(KEY_LAST_ACCOUNT, "");
+		if (lastAccountLogin.length() > 0) {
 			// There's a last logged in user.
 			try {
-				UserManager.parse(lastUserLogin);
+				AccountManager.parse(lastAccountLogin);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 
 			// Check whether the user needs to re-login.
-			if (UserManager.needReLogin()) {
+			if (AccountManager.needReLogin()) {
 				// TODO: Make the user to login.
 				return;
 			}
@@ -92,7 +92,7 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 	protected void onDestroy() {
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 		try {
-			mColumnPageView.save(sharedPreferences, UserManager.getUserName() + KEY_COLUMN_PAGES);
+			mColumnPageView.save(sharedPreferences, AccountManager.getUserName() + KEY_COLUMN_PAGES);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -106,7 +106,7 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 	 */
 	private void displayColumnPages() {
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-		String columnPages = sharedPreferences.getString(UserManager.getUserName()
+		String columnPages = sharedPreferences.getString(AccountManager.getUserName()
 		        + KEY_COLUMN_PAGES, "");
 		if (columnPages.length() > 0) {
 			try {
@@ -118,7 +118,7 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 		} else {
 			if (mColumnInfos.isEmpty()) {
 				NetworkService.getColumnInfoList(getResources().getString(R.string.server_url),
-				        ((Application) getApplication()).getUUID(), this);
+				        AccountManager.getUserName(), this);
 			} else {
 				mColumnPageView.initialize(createColumnPages(mColumnInfos), 0);
 			}
