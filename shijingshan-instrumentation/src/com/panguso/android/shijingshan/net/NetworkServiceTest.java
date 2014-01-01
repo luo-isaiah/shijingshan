@@ -25,12 +25,12 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	public void testGetColumnInfoList() {
-		/** The UUID. */
-		final String UUID = "ffffffff-aa13-3f0f-ffff-ffffd0fe3dcb";
+	public void testGetColumnInfoListWithNoAccount() {
+		/** The account */
+		final String account = "";
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
-		NetworkService.getColumnInfoList(SERVER_URL, UUID, new ColumnInfoListRequestListener() {
+		NetworkService.getColumnInfoList(SERVER_URL, account, new ColumnInfoListRequestListener() {
 
 			@Override
 			public void onColumnInfoListRequestFailed() {
