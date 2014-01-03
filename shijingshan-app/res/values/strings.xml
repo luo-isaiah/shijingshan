@@ -6,8 +6,8 @@
     <!-- retry dialog -->
     <string name="retry_text">请检查网络连接并重试</string>
     <string name="retry_button">重试</string>
-    
-    <!-- log activity text view -->
+
+    <!-- log activity -->
     <string name="log_title">登录</string>
     <string name="log_username">账号</string>
     <string name="log_username_hint">用户名/邮箱/手机号</string>
@@ -17,7 +17,7 @@
     <string name="log_find_password">找回密码</string>
     <string name="log_register">还没有账号？点击注册</string>
 
-    <!-- register activity text view -->
+    <!-- register activity -->
     <string name="register_username">用户名：</string>
     <string name="register_password">密码：</string>
     <string name="register_mobile_number">手机号：</string>
@@ -28,7 +28,10 @@
     <string name="digits_password">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
     <string name="digits_mobile_number">0123456789</string>
     <string name="digits_enterprise_id">0123456789</string>
-    
+
+    <!-- business activity -->
+    <string name="business_title">选择行业</string>
+
     <!-- setting activity -->
     <string name="setting_title">设置</string>
     <string name="change_password">修改密码</string>

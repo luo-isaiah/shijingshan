@@ -110,15 +110,27 @@ public final class ColumnInfo {
 	private static final String VALUE_SFGK_YES = "yes";
 
 	/**
-	 * Parse a column info from its JSON format.
+	 * Check if the JSON object is a column info JSON object.
 	 * 
-	 * @param json The column info in JSON format.
+	 * @param json The JSON object.
+	 * @return True if the JSON object is a column info JSON object, otherwise
+	 *         false.
+	 * @author Luo Yinzhuo
+	 */
+	public static boolean isColumnInfo(JSONObject json) {
+		return json != null && json.has(KEY_COLUMN_ID) && json.has(KEY_COLUMN_NAME)
+		        && json.has(KEY_SFGK);
+	}
+
+	/**
+	 * Parse a column info from its JSON object.
+	 * 
+	 * @param json The column info JSON object.
 	 * @return The column info.
 	 * @throws JSONException If the column info has error.
 	 * @author Luo Yinzhuo
 	 */
 	public static ColumnInfo parse(JSONObject json) throws JSONException {
-		Log.d("ColumnInfo", json.toString());
 		return new ColumnInfo(json.getString(KEY_COLUMN_ID), json.getString(KEY_COLUMN_NAME), json
 		        .getString(KEY_SFGK).equals(VALUE_SFGK_YES));
 	}

@@ -25,12 +25,29 @@ public final class RequestFactory {
 
 	/** The deviceToken. */
 	private static final String DEVICE_TOKEN = "deviceToken";
-	
+
+	/**
+	 * Create a business info list request.
+	 * 
+	 * @param serverURL The server URL.
+	 * @return The business list request.
+	 * @throws UnsupportedEncodingException If device doesn't support UTF-8
+	 *         encode.
+	 * @author Luo Yinzhuo
+	 */
+	static HttpPost createBusinessInfoListRequest(String serverURL) throws UnsupportedEncodingException {
+		HttpPost post = new HttpPost(serverURL);
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair(TRANS_CODE, "101"));
+		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+		return post;
+	}
+
 	/** The account. */
 	private static final String ACCOUNT = "account";
 
 	/**
-	 * Create a column list request.
+	 * Create a column info list request.
 	 * 
 	 * @param serverURL The server URL.
 	 * @param account The account name.
@@ -40,7 +57,7 @@ public final class RequestFactory {
 	 * @throws JSONException If an error occurs when create JSON parameters.
 	 * @author Luo Yinzhuo
 	 */
-	static HttpPost createColumnListRequest(String serverURL, String account)
+	static HttpPost createColumnInfoListRequest(String serverURL, String account)
 	        throws UnsupportedEncodingException, JSONException {
 		HttpPost post = new HttpPost(serverURL);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -56,7 +73,7 @@ public final class RequestFactory {
 	private static final String COLUMN_ID = "columnId";
 
 	/**
-	 * Create a news list request.
+	 * Create a news info list request based on specified column.
 	 * 
 	 * @param serverURL The server URL.
 	 * @param columnID The column ID.
@@ -66,7 +83,7 @@ public final class RequestFactory {
 	 * @throws JSONException If an error occurs when create JSON parameters.
 	 * @author Luo Yinzhuo
 	 */
-	static HttpPost createNewsListRequest(String serverURL, String columnID)
+	static HttpPost createNewsInfoListRequest(String serverURL, String columnID)
 	        throws UnsupportedEncodingException, JSONException {
 		HttpPost post = new HttpPost(serverURL);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();

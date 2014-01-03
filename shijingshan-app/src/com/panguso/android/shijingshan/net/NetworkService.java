@@ -49,6 +49,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.panguso.android.shijingshan.business.BusinessInfo;
 import com.panguso.android.shijingshan.column.ColumnInfo;
 import com.panguso.android.shijingshan.news.NewsInfo;
 
@@ -146,6 +147,122 @@ public final class NetworkService {
 	}
 
 	/**
+	 * Interface definition for a callback to be invoked when a business info
+	 * list request is executed.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public interface BusinessInfoListRequestListener {
+		/**
+		 * Called when the business info list request creation is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onBusinessInfoListRequestFailed();
+
+		/**
+		 * Called when the business info list request execution is successful.
+		 * 
+		 * @param businessInfos The list of {@link BusinessInfo} from server.
+		 * @author Luo Yinzhuo
+		 */
+		public void onBusinessInfoListResponseSuccess(List<BusinessInfo> businessInfos);
+
+		/**
+		 * Called when the business info list request execution is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onBusinessInfoListResponseFailed();
+	}
+
+	/**
+	 * Specified for execute business info list request.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private static class BusinessInfoListCommand implements Runnable {
+		/** The server URL. */
+		private final String mServerURL;
+		/** The request listener. */
+		private final BusinessInfoListRequestListener mListener;
+
+		/**
+		 * Construct a new instance.
+		 * 
+		 * @param serverURL
+		 *        The server URL.
+		 * @param listener
+		 *        The request listener.
+		 */
+		private BusinessInfoListCommand(String serverURL, BusinessInfoListRequestListener listener) {
+			mServerURL = serverURL;
+			mListener = listener;
+		}
+
+		/** The key to get xCode. */
+		private static final String KEY_XCODE = "xCode";
+		/** The key to get xData. */
+		private static final String KEY_XDATA = "xData";
+
+		@Override
+		public void run() {
+			HttpPost request;
+			try {
+				request = RequestFactory.createBusinessInfoListRequest(mServerURL);
+			} catch (Exception e) {
+				e.printStackTrace();
+				mListener.onBusinessInfoListRequestFailed();
+				return;
+			}
+
+			String content;
+			try {
+				HttpResponse response = HTTP_CLIENT.execute(request);
+				content = NetworkService.getContent(response);
+			} catch (IOException e) {
+				e.printStackTrace();
+				mListener.onBusinessInfoListResponseFailed();
+				return;
+			}
+
+			try {
+				JSONObject jsonResponse = new JSONObject(content);
+				if (jsonResponse.getInt(KEY_XCODE) == 0) {
+					JSONArray jsonBusinessInfo = jsonResponse.getJSONArray(KEY_XDATA);
+					List<BusinessInfo> businessInfos = new ArrayList<BusinessInfo>();
+					for (int i = 0; i < jsonBusinessInfo.length(); i++) {
+						JSONObject businessInfo = jsonBusinessInfo.getJSONObject(i);
+						if (BusinessInfo.isBusinessInfo(businessInfo)) {
+							businessInfos.add(BusinessInfo.parse(businessInfo));
+						}
+					}
+					mListener.onBusinessInfoListResponseSuccess(businessInfos);
+					return;
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			Log.e("BusinessInfoListCommand", content);
+			mListener.onBusinessInfoListResponseFailed();
+		}
+	}
+
+	/**
+	 * Get the business info list.
+	 * 
+	 * @param serverURL
+	 *        The server URL.
+	 * @param listener
+	 *        The request listener.
+	 * @author Luo Yinzhuo
+	 */
+	public static void getBusinessInfoList(String serverURL,
+	        BusinessInfoListRequestListener listener) {
+		EXECUTOR.execute(new BusinessInfoListCommand(serverURL, listener));
+	}
+
+	/**
 	 * Interface definition for a callback to be invoked when a column info list
 	 * request is executed.
 	 * 
@@ -178,7 +295,7 @@ public final class NetworkService {
 	}
 
 	/**
-	 * Specified for execute column list request.
+	 * Specified for execute column info list request.
 	 * 
 	 * @author Luo Yinzhuo
 	 */
@@ -216,7 +333,7 @@ public final class NetworkService {
 		public void run() {
 			HttpPost request;
 			try {
-				request = RequestFactory.createColumnListRequest(mServerURL, mAccount);
+				request = RequestFactory.createColumnInfoListRequest(mServerURL, mAccount);
 			} catch (Exception e) {
 				e.printStackTrace();
 				mListener.onColumnInfoListRequestFailed();
@@ -239,7 +356,10 @@ public final class NetworkService {
 					JSONArray jsonColumnInfo = jsonResponse.getJSONArray(KEY_XDATA);
 					List<ColumnInfo> columnInfos = new ArrayList<ColumnInfo>();
 					for (int i = 0; i < jsonColumnInfo.length(); i++) {
-						columnInfos.add(ColumnInfo.parse(jsonColumnInfo.getJSONObject(i)));
+						JSONObject columnInfo = jsonColumnInfo.getJSONObject(i);
+						if (ColumnInfo.isColumnInfo(columnInfo)) {
+							columnInfos.add(ColumnInfo.parse(columnInfo));
+						}
 					}
 					mListener.onColumnInfoListResponseSuccess(columnInfos);
 					return;
@@ -343,7 +463,7 @@ public final class NetworkService {
 		public void run() {
 			HttpPost request;
 			try {
-				request = RequestFactory.createNewsListRequest(mServerURL, mColumnID);
+				request = RequestFactory.createNewsInfoListRequest(mServerURL, mColumnID);
 			} catch (Exception e) {
 				e.printStackTrace();
 				mListener.onNewsListRequestFailed();
@@ -374,8 +494,10 @@ public final class NetworkService {
 						JSONArray jsonChildColumnInfo = jsonResponse
 						        .getJSONArray(KEY_CHILD_COLUMNS);
 						for (int i = 0; i < jsonChildColumnInfo.length(); i++) {
-							childColumnInfos.add(ColumnInfo.parse(jsonChildColumnInfo
-							        .getJSONObject(i)));
+							JSONObject childColumnInfo = jsonChildColumnInfo.getJSONObject(i);
+							if (ColumnInfo.isColumnInfo(childColumnInfo)) {
+								childColumnInfos.add(ColumnInfo.parse(childColumnInfo));
+							}
 						}
 					}
 					mListener.onNewsListResponseSuccess(newsInfos, childColumnInfos);
