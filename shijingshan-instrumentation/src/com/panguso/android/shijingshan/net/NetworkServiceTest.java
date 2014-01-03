@@ -6,7 +6,9 @@ import junit.framework.Assert;
 
 import org.json.JSONArray;
 
+import com.panguso.android.shijingshan.business.BusinessInfo;
 import com.panguso.android.shijingshan.column.ColumnInfo;
+import com.panguso.android.shijingshan.net.NetworkService.BusinessInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.ColumnInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.ImageRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.NewsListRequestListener;
@@ -18,6 +20,56 @@ import android.test.AndroidTestCase;
 public class NetworkServiceTest extends AndroidTestCase {
 	/** The server url. */
 	private static final String SERVER_URL = "http://tsinghuacims.oicp.net:45476/sjs/JsonAction";
+
+	/**
+	 * Test
+	 * {@link NetworkService#getBusinessInfoList(String, BusinessInfoListRequestListener)}
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testGetBusinessInfoList() {
+		/** The lock to synchronize. */
+		final Object LOCK = new Object();
+		NetworkService.getBusinessInfoList(SERVER_URL, new BusinessInfoListRequestListener() {
+
+			@Override
+			public void onBusinessInfoListRequestFailed() {
+				assertTrue("Create Business Info List Request Failed!", false);
+				// Let main thread finish.
+				synchronized (LOCK) {
+					LOCK.notify();
+				}
+			}
+
+			@Override
+			public void onBusinessInfoListResponseSuccess(List<BusinessInfo> businessInfos) {
+				assertNotNull("Business info is empty!", businessInfos);
+				assertTrue("Business info is empty!", businessInfos.size() > 0);
+				// Let main thread finish.
+				synchronized (LOCK) {
+					LOCK.notify();
+				}
+			}
+
+			@Override
+			public void onBusinessInfoListResponseFailed() {
+				assertTrue("Get Business Info List Failed!", false);
+				// Let main thread finish.
+				synchronized (LOCK) {
+					LOCK.notify();
+				}
+			}
+		});
+
+		// Wait for the executor thread finish job.
+		synchronized (LOCK) {
+			try {
+				LOCK.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 	/**
 	 * Test
@@ -76,7 +128,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	public void testGetNewsList() {
+	public void testGetNewsInfoList() {
 		/** The column ID. */
 		final String COLUMN_ID = "100";
 		/** The lock to synchronize. */
@@ -122,8 +174,8 @@ public class NetworkServiceTest extends AndroidTestCase {
 			}
 		}
 	}
-	
-	/**
+
+/**
 	 * Test {@link NetworkService#getImage(String, ImageRequestListener)
 	 * 
 	 * @author Luo Yinzhuo

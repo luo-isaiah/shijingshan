@@ -42,16 +42,36 @@ public class RequestFactoryTest extends AndroidTestCase {
 		reader.close();
 		return URLDecoder.decode(sb.toString(), "utf-8");
 	}
+	
+	/**
+	 * Test {@link RequestFactory#createBusinessInfoListRequest(String)}.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testBusinessListRequest() {
+		final String EXPECT_CONTENT = "transCode=101";
+        try {
+        	HttpPost request = RequestFactory.createBusinessInfoListRequest(SERVER_URL);
+        	assertNotNull(request);
+    		String content = readContent(request.getEntity().getContent());
+    		assertNotNull(content);
+    		assertEquals(EXPECT_CONTENT, content);
+    		return;
+        } catch (IOException e) {
+	        e.printStackTrace();
+        }
+        assertTrue("Create business list Request with no user failed!", false);
+	}
 
 	/**
-	 * Test {@link RequestFactory#createColumnListRequest(String, String)}.
+	 * Test {@link RequestFactory#createColumnInfoListRequest(String, String)}.
 	 * 
 	 * @author Luo Yinzhuo
 	 */
 	public void testColumnListRequestWithNoUser() {
 		final String EXPECT_CONTENT = "transCode=201&param={\"account\":\"\"}";
 		try {
-			HttpPost request = RequestFactory.createColumnListRequest(SERVER_URL, NO_USER);
+			HttpPost request = RequestFactory.createColumnInfoListRequest(SERVER_URL, NO_USER);
 			assertNotNull(request);
 			String content = readContent(request.getEntity().getContent());
 			assertNotNull(content);
@@ -76,7 +96,7 @@ public class RequestFactoryTest extends AndroidTestCase {
 	public void testArticleListRequest() {
 		final String EXPECT_CONTENT = "transCode=202&param={\"columnId\":\"100\"}";
 		try {
-			HttpPost request = RequestFactory.createNewsListRequest(SERVER_URL, COLUMN_ID);
+			HttpPost request = RequestFactory.createNewsInfoListRequest(SERVER_URL, COLUMN_ID);
 			assertNotNull(request);
 			String content = readContent(request.getEntity().getContent());
 			assertNotNull(content);
