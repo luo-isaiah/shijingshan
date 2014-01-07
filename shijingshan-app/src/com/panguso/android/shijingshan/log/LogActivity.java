@@ -15,22 +15,19 @@ import android.os.Bundle;
 public class LogActivity extends Activity implements OnBackListener {
 	/** The title bar. */
 	private BlueTitleBar mTitleBar;
-	
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.log_activity);
 		mTitleBar = (BlueTitleBar) findViewById(R.id.title_bar);
-		
+
 		mTitleBar.setTitle(getResources().getString(R.string.log_title));
 		mTitleBar.setOnBackListener(this);
 	}
 
-
 	@Override
-    public void onBack() {
+	public void onBack() {
 		finish();
-    }
-
+	}
 }

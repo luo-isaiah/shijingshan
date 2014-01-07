@@ -17,12 +17,17 @@ import org.json.JSONException;
 import com.panguso.android.shijingshan.Application;
 import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.account.AccountManager;
+import com.panguso.android.shijingshan.dialog.StartDialog;
+import com.panguso.android.shijingshan.dialog.StartDialog.OnStartDialogListener;
+import com.panguso.android.shijingshan.dialog.WaitingDialog;
+import com.panguso.android.shijingshan.dialog.WaitingDialog.OnWaitingDialogListener;
 import com.panguso.android.shijingshan.log.LogActivity;
 import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.ColumnInfoListRequestListener;
 import com.panguso.android.shijingshan.setting.SettingActivity;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -37,7 +42,34 @@ import android.widget.ImageButton;
  * @date 2013-8-7
  */
 public class ColumnPageActivity extends Activity implements ColumnInfoListRequestListener,
-        OnClickListener {
+        OnClickListener, OnStartDialogListener, OnWaitingDialogListener {
+	/** The initialize flag. */
+	private boolean mInitialized = false;
+	/** The waiting dialog has been created flag. */
+	private boolean mHasWaitingDialog = false;
+
+	/** The start dialog ID. */
+	private static final int DIALOG_START = 0;
+	/** The waiting dialog ID. */
+	private static final int DIALOG_WAITING = 1;
+	/** The retry dialog ID. */
+	private static final int DIALOG_RETRY = 2;
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+			case DIALOG_START:
+				return new StartDialog(this, this);
+			case DIALOG_WAITING:
+				if (!mHasWaitingDialog) {
+					mHasWaitingDialog = true;
+				}
+				return new WaitingDialog(this, this);
+			default:
+				return null;
+		}
+	}
+
 	/** The key to get last logged account in {@link SharedPreferences} data. */
 	private static final String KEY_LAST_ACCOUNT = "last_account";
 	/** The key to get the last displayed {@link ColumnPage}'s data. */
@@ -57,6 +89,8 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		showDialog(DIALOG_START);
+
 		setContentView(R.layout.column_page_activity);
 		mLog = (ImageButton) findViewById(R.id.log);
 		mLog.setOnClickListener(this);
@@ -92,7 +126,8 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 	protected void onDestroy() {
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 		try {
-			mColumnPageView.save(sharedPreferences, AccountManager.getUserName() + KEY_COLUMN_PAGES);
+			mColumnPageView
+			        .save(sharedPreferences, AccountManager.getUserName() + KEY_COLUMN_PAGES);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -111,7 +146,7 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 		if (columnPages.length() > 0) {
 			try {
 				mColumnPageView.initialize(columnPages);
-				// TODO: dismiss the waiting dialog.
+				onInitialized();
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -121,8 +156,21 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 				        AccountManager.getUserName(), this);
 			} else {
 				mColumnPageView.initialize(createColumnPages(mColumnInfos), 0);
+				onInitialized();
 			}
 		}
+	}
+
+	/**
+	 * Called when the {@link ColumnPageView} complete the initialization.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private void onInitialized() {
+		if (mHasWaitingDialog) {
+			dismissDialog(DIALOG_WAITING);
+		}
+		mInitialized = true;
 	}
 
 	/** The list of column info. */
@@ -141,6 +189,7 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 				mColumnInfos.clear();
 				mColumnInfos.addAll(columnInfos);
 				mColumnPageView.initialize(createColumnPages(mColumnInfos), 0);
+				onInitialized();
 			}
 		});
 	}
@@ -197,6 +246,19 @@ public class ColumnPageActivity extends Activity implements ColumnInfoListReques
 				startActivity(intent);
 			default:
 				break;
+		}
+	}
+
+	@Override
+	public void onBack() {
+		finish();
+	}
+
+	@Override
+	public void onTimeout() {
+		dismissDialog(DIALOG_START);
+		if (!mInitialized) {
+			showDialog(DIALOG_WAITING);
 		}
 	}
 
