@@ -199,6 +199,7 @@ public class Column {
 	 * Invoked when a single tap occurs on the {@link Column}.
 	 * 
 	 * @param context The system context.
+	 * 
 	 * @author Luo Yinzhuo
 	 */
 	public void onSingleTapUp(Context context) {

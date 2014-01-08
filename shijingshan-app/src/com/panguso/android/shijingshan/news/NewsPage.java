@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
+import android.view.MotionEvent;
 
 /**
  * Represent a single page of articles.
@@ -31,9 +32,9 @@ public class NewsPage {
 	 * Initialize the news cell width and height.
 	 * 
 	 * @param width
-	 *        The {@link NewsPageView} width.
+	 *            The {@link NewsPageView} width.
 	 * @param height
-	 *        The {@link NewsPageView} height.
+	 *            The {@link NewsPageView} height.
 	 * @author Luo Yinzhuo
 	 */
 	public static void initialize(int width, int height) {
@@ -64,7 +65,7 @@ public class NewsPage {
 	 * Add a {@link News} to this {@link NewsPage}.
 	 * 
 	 * @param news
-	 *        The {@link News}.
+	 *            The {@link News}.
 	 * @return True if the {@link News} is added, otherwise false.
 	 */
 	public boolean addNews(News news) {
@@ -73,7 +74,8 @@ public class NewsPage {
 
 		if (news.hasImage()) {
 			// A news with image need 2x2 cells.
-			while (mCells[row][column] != -1 || mCells[row + 1][column + 1] != -1) {
+			while (mCells[row][column] != -1
+					|| mCells[row + 1][column + 1] != -1) {
 				if (column >= COLUMN_COUNT - 2) {
 					row++;
 					column = 0;
@@ -100,8 +102,8 @@ public class NewsPage {
 			mCells[row][column + 1] = index;
 			mCells[row + 1][column] = index;
 			mCells[row + 1][column + 1] = index;
-			Rect rect = new Rect(column * CELL_WIDTH, row * CELL_HEIGHT, (column + 2) * CELL_WIDTH,
-			        (row + 2) * CELL_HEIGHT);
+			Rect rect = new Rect(column * CELL_WIDTH, row * CELL_HEIGHT,
+					(column + 2) * CELL_WIDTH, (row + 2) * CELL_HEIGHT);
 			mNews.add(news);
 			mRects.add(rect);
 			return true;
@@ -122,8 +124,8 @@ public class NewsPage {
 
 			final int index = mNews.size();
 			mCells[row][column] = index;
-			Rect rect = new Rect(column * CELL_WIDTH, row * CELL_HEIGHT, (column + 1) * CELL_WIDTH,
-			        (row + 1) * CELL_HEIGHT);
+			Rect rect = new Rect(column * CELL_WIDTH, row * CELL_HEIGHT,
+					(column + 1) * CELL_WIDTH, (row + 1) * CELL_HEIGHT);
 			mNews.add(news);
 			mRects.add(rect);
 			return true;
@@ -131,14 +133,16 @@ public class NewsPage {
 	}
 
 	/** The paint shared by all the news pages. */
-	private static final Paint PAINT = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
+	private static final Paint PAINT = new Paint(Paint.ANTI_ALIAS_FLAG
+			| Paint.DITHER_FLAG);
 	/** The delimiter color. */
 	private static int DELIMITER;
 
 	/**
 	 * Initialize the news delimiter color.
 	 * 
-	 * @param delimiter The news delimiter color.
+	 * @param delimiter
+	 *            The news delimiter color.
 	 * @author Luo Yinzhuo
 	 */
 	public static void initialize(int delimiter) {
@@ -148,8 +152,10 @@ public class NewsPage {
 	/**
 	 * Draw the news page.
 	 * 
-	 * @param canvas The {@link NewsPageView}'s canvas.
-	 * @param listener The request listener.
+	 * @param canvas
+	 *            The {@link NewsPageView}'s canvas.
+	 * @param listener
+	 *            The request listener.
 	 * @author Luo Yinzhuo
 	 */
 	public void draw(Canvas canvas, ImageRequestListener listener) {
@@ -179,8 +185,8 @@ public class NewsPage {
 		for (int i = 1; i < ROW_COUNT; i++) {
 			for (int j = 0; j < COLUMN_COUNT; j++) {
 				if (mCells[i - 1][j] != mCells[i][j]) {
-					canvas.drawLine(j * CELL_WIDTH, i * CELL_HEIGHT, (j + 1) * CELL_WIDTH, i
-					        * CELL_HEIGHT, PAINT);
+					canvas.drawLine(j * CELL_WIDTH, i * CELL_HEIGHT, (j + 1)
+							* CELL_WIDTH, i * CELL_HEIGHT, PAINT);
 				}
 			}
 		}
@@ -189,8 +195,8 @@ public class NewsPage {
 		for (int j = 1; j < COLUMN_COUNT; j++) {
 			for (int i = 0; i < ROW_COUNT; i++) {
 				if (mCells[i][j - 1] != mCells[i][j]) {
-					canvas.drawLine(j * CELL_WIDTH, i * CELL_HEIGHT, j * CELL_WIDTH, (i + 1)
-					        * CELL_HEIGHT, PAINT);
+					canvas.drawLine(j * CELL_WIDTH, i * CELL_HEIGHT, j
+							* CELL_WIDTH, (i + 1) * CELL_HEIGHT, PAINT);
 				}
 			}
 		}
@@ -198,5 +204,21 @@ public class NewsPage {
 		for (int i = 0; i < count; i++) {
 			mNews.get(i).draw(canvas, mRects.get(i), listener);
 		}
+	}
+
+	/**
+	 * Invoked when a down event occurs on the page.
+	 * 
+	 * @param e
+	 *            The event.
+	 * @author Luo Yinzhuo
+	 */
+	public News onDown(MotionEvent e) {
+		for (int i = 0; i < mRects.size(); i++) {
+			if (mRects.get(i).contains((int) e.getX(), (int) e.getY())) {
+				return mNews.get(i);
+			}
+		}
+		return null;
 	}
 }

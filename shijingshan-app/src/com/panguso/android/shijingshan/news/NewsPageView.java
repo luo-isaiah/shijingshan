@@ -11,6 +11,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
+import android.view.MotionEvent;
 import android.view.View;
 
 /**
@@ -21,23 +24,31 @@ import android.view.View;
 public class NewsPageView extends View {
 	/** The news page manager. */
 	private final NewsPageManager mNewsPageManager;
+	/** The gesture detector. */
+	private final GestureDetector mGestureDetector;
 
 	/**
 	 * Construct a new instance.
 	 * 
-	 * @param context The context.
-	 * @param attrs The attributes.
+	 * @param context
+	 *            The context.
+	 * @param attrs
+	 *            The attributes.
 	 */
 	public NewsPageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mNewsPageManager = new NewsPageManager();
+		this.mGestureDetector = new GestureDetector(context,
+				this.mNewsPageManager);
 	}
 
 	/**
 	 * Initialize the {@link NewsPageManager}.
 	 * 
-	 * @param newsPages The list of {@link NewsPage}.
-	 * @param newsPagePosition The initial news page position.
+	 * @param newsPages
+	 *            The list of {@link NewsPage}.
+	 * @param newsPagePosition
+	 *            The initial news page position.
 	 * @author Luo Yinzhuo
 	 */
 	public void initialize(List<NewsPage> newsPages, int newsPagePosition) {
@@ -53,20 +64,30 @@ public class NewsPageView extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		canvas.drawColor(Color.WHITE);
-		this.mNewsPageManager.draw(canvas);
+		mNewsPageManager.draw(canvas);
 	}
 
-	private class NewsPageManager implements ImageRequestListener {
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		return mGestureDetector.onTouchEvent(event);
+	}
+
+	private class NewsPageManager implements ImageRequestListener,
+			OnGestureListener {
 		/** The news page list. */
 		private final List<NewsPage> mNewsPages = new ArrayList<NewsPage>();
 		/** The news page position manager. */
 		private final NewsPagePositionManager mNewsPagePositionManager = new NewsPagePositionManager();
+		/** The press down news. */
+		private final PressDownNews mPressDownNews = new PressDownNews();
 
 		/**
 		 * Initialize itself from a list of {@link NewsPage}s.
 		 * 
-		 * @param newsPages The list of {@link NewsPage}s.
-		 * @param newsPagePosition The initial news page position.
+		 * @param newsPages
+		 *            The list of {@link NewsPage}s.
+		 * @param newsPagePosition
+		 *            The initial news page position.
 		 * @author Luo Yinzhuo
 		 */
 		public void initialize(List<NewsPage> newsPages, int newsPagePosition) {
@@ -78,15 +99,18 @@ public class NewsPageView extends View {
 		/**
 		 * Draw the news pages to the canvas.
 		 * 
-		 * @param canvas The {@link NewsPageView}'s canvas.
+		 * @param canvas
+		 *            The {@link NewsPageView}'s canvas.
 		 * @author Luo Yinzhuo
 		 */
 		public void draw(Canvas canvas) {
-			final float newsPagePosition = this.mNewsPagePositionManager.getNewsPagePosition();
+			final float newsPagePosition = this.mNewsPagePositionManager
+					.getNewsPagePosition();
 
 			if (this.mNewsPages.size() > 0) {
 				final int left = (int) Math.floor(newsPagePosition);
-				float offsetX = (left - newsPagePosition) * NewsPageView.this.getWidth();
+				float offsetX = (left - newsPagePosition)
+						* NewsPageView.this.getWidth();
 				canvas.save();
 				canvas.translate(offsetX, 0);
 
@@ -130,15 +154,16 @@ public class NewsPageView extends View {
 			/**
 			 * Start animation.
 			 * 
-			 * @param direction True to animate to the left page, otherwise
-			 *        false.
-			 * @param bouncing True to have bounce effect when need, otherwise
-			 *        false.
+			 * @param direction
+			 *            True to animate to the left page, otherwise false.
+			 * @param bouncing
+			 *            True to have bounce effect when need, otherwise false.
 			 * @author Luo Yinzhuo
 			 */
 			public void animate(boolean direction, boolean bouncing) {
 				if (this.mNewsPageAnimation == null) {
-					this.mNewsPageAnimation = new NewsPageAnimation(direction, bouncing);
+					this.mNewsPageAnimation = new NewsPageAnimation(direction,
+							bouncing);
 				} else {
 					this.mNewsPageAnimation.animate(direction, bouncing);
 				}
@@ -149,28 +174,32 @@ public class NewsPageView extends View {
 			 * Scroll the news page.
 			 * 
 			 * @param distanceX
-			 *        The scroll distance along X axis.
+			 *            The scroll distance along X axis.
 			 * @author Luo Yinzhuo
 			 */
 			public void scroll(float distanceX) {
 				final float leftBorder = -BOUNCING;
 				final float leftEdge = 0;
 				final float rightEdge = NewsPageManager.this.mNewsPages.size() > 0 ? NewsPageManager.this.mNewsPages
-				        .size() - 1 : 0;
+						.size() - 1 : 0;
 				final float rightBorder = rightEdge + BOUNCING;
 				float estimateColumnPagePosition;
-				if (this.mNewsPagePosition < leftEdge || this.mNewsPagePosition > rightEdge) {
-					estimateColumnPagePosition = this.mNewsPagePosition + distanceX
-					        / NewsPageView.this.getWidth() * BOUNCING;
+				if (this.mNewsPagePosition < leftEdge
+						|| this.mNewsPagePosition > rightEdge) {
+					estimateColumnPagePosition = this.mNewsPagePosition
+							+ distanceX / NewsPageView.this.getWidth()
+							* BOUNCING;
 				} else {
-					estimateColumnPagePosition = this.mNewsPagePosition + distanceX
-					        / NewsPageView.this.getWidth();
+					estimateColumnPagePosition = this.mNewsPagePosition
+							+ distanceX / NewsPageView.this.getWidth();
 				}
 
 				if (distanceX > 0) {
-					this.mNewsPagePosition = Math.max(estimateColumnPagePosition, leftBorder);
+					this.mNewsPagePosition = Math.max(
+							estimateColumnPagePosition, leftBorder);
 				} else {
-					this.mNewsPagePosition = Math.min(estimateColumnPagePosition, rightBorder);
+					this.mNewsPagePosition = Math.min(
+							estimateColumnPagePosition, rightBorder);
 				}
 			}
 
@@ -180,7 +209,8 @@ public class NewsPageView extends View {
 			 * @author Luo Yinzhuo
 			 */
 			public void pause() {
-				this.mNewsPagePosition = this.mNewsPageAnimation.getNewsPagePosition();
+				this.mNewsPagePosition = this.mNewsPageAnimation
+						.getNewsPagePosition();
 				this.mNewsPageAnimation = null;
 			}
 
@@ -191,9 +221,10 @@ public class NewsPageView extends View {
 			 * @author Luo Yinzhuo
 			 */
 			public boolean resume() {
-				if (this.mNewsPagePosition != Math.floor(this.mNewsPagePosition + 0.5f)) {
+				if (this.mNewsPagePosition != Math
+						.floor(this.mNewsPagePosition + 0.5f)) {
 					this.mNewsPageAnimation = new NewsPageAnimation(
-					        (int) Math.floor(this.mNewsPagePosition + 0.5f));
+							(int) Math.floor(this.mNewsPagePosition + 0.5f));
 					return true;
 				} else {
 					return false;
@@ -220,7 +251,7 @@ public class NewsPageView extends View {
 			public boolean getAnimationDirection() {
 				return this.mDirection;
 			}
-			
+
 			/**
 			 * Invoked when the news page animation is finished.
 			 * 
@@ -258,17 +289,20 @@ public class NewsPageView extends View {
 				/**
 				 * Construct a new instance.
 				 * 
-				 * @param direction True to animate to the left page, otherwise
-				 *        to the right page.
-				 * @param bouncing True to add bounce effect if need, otherwise
-				 *        false.
+				 * @param direction
+				 *            True to animate to the left page, otherwise to the
+				 *            right page.
+				 * @param bouncing
+				 *            True to add bounce effect if need, otherwise
+				 *            false.
 				 */
 				public NewsPageAnimation(boolean direction, boolean bouncing) {
 					this.mStartTime = System.currentTimeMillis();
 					this.mStartPagePosition = NewsPagePositionManager.this.mNewsPagePosition;
 					this.mDuration = DURATION_BASE;
 					if (direction) {
-						this.mTargetPagePosition = (int) Math.floor(this.mStartPagePosition + 0.5f) - 1;
+						this.mTargetPagePosition = (int) Math
+								.floor(this.mStartPagePosition + 0.5f) - 1;
 						if (this.mTargetPagePosition < 0) {
 							this.mTargetPagePosition = 0;
 							if (bouncing) {
@@ -276,8 +310,10 @@ public class NewsPageView extends View {
 							}
 						}
 					} else {
-						this.mTargetPagePosition = (int) Math.floor(this.mStartPagePosition + 0.5f) + 1;
-						final int maxColumnPagePosition = NewsPageManager.this.mNewsPages.size() - 1;
+						this.mTargetPagePosition = (int) Math
+								.floor(this.mStartPagePosition + 0.5f) + 1;
+						final int maxColumnPagePosition = NewsPageManager.this.mNewsPages
+								.size() - 1;
 						if (this.mTargetPagePosition > maxColumnPagePosition) {
 							this.mTargetPagePosition = maxColumnPagePosition;
 							if (bouncing) {
@@ -290,23 +326,27 @@ public class NewsPageView extends View {
 				/**
 				 * Construct a new instance.
 				 * 
-				 * @param targetPagePosition The target page position.
+				 * @param targetPagePosition
+				 *            The target page position.
 				 */
 				public NewsPageAnimation(int targetPagePosition) {
 					this.mStartTime = System.currentTimeMillis();
 					this.mStartPagePosition = NewsPagePositionManager.this.mNewsPagePosition;
-					this.mDuration = (long) (DURATION_BASE * Math.abs(this.mTargetPagePosition
-					        - this.mStartPagePosition));
+					this.mDuration = (long) (DURATION_BASE * Math
+							.abs(this.mTargetPagePosition
+									- this.mStartPagePosition));
 					this.mTargetPagePosition = targetPagePosition;
 				}
 
 				/**
 				 * Append one more animate action based on the original one.
 				 * 
-				 * @param direction The new animate action direction, True to
-				 *        animate to the left page, otherwise to the right page.
-				 * @param bouncing True to add bounce effect if need, otherwise
-				 *        false.
+				 * @param direction
+				 *            The new animate action direction, True to animate
+				 *            to the left page, otherwise to the right page.
+				 * @param bouncing
+				 *            True to add bounce effect if need, otherwise
+				 *            false.
 				 * @author Luo Yinzhuo
 				 */
 				public void animate(boolean direction, boolean bouncing) {
@@ -323,7 +363,8 @@ public class NewsPageView extends View {
 						}
 					} else {
 						this.mTargetPagePosition++;
-						final int maxColumnPagePosition = NewsPageManager.this.mNewsPages.size() - 1;
+						final int maxColumnPagePosition = NewsPageManager.this.mNewsPages
+								.size() - 1;
 						if (this.mTargetPagePosition > maxColumnPagePosition) {
 							this.mTargetPagePosition = maxColumnPagePosition;
 							if (bouncing) {
@@ -340,31 +381,42 @@ public class NewsPageView extends View {
 				 * @author Luo Yinzhuo
 				 */
 				public float getNewsPagePosition() {
-					long passTime = System.currentTimeMillis() - this.mStartTime;
+					long passTime = System.currentTimeMillis()
+							- this.mStartTime;
 					if (passTime >= this.mDuration) {
 						NewsPagePositionManager.this.onAnimationFinished();
 						return this.mTargetPagePosition;
 					} else {
 						float estimateNewsPagePosition;
 						if (this.mBouncing == BOUNCE_RIGHT) {
-							estimateNewsPagePosition = (this.mTargetPagePosition + 2 * BOUNCING - this.mStartPagePosition)
-							        * passTime / this.mDuration + this.mStartPagePosition;
-							if (estimateNewsPagePosition > this.mTargetPagePosition + BOUNCING) {
+							estimateNewsPagePosition = (this.mTargetPagePosition
+									+ 2 * BOUNCING - this.mStartPagePosition)
+									* passTime
+									/ this.mDuration
+									+ this.mStartPagePosition;
+							if (estimateNewsPagePosition > this.mTargetPagePosition
+									+ BOUNCING) {
 								estimateNewsPagePosition = 2
-								        * (this.mTargetPagePosition + BOUNCING)
-								        - estimateNewsPagePosition;
+										* (this.mTargetPagePosition + BOUNCING)
+										- estimateNewsPagePosition;
 							}
 						} else if (this.mBouncing == BOUNCE_LEFT) {
-							estimateNewsPagePosition = (this.mTargetPagePosition - 2 * BOUNCING - this.mStartPagePosition)
-							        * passTime / this.mDuration + this.mStartPagePosition;
-							if (estimateNewsPagePosition < this.mTargetPagePosition - BOUNCING) {
+							estimateNewsPagePosition = (this.mTargetPagePosition
+									- 2 * BOUNCING - this.mStartPagePosition)
+									* passTime
+									/ this.mDuration
+									+ this.mStartPagePosition;
+							if (estimateNewsPagePosition < this.mTargetPagePosition
+									- BOUNCING) {
 								estimateNewsPagePosition = 2
-								        * (this.mTargetPagePosition - BOUNCING)
-								        - estimateNewsPagePosition;
+										* (this.mTargetPagePosition - BOUNCING)
+										- estimateNewsPagePosition;
 							}
 						} else {
 							estimateNewsPagePosition = (this.mTargetPagePosition - this.mStartPagePosition)
-							        * passTime / this.mDuration + this.mStartPagePosition;
+									* passTime
+									/ this.mDuration
+									+ this.mStartPagePosition;
 						}
 						return estimateNewsPagePosition;
 					}
@@ -380,7 +432,8 @@ public class NewsPageView extends View {
 			/**
 			 * Set the news page position.
 			 * 
-			 * @param newsPagePosition The new news page position.
+			 * @param newsPagePosition
+			 *            The new news page position.
 			 * @author Luo Yinzhuo
 			 */
 			public void setNewsPagePosition(int newsPagePosition) {
@@ -395,23 +448,153 @@ public class NewsPageView extends View {
 			 */
 			public float getNewsPagePosition() {
 				if (this.mNewsPageAnimation != null) {
-					this.mNewsPagePosition = this.mNewsPageAnimation.getNewsPagePosition();
+					this.mNewsPagePosition = this.mNewsPageAnimation
+							.getNewsPagePosition();
 				}
 				return this.mNewsPagePosition;
 			}
 		}
 
-		@Override
-        public void onImageResponseSuccess(Bitmap bitmap) {
-			Log.d("NewsPageManager", "onImageResponseSuccess.");
-			postInvalidate();
-        }
+		/**
+		 * Specific for manage the press down news.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		private class PressDownNews {
+			/** The news. */
+			private News mNews;
+
+			/**
+			 * Extract a press down {@link News} from a {@link NewsPage}.
+			 * 
+			 * @param news
+			 *            The news.
+			 * 
+			 * @author Luo Yinzhuo
+			 */
+			public void extract(News news) {
+				mNews = news;
+			}
+
+			/**
+			 * Release the news.
+			 * 
+			 * @author Luo Yinzhuo
+			 */
+			public void release() {
+				mNews = null;
+			}
+
+			/**
+			 * Check if the press down news exist or not.
+			 * 
+			 * @return True if the news is not null, else false.
+			 * 
+			 * @author Luo Yinzhuo
+			 */
+			public boolean isEmpty() {
+				return mNews == null;
+			}
+
+			/**
+			 * Invoked when a single tap occurs on a {@link News}.
+			 * 
+			 * @author Luo Yinzhuo
+			 */
+			public void onSingleTapUp() {
+				mNews.onSingleTapUp(NewsPageView.this.getContext());
+			}
+		}
 
 		@Override
-        public void onImageResponseFailed() {
-	        // TODO Auto-generated method stub
-	        
-        }
+		public void onImageResponseSuccess(Bitmap bitmap) {
+			Log.d("NewsPageManager", "onImageResponseSuccess.");
+			postInvalidate();
+		}
+
+		@Override
+		public void onImageResponseFailed() {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public boolean onDown(MotionEvent e) {
+			final float newsPagePosition = this.mNewsPagePositionManager
+					.getNewsPagePosition();
+			final int page = (int) Math.floor(newsPagePosition + 0.5f);
+			if (!mNewsPages.isEmpty()) {
+				News news = mNewsPages.get(page).onDown(e);
+				if (news != null) {
+					mPressDownNews.extract(news);
+				}
+			}
+			return true;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * android.view.GestureDetector.OnGestureListener#onShowPress(android
+		 * .view.MotionEvent)
+		 */
+		@Override
+		public void onShowPress(MotionEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public boolean onSingleTapUp(MotionEvent e) {
+			if (!mPressDownNews.isEmpty()) {
+				mPressDownNews.onSingleTapUp();
+				mPressDownNews.release();
+				return true;
+			}
+			return false;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * android.view.GestureDetector.OnGestureListener#onScroll(android.view
+		 * .MotionEvent, android.view.MotionEvent, float, float)
+		 */
+		@Override
+		public boolean onScroll(MotionEvent e1, MotionEvent e2,
+				float distanceX, float distanceY) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * android.view.GestureDetector.OnGestureListener#onLongPress(android
+		 * .view.MotionEvent)
+		 */
+		@Override
+		public void onLongPress(MotionEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * android.view.GestureDetector.OnGestureListener#onFling(android.view
+		 * .MotionEvent, android.view.MotionEvent, float, float)
+		 */
+		@Override
+		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+				float velocityY) {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	}
 
 }

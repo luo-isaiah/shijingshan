@@ -33,6 +33,8 @@
             android:name=".news.NewsPageActivity"
             android:screenOrientation="portrait" >
         </activity>
+        <activity android:name=".news.NewsActivity" >
+        </activity>
         <activity android:name=".register.RegisterActivity" >
         </activity>
         <activity

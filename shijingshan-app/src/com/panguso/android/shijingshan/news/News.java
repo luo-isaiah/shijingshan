@@ -5,10 +5,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.panguso.android.shijingshan.R.id;
+import com.panguso.android.shijingshan.column.Column;
 import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.ImageRequestListener;
 
 import android.R.integer;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -24,7 +27,8 @@ import android.util.LruCache;
  */
 public class News {
 	/** The paint shared by all the news. */
-	private static final Paint PAINT = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
+	private static final Paint PAINT = new Paint(Paint.ANTI_ALIAS_FLAG
+			| Paint.DITHER_FLAG);
 	/** The horizontal margin. */
 	private static float MARGIN_HORIZONTAL;
 	/** The vertical margin. */
@@ -42,17 +46,23 @@ public class News {
 	 * Initialize the horizontal margin, vertical margin, news title font size,
 	 * color.
 	 * 
-	 * @param marginHorizontal The horizontal margin.
-	 * @param marginVertical The vertical margin.
-	 * @param imageFontSize The news title font size which has image.
-	 * @param noImageFontSize The news title font size which doesn't have image.
-	 * @param imageFontColor The news title font color which has image.
-	 * @param noImageFontColor The news title font color which doesn't have
-	 *        image.
+	 * @param marginHorizontal
+	 *            The horizontal margin.
+	 * @param marginVertical
+	 *            The vertical margin.
+	 * @param imageFontSize
+	 *            The news title font size which has image.
+	 * @param noImageFontSize
+	 *            The news title font size which doesn't have image.
+	 * @param imageFontColor
+	 *            The news title font color which has image.
+	 * @param noImageFontColor
+	 *            The news title font color which doesn't have image.
 	 * @author Luo Yinzhuo
 	 */
 	public static void initialize(float marginHorizontal, float marginVertical,
-	        float imageFontSize, float noImageFontSize, int imageFontColor, int noImageFontColor) {
+			float imageFontSize, float noImageFontSize, int imageFontColor,
+			int noImageFontColor) {
 		MARGIN_HORIZONTAL = marginHorizontal;
 		MARGIN_VERTICAL = marginVertical;
 		IMAGE_FONT_SIZE = imageFontSize;
@@ -71,20 +81,23 @@ public class News {
 	private final String mNewsURL;
 	/** The news time. */
 	private final String mTime;
+	
+	/** The key to store news URL. */
+	public static final String KEY_NEWS_URL = "news_url";
 
 	/**
 	 * Construct a new instance.
 	 * 
 	 * @param id
-	 *        The news id.
+	 *            The news id.
 	 * @param title
-	 *        The news title.
+	 *            The news title.
 	 * @param imageURL
-	 *        The image URL.
+	 *            The image URL.
 	 * @param newsURL
-	 *        The news URL.
+	 *            The news URL.
 	 * @param time
-	 *        The news time.
+	 *            The news time.
 	 */
 	News(String id, String title, String imageURL, String newsURL, String time) {
 		mID = id;
@@ -107,9 +120,12 @@ public class News {
 	/**
 	 * Invoked by {@link NewsPage} to draw the news on it.
 	 * 
-	 * @param canvas The {@link NewsPageView}'s canvas.
-	 * @param rect The news rectangle.
-	 * @param listener The image request listener.
+	 * @param canvas
+	 *            The {@link NewsPageView}'s canvas.
+	 * @param rect
+	 *            The news rectangle.
+	 * @param listener
+	 *            The image request listener.
 	 * @author Luo Yinzhuo
 	 */
 	public void draw(Canvas canvas, Rect rect, ImageRequestListener listener) {
@@ -127,8 +143,8 @@ public class News {
 
 			PAINT.setColor(IMAGE_FONT_COLOR);
 			PAINT.setTextSize(IMAGE_FONT_SIZE);
-			canvas.drawText(mTitle, rect.left + MARGIN_HORIZONTAL, rect.bottom - MARGIN_VERTICAL,
-			        PAINT);
+			canvas.drawText(mTitle, rect.left + MARGIN_HORIZONTAL, rect.bottom
+					- MARGIN_VERTICAL, PAINT);
 		} else {
 			// Draw background first.
 			PAINT.setColor(NO_IMAGE_FONT_COLOR);
@@ -146,11 +162,27 @@ public class News {
 					width = PAINT.measureText(mTitle, start, end);
 				}
 
-				canvas.drawText(mTitle.substring(start, end - 1), rect.left + MARGIN_HORIZONTAL,
-				        rect.top + (MARGIN_VERTICAL + NO_IMAGE_FONT_SIZE) * (line + 1), PAINT);
+				canvas.drawText(mTitle.substring(start, end - 1), rect.left
+						+ MARGIN_HORIZONTAL, rect.top
+						+ (MARGIN_VERTICAL + NO_IMAGE_FONT_SIZE) * (line + 1),
+						PAINT);
 				start = end - 1;
 				line++;
 			}
 		}
+	}
+
+	/**
+	 * Invoked when a single tap occurs on the {@link News}.
+	 * 
+	 * @param context
+	 *            The system context.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void onSingleTapUp(Context context) {
+		Intent intent = new Intent(context, NewsActivity.class);
+		intent.putExtra(KEY_NEWS_URL, mNewsURL);
+		context.startActivity(intent);
 	}
 }

@@ -9,20 +9,40 @@ import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.column.Column;
 import com.panguso.android.shijingshan.column.ColumnInfo;
 import com.panguso.android.shijingshan.column.ColumnPage;
+import com.panguso.android.shijingshan.dialog.StartDialog;
+import com.panguso.android.shijingshan.dialog.WaitingDialog;
+import com.panguso.android.shijingshan.dialog.WaitingDialog.OnWaitingDialogListener;
 import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.NewsListRequestListener;
 import com.panguso.android.shijingshan.news.NewsPageTitleBar.OnBackListener;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 
 /**
- * The article page activity.
+ * The news page activity.
  * 
  * @author Luo Yinzhuo
  */
-public class NewsPageActivity extends Activity implements OnBackListener, NewsListRequestListener {
+public class NewsPageActivity extends Activity implements OnBackListener,
+		NewsListRequestListener, OnWaitingDialogListener {
+	/** The waiting dialog ID. */
+	private static final int DIALOG_WAITING = 0;
+	/** The retry dialog ID. */
+	private static final int DIALOG_RETRY = 1;
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+			case DIALOG_WAITING:
+				return new WaitingDialog(this, this);
+			default:
+				return null;
+		}
+	}
+	
 	/** The title bar. */
 	private NewsPageTitleBar mTitleBar;
 	/** The news page view. */
@@ -31,6 +51,8 @@ public class NewsPageActivity extends Activity implements OnBackListener, NewsLi
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
+	    showDialog(DIALOG_WAITING);
+	    
 	    setContentView(R.layout.news_page_activity);
 	    mTitleBar = (NewsPageTitleBar) findViewById(R.id.title_bar);
 	    mTitleBar.setOnBackListener(this);
@@ -61,6 +83,7 @@ public class NewsPageActivity extends Activity implements OnBackListener, NewsLi
 			@Override
 			public void run() {
 				mNewsPageView.initialize(createNewsPages(newsInfos), 0);
+				dismissDialog(DIALOG_WAITING);
 			}
 		});
 	}

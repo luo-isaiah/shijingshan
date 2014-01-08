@@ -37,6 +37,6 @@
     <string name="change_password">修改密码</string>
 
     <!-- server request url -->
-    <string name="server_url">http://tsinghuacims.oicp.net:45476/sjs/JsonAction</string>
+    <string name="server_url">http://s-94379.gotocdn.com/sjs/JsonAction</string>
 
 </resources>
