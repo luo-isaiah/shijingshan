@@ -19,7 +19,7 @@ import android.test.AndroidTestCase;
 
 public class NetworkServiceTest extends AndroidTestCase {
 	/** The server url. */
-	private static final String SERVER_URL = "http://tsinghuacims.oicp.net:45476/sjs/JsonAction";
+	private static final String SERVER_URL = "http://s-94379.gotocdn.com/sjs/JsonAction";
 
 	/**
 	 * Test
@@ -30,36 +30,40 @@ public class NetworkServiceTest extends AndroidTestCase {
 	public void testGetBusinessInfoList() {
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
-		NetworkService.getBusinessInfoList(SERVER_URL, new BusinessInfoListRequestListener() {
+		NetworkService.getBusinessInfoList(SERVER_URL,
+				new BusinessInfoListRequestListener() {
 
-			@Override
-			public void onBusinessInfoListRequestFailed() {
-				assertTrue("Create Business Info List Request Failed!", false);
-				// Let main thread finish.
-				synchronized (LOCK) {
-					LOCK.notify();
-				}
-			}
+					@Override
+					public void onBusinessInfoListRequestFailed() {
+						assertTrue("Create Business Info List Request Failed!",
+								false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
 
-			@Override
-			public void onBusinessInfoListResponseSuccess(List<BusinessInfo> businessInfos) {
-				assertNotNull("Business info is empty!", businessInfos);
-				assertTrue("Business info is empty!", businessInfos.size() > 0);
-				// Let main thread finish.
-				synchronized (LOCK) {
-					LOCK.notify();
-				}
-			}
+					@Override
+					public void onBusinessInfoListResponseSuccess(
+							List<BusinessInfo> businessInfos) {
+						assertNotNull("Business info is empty!", businessInfos);
+						assertTrue("Business info is empty!",
+								businessInfos.size() > 0);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
 
-			@Override
-			public void onBusinessInfoListResponseFailed() {
-				assertTrue("Get Business Info List Failed!", false);
-				// Let main thread finish.
-				synchronized (LOCK) {
-					LOCK.notify();
-				}
-			}
-		});
+					@Override
+					public void onBusinessInfoListResponseFailed() {
+						assertTrue("Get Business Info List Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+				});
 
 		// Wait for the executor thread finish job.
 		synchronized (LOCK) {
@@ -82,36 +86,40 @@ public class NetworkServiceTest extends AndroidTestCase {
 		final String account = "";
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
-		NetworkService.getColumnInfoList(SERVER_URL, account, new ColumnInfoListRequestListener() {
+		NetworkService.getColumnInfoList(SERVER_URL, account,
+				new ColumnInfoListRequestListener() {
 
-			@Override
-			public void onColumnInfoListRequestFailed() {
-				assertTrue("Create Column Info List Request Failed!", false);
-				// Let main thread finish.
-				synchronized (LOCK) {
-					LOCK.notify();
-				}
-			}
+					@Override
+					public void onColumnInfoListRequestFailed() {
+						assertTrue("Create Column Info List Request Failed!",
+								false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
 
-			@Override
-			public void onColumnInfoListResponseSuccess(List<ColumnInfo> columnInfos) {
-				assertNotNull("Column info is empty!", columnInfos);
-				assertTrue("Column info is empty!", columnInfos.size() > 0);
-				// Let main thread finish.
-				synchronized (LOCK) {
-					LOCK.notify();
-				}
-			}
+					@Override
+					public void onColumnInfoListResponseSuccess(
+							List<ColumnInfo> columnInfos) {
+						assertNotNull("Column info is empty!", columnInfos);
+						assertTrue("Column info is empty!",
+								columnInfos.size() > 0);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
 
-			@Override
-			public void onColumnInfoListResponseFailed() {
-				assertTrue("Get Column Info List Failed!", false);
-				// Let main thread finish.
-				synchronized (LOCK) {
-					LOCK.notify();
-				}
-			}
-		});
+					@Override
+					public void onColumnInfoListResponseFailed() {
+						assertTrue("Get Column Info List Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+				});
 
 		// Wait for the executor thread finish job.
 		synchronized (LOCK) {
@@ -133,37 +141,40 @@ public class NetworkServiceTest extends AndroidTestCase {
 		final String COLUMN_ID = "100";
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
-		NetworkService.getNewsList(SERVER_URL, COLUMN_ID, new NewsListRequestListener() {
+		NetworkService.getNewsList(SERVER_URL, COLUMN_ID,
+				new NewsListRequestListener() {
 
-			@Override
-			public void onNewsListRequestFailed() {
-				assertTrue("Create News Info List Request Failed!", false);
-				// Let main thread finish.
-				synchronized (LOCK) {
-					LOCK.notify();
-				}
-			}
+					@Override
+					public void onNewsListRequestFailed() {
+						assertTrue("Create News Info List Request Failed!",
+								false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
 
-			@Override
-			public void onNewsListResponseSuccess(List<NewsInfo> newsInfos,
-			        List<ColumnInfo> childColumnInfos) {
-				assertNotNull("News info is empty!", newsInfos);
-				assertTrue("News info is empty!", newsInfos.size() > 0);
-				// Let main thread finish.
-				synchronized (LOCK) {
-					LOCK.notify();
-				}
-			}
+					@Override
+					public void onNewsListResponseSuccess(
+							List<NewsInfo> newsInfos,
+							List<ColumnInfo> childColumnInfos) {
+						assertNotNull("News info is empty!", newsInfos);
+						assertTrue("News info is empty!", newsInfos.size() > 0);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
 
-			@Override
-			public void onNewsListResponseFailed(String columnID) {
-				assertTrue("Get News Info List Failed!", false);
-				// Let main thread finish.
-				synchronized (LOCK) {
-					LOCK.notify();
-				}
-			}
-		});
+					@Override
+					public void onNewsListResponseFailed(String columnID) {
+						assertTrue("Get News Info List Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+				});
 
 		// Wait for the executor thread finish job.
 		synchronized (LOCK) {
@@ -182,7 +193,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 */
 	public void testGetImage() {
 		/** The image URL. */
-		final String IMAGE_URL = "http://tsinghuacims.oicp.net:45476/sjs//html/100/2013/10/2013_10_7177.png";
+		final String IMAGE_URL = "http://s-94379.gotocdn.com/sjs//html/100/2013/11/2013_11_9228.jpg";
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
 		NetworkService.getImage(IMAGE_URL, new ImageRequestListener() {
@@ -190,8 +201,8 @@ public class NetworkServiceTest extends AndroidTestCase {
 			@Override
 			public void onImageResponseSuccess(Bitmap bitmap) {
 				assertNotNull("Bitmap is null!", bitmap);
-				assertEquals("Bitmap width error!", 638, bitmap.getWidth());
-				assertEquals("Bitmap height error!", 162, bitmap.getHeight());
+				assertEquals("Bitmap width error!", 450, bitmap.getWidth());
+				assertEquals("Bitmap height error!", 299, bitmap.getHeight());
 				// Let main thread finish.
 				synchronized (LOCK) {
 					LOCK.notify();

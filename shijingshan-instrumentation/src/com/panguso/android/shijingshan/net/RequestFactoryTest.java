@@ -21,7 +21,7 @@ import android.test.AndroidTestCase;
  */
 public class RequestFactoryTest extends AndroidTestCase {
 	/** The server url. */
-	private static final String SERVER_URL = "http://tsinghuacims.oicp.net:45476/sjs/JsonAction";
+	private static final String SERVER_URL = "http://s-94379.gotocdn.com/sjs/JsonAction";
 	/** The UUID. */
 	private static final String UUID = "ffffffff-aa13-3f0f-ffff-ffffd0fe3dcb";
 	/** The no user. */
