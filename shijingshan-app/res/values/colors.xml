@@ -34,6 +34,11 @@
     <color name="log_table_edit_hint">#BBBBBB</color>
     <color name="log_underline_button_text">#BBBBBB</color>
     
+    <!-- register activity -->
+    <color name="register_background">#FFFFFF</color>
+    <color name="register_table_text">#545454</color>
+    <color name="register_table_edit_hint">#BBBBBB</color>
+    
     <!-- setting activity -->
     <color name="setting_background">#FFFFFF</color>
     
