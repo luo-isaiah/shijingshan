@@ -19,7 +19,9 @@
 
     <!-- register activity -->
     <string name="register_username">用户名：</string>
+    <string name="register_username_hint">6&#8211;20位字母或数字</string>
     <string name="register_password">密码：</string>
+    <string name="register_password_hint">6&#8211;20位字母、数字或特殊符号</string>
     <string name="register_mobile_number">手机号：</string>
     <string name="register_enterprise_id">企业ID：</string>
 

@@ -104,17 +104,18 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/log_in"
-            android:layout_margin="20dp" >
+            android:layout_margin="5dp" >
 
             <com.panguso.android.shijingshan.widget.UnderlineButton
                 android:id="@+id/find_password"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/underline_button_background"
+                android:padding="15dp"
                 android:text="@string/log_find_password"
                 android:textColor="@color/log_underline_button_text"
                 android:textSize="14sp"
-                android:visibility="invisible" />"
+                android:visibility="invisible" />
 
             <com.panguso.android.shijingshan.widget.UnderlineButton
                 android:id="@+id/register"
@@ -122,6 +123,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:background="@drawable/underline_button_background"
+                android:padding="15dp"
                 android:text="@string/log_register"
                 android:textColor="@color/log_underline_button_text"
                 android:textSize="14sp" />

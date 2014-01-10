@@ -35,12 +35,11 @@
         </activity>
         <activity android:name=".news.NewsActivity" >
         </activity>
-        <activity android:name=".register.RegisterActivity" >
-        </activity>
+        
         <activity
             android:name=".log.LogActivity"
-            android:launchMode="singleInstance"
             android:screenOrientation="portrait" >
+        </activity><activity android:name=".register.RegisterActivity">
         </activity>
         <activity
             android:name=".setting.SettingActivity"
