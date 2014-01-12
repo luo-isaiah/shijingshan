@@ -10,6 +10,8 @@
 package com.panguso.android.shijingshan.register;
 
 import com.panguso.android.shijingshan.R;
+import com.panguso.android.shijingshan.widget.BlueTitleBar;
+import com.panguso.android.shijingshan.widget.BlueTitleBar.OnBackListener;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -25,32 +27,49 @@ import android.widget.TextView.OnEditorActionListener;
  * @author Luo Yinzhuo
  * @date 2013-10-21
  */
-public class RegisterActivity extends Activity implements OnEditorActionListener {
+public class RegisterActivity extends Activity implements
+		OnEditorActionListener, OnBackListener {
+	/** The title bar. */
+	private BlueTitleBar mTitleBar;
+
 	/** The user name. */
 	private EditText mUserName;
 	/** The password. */
 	private EditText mPassword;
+	/** The confirm password. */
+	private EditText mConfirmPassword;
 	/** The mobile number. */
 	private EditText mMobileNumber;
-	/** The enterprise id. */
-	private EditText mEnterpriseId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.register_activity);
-		
-		mUserName = (EditText) findViewById(R.id.register_username);
-		mPassword = (EditText) findViewById(R.id.register_password);
-		mMobileNumber = (EditText) findViewById(R.id.register_mobile_number);
-		mEnterpriseId = (EditText) findViewById(R.id.register_enterprise_id);
-		
+
+		mTitleBar = (BlueTitleBar) findViewById(R.id.title_bar);
+		mTitleBar.setTitle(getResources().getString(R.string.log_title));
+		mTitleBar.setOnBackListener(this);
+
+		mUserName = (EditText) findViewById(R.id.username);
+		mPassword = (EditText) findViewById(R.id.password);
+		mConfirmPassword = (EditText) findViewById(R.id.confirm_password);
+		mMobileNumber = (EditText) findViewById(R.id.mobile_number);
+
 		mUserName.setOnEditorActionListener(this);
 	}
 
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-    	Log.d("RegisterActivity", "KeyEvent " + Boolean.valueOf(KeyEvent.KEYCODE_ENTER == event.getKeyCode()));
-	    return false;
-    }
+	@Override
+	public void onBack() {
+		finish();
+	}
+
+	@Override
+	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		Log.d("RegisterActivity",
+				"KeyEvent "
+						+ Boolean.valueOf(KeyEvent.KEYCODE_ENTER == event
+								.getKeyCode()));
+		return false;
+	}
+
 }
