@@ -19,16 +19,17 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:background="@drawable/round_border" >
+            android:background="@drawable/round_border"
+            android:stretchColumns="1" >
 
             <TableRow>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="14dp"
-                    android:paddingBottom="2dp"
-                    android:paddingTop="2dp"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginTop="16dp"
                     android:text="@string/log_username"
                     android:textColor="@color/log_table_text"
                     android:textSize="18sp" />
@@ -37,14 +38,15 @@
                     android:id="@+id/username"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="14dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="9dp"
                     android:background="@null"
                     android:digits="@string/digits_username"
                     android:hint="@string/log_username_hint"
                     android:inputType="text"
                     android:maxLength="20"
-                    android:paddingBottom="4dp"
-                    android:paddingTop="4dp"
+                    android:padding="5dp"
                     android:singleLine="true"
                     android:textColorHint="@color/log_table_edit_hint"
                     android:textSize="16sp" />
@@ -60,9 +62,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="14dp"
-                    android:paddingBottom="2dp"
-                    android:paddingTop="2dp"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginTop="16dp"
                     android:text="@string/log_password"
                     android:textColor="@color/log_table_text"
                     android:textSize="18sp" />
@@ -71,14 +73,15 @@
                     android:id="@+id/password"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="14dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="9dp"
                     android:background="@null"
                     android:digits="@string/digits_password"
                     android:hint="@string/log_password_hint"
                     android:inputType="textPassword"
                     android:maxLength="20"
-                    android:paddingBottom="5dp"
-                    android:paddingTop="5dp"
+                    android:padding="5dp"
                     android:singleLine="true"
                     android:textColorHint="@color/log_table_edit_hint"
                     android:textSize="16sp" />

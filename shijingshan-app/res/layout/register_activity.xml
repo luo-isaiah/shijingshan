@@ -9,237 +9,221 @@
         android:layout_width="fill_parent"
         android:layout_height="48dp" />
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:background="@color/register_background" >
 
-        <RelativeLayout
+        <TableLayout
+            android:id="@+id/username_password_table"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="@drawable/round_border"
+            android:stretchColumns="1" >
 
-            <TableLayout
-                android:id="@+id/username_password_table"
+            <TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/register_username"
+                    android:textColor="@color/register_table_text"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/username"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="9dp"
+                    android:background="@null"
+                    android:digits="@string/digits_username"
+                    android:hint="@string/register_username_hint"
+                    android:inputType="text"
+                    android:maxLength="20"
+                    android:padding="5dp"
+                    android:singleLine="true"
+                    android:textColorHint="@color/register_table_edit_hint"
+                    android:textSize="16sp" />
+            </TableRow>
+
+            <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:background="@drawable/round_border" >
+                android:src="@color/delimiter" />
 
-                <TableRow>
+            <TableRow>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="14dp"
-                        android:paddingBottom="2dp"
-                        android:paddingTop="2dp"
-                        android:text="@string/register_username"
-                        android:textColor="@color/register_table_text"
-                        android:textSize="18sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/register_password"
+                    android:textColor="@color/register_table_text"
+                    android:textSize="18sp" />
 
-                    <EditText
-                        android:id="@+id/username"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="14dp"
-                        android:background="@null"
-                        android:digits="@string/digits_username"
-                        android:hint="@string/register_username_hint"
-                        android:inputType="text"
-                        android:maxLength="20"
-                        android:paddingBottom="4dp"
-                        android:paddingTop="4dp"
-                        android:singleLine="true"
-                        android:textColorHint="@color/register_table_edit_hint"
-                        android:textSize="16sp" />
-                </TableRow>
-
-                <ImageView
+                <EditText
+                    android:id="@+id/password"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:src="@color/delimiter" />
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="9dp"
+                    android:background="@null"
+                    android:digits="@string/digits_password"
+                    android:hint="@string/register_password_hint"
+                    android:inputType="textPassword"
+                    android:maxLength="20"
+                    android:padding="5dp"
+                    android:singleLine="true"
+                    android:textColorHint="@color/register_table_edit_hint"
+                    android:textSize="16sp" />
+            </TableRow>
 
-                <TableRow>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="14dp"
-                        android:paddingBottom="2dp"
-                        android:paddingTop="2dp"
-                        android:text="@string/register_password"
-                        android:textColor="@color/register_table_text"
-                        android:textSize="18sp" />
-
-                    <EditText
-                        android:id="@+id/password"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="14dp"
-                        android:background="@null"
-                        android:digits="@string/digits_password"
-                        android:hint="@string/register_password_hint"
-                        android:inputType="textPassword"
-                        android:maxLength="20"
-                        android:paddingBottom="5dp"
-                        android:paddingTop="5dp"
-                        android:singleLine="true"
-                        android:textColorHint="@color/register_table_edit_hint"
-                        android:textSize="16sp" />
-                </TableRow>
-
-                <ImageView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@color/delimiter" />
-
-                <TableRow>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="14dp"
-                        android:paddingBottom="2dp"
-                        android:paddingTop="2dp"
-                        android:text="@string/register_confirm_password"
-                        android:textColor="@color/register_table_text"
-                        android:textSize="18sp" />
-
-                    <EditText
-                        android:id="@+id/confirm_password"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="14dp"
-                        android:background="@null"
-                        android:digits="@string/digits_password"
-                        android:hint="@string/register_confirm_password_hint"
-                        android:inputType="textPassword"
-                        android:maxLength="20"
-                        android:paddingBottom="5dp"
-                        android:paddingTop="5dp"
-                        android:singleLine="true"
-                        android:textColorHint="@color/register_table_edit_hint"
-                        android:textSize="16sp" />
-                </TableRow>
-
-                <ImageView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@color/delimiter" />
-
-                <TableRow>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="14dp"
-                        android:paddingBottom="2dp"
-                        android:paddingTop="2dp"
-                        android:text="@string/register_mobile_number"
-                        android:textColor="@color/register_table_text"
-                        android:textSize="18sp" />
-
-                    <EditText
-                        android:id="@+id/mobile_number"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="14dp"
-                        android:background="@null"
-                        android:digits="@string/digits_mobile_number"
-                        android:hint="@string/register_mobile_number_hint"
-                        android:inputType="number"
-                        android:maxLength="11"
-                        android:paddingBottom="5dp"
-                        android:paddingTop="5dp"
-                        android:singleLine="true"
-                        android:textColorHint="@color/register_table_edit_hint"
-                        android:textSize="16sp" />
-                </TableRow>
-
-                <ImageView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@color/delimiter" />
-
-                <TableRow>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="14dp"
-                        android:paddingBottom="2dp"
-                        android:paddingTop="2dp"
-                        android:text="@string/register_enterprise"
-                        android:textColor="@color/register_table_text"
-                        android:textSize="18sp" />
-
-                    <EditText
-                        android:id="@+id/mobile_number"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="14dp"
-                        android:background="@null"
-                        android:digits="@string/digits_mobile_number"
-                        android:hint="@string/register_mobile_number_hint"
-                        android:inputType="number"
-                        android:maxLength="11"
-                        android:paddingBottom="5dp"
-                        android:paddingTop="5dp"
-                        android:singleLine="true"
-                        android:textColorHint="@color/register_table_edit_hint"
-                        android:textSize="16sp" />
-                </TableRow>
-
-                <ImageView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@color/delimiter" />
-
-                <TableRow>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="14dp"
-                        android:paddingBottom="2dp"
-                        android:paddingTop="2dp"
-                        android:text="@string/register_usertype"
-                        android:textColor="@color/register_table_text"
-                        android:textSize="18sp" />
-
-                    <EditText
-                        android:id="@+id/mobile_number"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="14dp"
-                        android:background="@null"
-                        android:digits="@string/digits_mobile_number"
-                        android:hint="@string/register_mobile_number_hint"
-                        android:inputType="number"
-                        android:maxLength="11"
-                        android:paddingBottom="5dp"
-                        android:paddingTop="5dp"
-                        android:singleLine="true"
-                        android:textColorHint="@color/register_table_edit_hint"
-                        android:textSize="16sp" />
-                </TableRow>
-            </TableLayout>
-
-            <Button
-                android:id="@+id/register"
+            <ImageView
                 android:layout_width="fill_parent"
-                android:layout_height="56dp"
-                android:layout_below="@id/username_password_table"
-                android:layout_marginBottom="12dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/blue_button_background"
-                android:enabled="false"
-                android:text="@string/register"
-                android:textColor="@color/blue_button_text"
-                android:textSize="18sp" />
-        </RelativeLayout>
-    </ScrollView>
+                android:layout_height="wrap_content"
+                android:src="@color/delimiter" />
+
+            <TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/register_confirm_password"
+                    android:textColor="@color/register_table_text"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/confirm_password"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="9dp"
+                    android:background="@null"
+                    android:digits="@string/digits_password"
+                    android:hint="@string/register_confirm_password_hint"
+                    android:inputType="textPassword"
+                    android:maxLength="20"
+                    android:padding="5dp"
+                    android:singleLine="true"
+                    android:textColorHint="@color/register_table_edit_hint"
+                    android:textSize="16sp" />
+            </TableRow>
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:src="@color/delimiter" />
+
+            <TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/register_mobile_number"
+                    android:textColor="@color/register_table_text"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/mobile_number"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="9dp"
+                    android:background="@null"
+                    android:digits="@string/digits_mobile_number"
+                    android:hint="@string/register_mobile_number_hint"
+                    android:inputType="number"
+                    android:maxLength="11"
+                    android:padding="5dp"
+                    android:singleLine="true"
+                    android:textColorHint="@color/register_table_edit_hint"
+                    android:textSize="16sp" />
+            </TableRow>
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:src="@color/delimiter" />
+
+            <TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/register_enterprise"
+                    android:textColor="@color/register_table_text"
+                    android:textSize="18sp" />
+
+                <com.panguso.android.shijingshan.register.RegisterArrowButton
+                    android:id="@+id/enterprise"
+                    android:layout_width="fill_parent"
+                    android:layout_height="56dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="6dp" />
+            </TableRow>
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:src="@color/delimiter" />
+
+            <TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/register_user_type"
+                    android:textColor="@color/register_table_text"
+                    android:textSize="18sp" />
+
+                <com.panguso.android.shijingshan.register.RegisterArrowButton
+                    android:id="@+id/user_type"
+                    android:layout_width="fill_parent"
+                    android:layout_height="58dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="6dp" />
+            </TableRow>
+        </TableLayout>
+
+        <Button
+            android:id="@+id/register"
+            android:layout_width="fill_parent"
+            android:layout_height="56dp"
+            android:layout_below="@id/username_password_table"
+            android:layout_marginBottom="12dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/blue_button_background"
+            android:enabled="false"
+            android:text="@string/register"
+            android:textColor="@color/blue_button_text"
+            android:textSize="18sp" />
+    </RelativeLayout>
 
 </LinearLayout>

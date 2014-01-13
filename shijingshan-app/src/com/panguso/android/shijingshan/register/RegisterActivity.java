@@ -17,7 +17,11 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
@@ -28,7 +32,7 @@ import android.widget.TextView.OnEditorActionListener;
  * @date 2013-10-21
  */
 public class RegisterActivity extends Activity implements
-		OnEditorActionListener, OnBackListener {
+		OnEditorActionListener, OnBackListener, OnClickListener {
 	/** The title bar. */
 	private BlueTitleBar mTitleBar;
 
@@ -40,7 +44,11 @@ public class RegisterActivity extends Activity implements
 	private EditText mConfirmPassword;
 	/** The mobile number. */
 	private EditText mMobileNumber;
-
+	/** The enterprise. */
+	private RegisterArrowButton mEnterprise;
+	/** The user type. */
+	private RegisterArrowButton mUserType;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -54,8 +62,12 @@ public class RegisterActivity extends Activity implements
 		mPassword = (EditText) findViewById(R.id.password);
 		mConfirmPassword = (EditText) findViewById(R.id.confirm_password);
 		mMobileNumber = (EditText) findViewById(R.id.mobile_number);
-
-		mUserName.setOnEditorActionListener(this);
+		
+		mEnterprise = (RegisterArrowButton) findViewById(R.id.enterprise);
+		mEnterprise.setTextHint(R.string.register_enterprise_hint);
+		
+		mUserType = (RegisterArrowButton) findViewById(R.id.user_type);
+		mUserType.setTextHint(R.string.register_user_type_hint);
 	}
 
 	@Override
@@ -70,6 +82,11 @@ public class RegisterActivity extends Activity implements
 						+ Boolean.valueOf(KeyEvent.KEYCODE_ENTER == event
 								.getKeyCode()));
 		return false;
+	}
+
+	@Override
+	public void onClick(View v) {
+		Log.d("RegisterActivity", "Enterprise button clicked!");
 	}
 
 }

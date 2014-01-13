@@ -27,7 +27,9 @@
     <string name="register_mobile_number">手机号</string>
     <string name="register_mobile_number_hint">11位手机号码</string>
     <string name="register_enterprise">企业</string>
-    <string name="register_usertype">用户类型</string>
+    <string name="register_enterprise_hint">选择您所在的企业</string>
+    <string name="register_user_type">用户类型</string>
+    <string name="register_user_type_hint">选择您的用户类型</string>
     <string name="register">注册</string>
 
     <!-- username password mobile number enterprise id constraints -->
