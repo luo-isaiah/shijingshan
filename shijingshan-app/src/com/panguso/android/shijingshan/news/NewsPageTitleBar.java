@@ -32,7 +32,7 @@ public class NewsPageTitleBar extends RelativeLayout implements OnClickListener 
 		 * 
 		 * @author Luo Yinzhuo
 		 */
-		public void onBack();
+		public void onWaitingDialogBack();
 	}
 
 	/** The back button. */
@@ -81,6 +81,6 @@ public class NewsPageTitleBar extends RelativeLayout implements OnClickListener 
 
 	@Override
 	public void onClick(View v) {
-		mListener.onBack();
+		mListener.onWaitingDialogBack();
 	}
 }

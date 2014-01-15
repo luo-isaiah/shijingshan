@@ -85,4 +85,10 @@ public class BusinessActivity extends Activity implements BusinessInfoListReques
 		finish();
     }
 
+	@Override
+	public void onWaitingDialogBack() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

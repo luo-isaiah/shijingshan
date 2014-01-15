@@ -19,8 +19,8 @@ import android.widget.TextView;
 public class BlueTitleBar extends RelativeLayout implements OnClickListener {
 
 	/**
-	 * Interface definition for a callback to be invoked when a {@link BlueTitleBar}
-	 * 's back button is clicked.
+	 * Interface definition for a callback to be invoked when a
+	 * {@link BlueTitleBar} 's back button is clicked.
 	 * 
 	 * @author Luo Yinzhuo
 	 */
@@ -44,13 +44,15 @@ public class BlueTitleBar extends RelativeLayout implements OnClickListener {
 	/**
 	 * Construct a new instance.
 	 * 
-	 * @param context The system context.
-	 * @param attrs The attributes.
+	 * @param context
+	 *            The system context.
+	 * @param attrs
+	 *            The attributes.
 	 */
 	public BlueTitleBar(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		LayoutInflater inflater = (LayoutInflater) context
-		        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.blue_title_bar_widget, this);
 		mBack = (ImageButton) findViewById(R.id.back);
 		mTitle = (TextView) findViewById(R.id.title);
@@ -61,7 +63,8 @@ public class BlueTitleBar extends RelativeLayout implements OnClickListener {
 	/**
 	 * Set the title.
 	 * 
-	 * @param title The title.
+	 * @param title
+	 *            The title.
 	 * @author Luo Yinzhuo
 	 */
 	public void setTitle(String title) {
@@ -71,7 +74,8 @@ public class BlueTitleBar extends RelativeLayout implements OnClickListener {
 	/**
 	 * Set the {@link OnBackListener}.
 	 * 
-	 * @param listener The {@link OnBackListener}.
+	 * @param listener
+	 *            The {@link OnBackListener}.
 	 * @author Luo Yinzhuo
 	 */
 	public void setOnBackListener(OnBackListener listener) {
@@ -80,6 +84,8 @@ public class BlueTitleBar extends RelativeLayout implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		mListener.onBack();
+		if (mListener != null) {
+			mListener.onBack();
+		}
 	}
 }

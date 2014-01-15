@@ -38,8 +38,10 @@
     <color name="register_background">#FFFFFF</color>
     <color name="register_table_text">#545454</color>
     <color name="register_table_edit_hint">#BBBBBB</color>
-    <color name="register_arrow_button_background_normal">#FFFFFF</color>
     <color name="register_arrow_button_background_pressed">#83B8F0</color>
+    
+    <!-- user type dialog -->
+    <color name="user_type_button_background_pressed">#83B8F0</color>
     
     <!-- setting activity -->
     <color name="setting_background">#FFFFFF</color>

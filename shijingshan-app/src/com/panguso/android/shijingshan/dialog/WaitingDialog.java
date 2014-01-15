@@ -22,12 +22,13 @@ public class WaitingDialog extends Dialog {
 	 * @author Luo Yinzhuo
 	 */
 	public interface OnWaitingDialogListener {
+		
 		/**
 		 * Called when the back key is pressed.
 		 * 
 		 * @author Luo Yinzhuo
 		 */
-		public void onBack();
+		public void onWaitingDialogBack();
 	}
 	
 	/** The listener. */
@@ -49,6 +50,6 @@ public class WaitingDialog extends Dialog {
 
 	@Override
 	public void onBackPressed() {
-		mListener.onBack();
+		mListener.onWaitingDialogBack();
 	}
 }

@@ -6,13 +6,15 @@ package com.panguso.android.shijingshan.register.usertype;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
+
 /**
- * Specific for store a {@link UserType}'s information.
+ * Specific for store a {@link UserTypeButton}'s information.
  * 
  * @author Luo Yinzhuo
  * 
  */
-public class UserTypeInfo {
+public final class UserTypeInfo {
 	/** The user type id. */
 	private final String mId;
 	/** The user type name. */
@@ -29,6 +31,19 @@ public class UserTypeInfo {
 	private UserTypeInfo(String id, String name) {
 		mId = id;
 		mName = name;
+	}
+
+	/**
+	 * Get the {@link UserTypeButton} based on the {@link UserType}.
+	 * 
+	 * @param context
+	 *            The context.
+	 * @return The {@link UserTypeButton}.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public UserTypeButton getUserTypeButton(Context context) {
+		return new UserTypeButton(context, mId, mName);
 	}
 
 	/** The key to get user type id. */

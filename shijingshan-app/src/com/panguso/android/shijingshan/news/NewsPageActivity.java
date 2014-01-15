@@ -67,7 +67,7 @@ public class NewsPageActivity extends Activity implements OnBackListener,
     }
 
 	@Override
-    public void onBack() {
+    public void onWaitingDialogBack() {
 		finish();
     }
 	
