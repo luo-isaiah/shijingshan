@@ -2,17 +2,15 @@ package com.panguso.android.shijingshan.net;
 
 import java.util.List;
 
-import junit.framework.Assert;
-
-import org.json.JSONArray;
-
 import com.panguso.android.shijingshan.business.BusinessInfo;
 import com.panguso.android.shijingshan.column.ColumnInfo;
 import com.panguso.android.shijingshan.net.NetworkService.BusinessInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.ColumnInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.ImageRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.NewsListRequestListener;
+import com.panguso.android.shijingshan.net.NetworkService.UserTypeInfoListRequestListener;
 import com.panguso.android.shijingshan.news.NewsInfo;
+import com.panguso.android.shijingshan.register.usertype.UserTypeInfo;
 
 import android.graphics.Bitmap;
 import android.test.AndroidTestCase;
@@ -58,6 +56,60 @@ public class NetworkServiceTest extends AndroidTestCase {
 					@Override
 					public void onBusinessInfoListResponseFailed() {
 						assertTrue("Get Business Info List Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+				});
+
+		// Wait for the executor thread finish job.
+		synchronized (LOCK) {
+			try {
+				LOCK.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Test
+	 * {@link NetworkService#getUserTypeInfoList(String, UserTypeInfoListRequestListener)}
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testGetUserTypeInfoList() {
+		/** The lock to synchronize. */
+		final Object LOCK = new Object();
+		NetworkService.getUserTypeInfoList(SERVER_URL,
+				new UserTypeInfoListRequestListener() {
+
+					@Override
+					public void onUserTypeInfoListRequestFailed() {
+						assertTrue("Create User Type Info List Request Failed!",
+								false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onUserTypeInfoListResponseSuccess(
+							List<UserTypeInfo> userTypeInfos) {
+						assertNotNull("User type info is empty!", userTypeInfos);
+						assertTrue("User type info is empty!",
+								userTypeInfos.size() > 0);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onUserTypeInfoListResponseFailed() {
+						assertTrue("Get User Type Info List Failed!", false);
 						// Let main thread finish.
 						synchronized (LOCK) {
 							LOCK.notify();
