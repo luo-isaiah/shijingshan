@@ -52,6 +52,7 @@ import android.util.Log;
 import com.panguso.android.shijingshan.business.BusinessInfo;
 import com.panguso.android.shijingshan.column.ColumnInfo;
 import com.panguso.android.shijingshan.news.NewsInfo;
+import com.panguso.android.shijingshan.register.usertype.UserTypeInfo;
 
 /**
  * Provide network service.
@@ -261,7 +262,123 @@ public final class NetworkService {
 	        BusinessInfoListRequestListener listener) {
 		EXECUTOR.execute(new BusinessInfoListCommand(serverURL, listener));
 	}
+	
+	/**
+	 * Interface definition for a callback to be invoked when a user type info
+	 * list request is executed.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public interface UserTypeInfoListRequestListener {
+		/**
+		 * Called when the user type info list request creation is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onUserTypeInfoListRequestFailed();
 
+		/**
+		 * Called when the user type info list request execution is successful.
+		 * 
+		 * @param userTypeInfos The list of {@link UserTypeInfo} from server.
+		 * @author Luo Yinzhuo
+		 */
+		public void onUserTypeInfoListResponseSuccess(List<UserTypeInfo> userTypeInfos);
+
+		/**
+		 * Called when the user type info list request execution is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onUserTypeInfoListResponseFailed();
+	}
+
+	/**
+	 * Specified for execute user type info list request.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private static class UserTypeInfoListCommand implements Runnable {
+		/** The server URL. */
+		private final String mServerURL;
+		/** The request listener. */
+		private final UserTypeInfoListRequestListener mListener;
+
+		/**
+		 * Construct a new instance.
+		 * 
+		 * @param serverURL
+		 *        The server URL.
+		 * @param listener
+		 *        The request listener.
+		 */
+		private UserTypeInfoListCommand(String serverURL, UserTypeInfoListRequestListener listener) {
+			mServerURL = serverURL;
+			mListener = listener;
+		}
+
+		/** The key to get xCode. */
+		private static final String KEY_XCODE = "xCode";
+		/** The key to get xData. */
+		private static final String KEY_XDATA = "xData";
+
+		@Override
+		public void run() {
+			HttpPost request;
+			try {
+				request = RequestFactory.createUserTypeInfoListRequest(mServerURL);
+			} catch (Exception e) {
+				e.printStackTrace();
+				mListener.onUserTypeInfoListRequestFailed();
+				return;
+			}
+
+			String content;
+			try {
+				HttpResponse response = HTTP_CLIENT.execute(request);
+				content = NetworkService.getContent(response);
+			} catch (IOException e) {
+				e.printStackTrace();
+				mListener.onUserTypeInfoListResponseFailed();
+				return;
+			}
+
+			try {
+				JSONObject jsonResponse = new JSONObject(content);
+				if (jsonResponse.getInt(KEY_XCODE) == 0) {
+					JSONArray jsonUserTypeInfo = jsonResponse.getJSONArray(KEY_XDATA);
+					List<UserTypeInfo> userTypeInfos = new ArrayList<UserTypeInfo>();
+					for (int i = 0; i < jsonUserTypeInfo.length(); i++) {
+						JSONObject userTypeInfo = jsonUserTypeInfo.getJSONObject(i);
+						if (UserTypeInfo.isUserTypeInfo(userTypeInfo)) {
+							userTypeInfos.add(UserTypeInfo.parse(userTypeInfo));
+						}
+					}
+					mListener.onUserTypeInfoListResponseSuccess(userTypeInfos);
+					return;
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			Log.e("UserTypeInfoListCommand", content);
+			mListener.onUserTypeInfoListResponseFailed();
+		}
+	}
+
+	/**
+	 * Get the user type info list.
+	 * 
+	 * @param serverURL
+	 *        The server URL.
+	 * @param listener
+	 *        The request listener.
+	 * @author Luo Yinzhuo
+	 */
+	public static void getUserTypeInfoList(String serverURL,
+			UserTypeInfoListRequestListener listener) {
+		EXECUTOR.execute(new UserTypeInfoListCommand(serverURL, listener));
+	}
+	
 	/**
 	 * Interface definition for a callback to be invoked when a column info list
 	 * request is executed.

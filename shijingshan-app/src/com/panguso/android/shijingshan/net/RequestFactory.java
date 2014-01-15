@@ -29,16 +29,38 @@ public final class RequestFactory {
 	/**
 	 * Create a business info list request.
 	 * 
-	 * @param serverURL The server URL.
-	 * @return The business list request.
-	 * @throws UnsupportedEncodingException If device doesn't support UTF-8
-	 *         encode.
+	 * @param serverURL
+	 *            The server URL.
+	 * @return The business info list request.
+	 * @throws UnsupportedEncodingException
+	 *             If device doesn't support UTF-8 encode.
 	 * @author Luo Yinzhuo
 	 */
-	static HttpPost createBusinessInfoListRequest(String serverURL) throws UnsupportedEncodingException {
+	static HttpPost createBusinessInfoListRequest(String serverURL)
+			throws UnsupportedEncodingException {
 		HttpPost post = new HttpPost(serverURL);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair(TRANS_CODE, "101"));
+		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+		return post;
+	}
+
+	/**
+	 * Create a user type info list request.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @return The user type info list request.
+	 * @throws UnsupportedEncodingException
+	 *             If device doesn't support UTF-8 encode.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	static HttpPost createUserTypeInfoListRequest(String serverURL)
+			throws UnsupportedEncodingException {
+		HttpPost post = new HttpPost(serverURL);
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair(TRANS_CODE, "108"));
 		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
 		return post;
 	}
@@ -49,16 +71,19 @@ public final class RequestFactory {
 	/**
 	 * Create a column info list request.
 	 * 
-	 * @param serverURL The server URL.
-	 * @param account The account name.
+	 * @param serverURL
+	 *            The server URL.
+	 * @param account
+	 *            The account name.
 	 * @return The column list request.
-	 * @throws UnsupportedEncodingException If device doesn't support UTF-8
-	 *         encode.
-	 * @throws JSONException If an error occurs when create JSON parameters.
+	 * @throws UnsupportedEncodingException
+	 *             If device doesn't support UTF-8 encode.
+	 * @throws JSONException
+	 *             If an error occurs when create JSON parameters.
 	 * @author Luo Yinzhuo
 	 */
 	static HttpPost createColumnInfoListRequest(String serverURL, String account)
-	        throws UnsupportedEncodingException, JSONException {
+			throws UnsupportedEncodingException, JSONException {
 		HttpPost post = new HttpPost(serverURL);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair(TRANS_CODE, "201"));
@@ -75,16 +100,19 @@ public final class RequestFactory {
 	/**
 	 * Create a news info list request based on specified column.
 	 * 
-	 * @param serverURL The server URL.
-	 * @param columnID The column ID.
+	 * @param serverURL
+	 *            The server URL.
+	 * @param columnID
+	 *            The column ID.
 	 * @return The news list request.
-	 * @throws UnsupportedEncodingException If device doesn't support UTF-8
-	 *         encode.
-	 * @throws JSONException If an error occurs when create JSON parameters.
+	 * @throws UnsupportedEncodingException
+	 *             If device doesn't support UTF-8 encode.
+	 * @throws JSONException
+	 *             If an error occurs when create JSON parameters.
 	 * @author Luo Yinzhuo
 	 */
 	static HttpPost createNewsInfoListRequest(String serverURL, String columnID)
-	        throws UnsupportedEncodingException, JSONException {
+			throws UnsupportedEncodingException, JSONException {
 		HttpPost post = new HttpPost(serverURL);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair(TRANS_CODE, "202"));
