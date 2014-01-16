@@ -12,6 +12,8 @@ import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.R.integer;
+
 /**
  * Factory to create requests.
  * 
@@ -45,6 +47,35 @@ public final class RequestFactory {
 		return post;
 	}
 
+	/** The business id. */
+	private static final String BUSINESS_ID = "code_id";
+
+	/**
+	 * Create an enterprise info list request.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param businessId
+	 *            The business id.
+	 * @return The enterprise info list request.
+	 * @throws UnsupportedEncodingException
+	 *             If device doesn't support UTF-8 encode.
+	 * @throws JSONException
+	 *             If an error occurs when create JSON parameters.
+	 * @author Luo Yinzhuo
+	 */
+	static HttpPost createEnterpriseInfoListRequest(String serverURL,
+			int businessId) throws JSONException, UnsupportedEncodingException {
+		HttpPost post = new HttpPost(serverURL);
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair(TRANS_CODE, "102"));
+		JSONObject param = new JSONObject();
+		param.put(BUSINESS_ID, businessId);
+		params.add(new BasicNameValuePair(PARAM, param.toString()));
+		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+		return post;
+	}
+
 	/**
 	 * Create a user type info list request.
 	 * 
@@ -53,7 +84,6 @@ public final class RequestFactory {
 	 * @return The user type info list request.
 	 * @throws UnsupportedEncodingException
 	 *             If device doesn't support UTF-8 encode.
-	 * 
 	 * @author Luo Yinzhuo
 	 */
 	static HttpPost createUserTypeInfoListRequest(String serverURL)

@@ -23,7 +23,7 @@ import android.widget.LinearLayout;
  * @author luoyinzhuo
  * 
  */
-public class UserTypeDialog extends Dialog implements OnBackListener,
+public final class UserTypeDialog extends Dialog implements OnBackListener,
 		UserTypeInfoListRequestListener, OnUserTypeButtonListener {
 
 	/**
@@ -141,6 +141,8 @@ public class UserTypeDialog extends Dialog implements OnBackListener,
 				if (mListener != null) {
 					mListener.onUserTypeDialogInitialized();
 				}
+				
+				mInitialized = true;
 			}
 		});
 	}

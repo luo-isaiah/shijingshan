@@ -2,7 +2,6 @@ package com.panguso.android.shijingshan.net;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -11,7 +10,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -20,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -44,14 +41,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.R.integer;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import com.panguso.android.shijingshan.business.BusinessInfo;
 import com.panguso.android.shijingshan.column.ColumnInfo;
 import com.panguso.android.shijingshan.news.NewsInfo;
+import com.panguso.android.shijingshan.register.business.BusinessInfo;
+import com.panguso.android.shijingshan.register.enterprise.EnterpriseInfo;
 import com.panguso.android.shijingshan.register.usertype.UserTypeInfo;
 
 /**
@@ -76,15 +73,17 @@ public final class NetworkService {
 		// timeout: get connections from connection pool
 		ConnManagerParams.setTimeout(httpParams, 1000);
 		// timeout: connect to the server
-		HttpConnectionParams.setConnectionTimeout(httpParams, DEFAULT_SOCKET_TIMEOUT);
+		HttpConnectionParams.setConnectionTimeout(httpParams,
+				DEFAULT_SOCKET_TIMEOUT);
 		// timeout: transfer data from server
 		HttpConnectionParams.setSoTimeout(httpParams, DEFAULT_SOCKET_TIMEOUT);
 
 		// set max connections per host
-		ConnManagerParams.setMaxConnectionsPerRoute(httpParams, new ConnPerRouteBean(
-		        DEFAULT_HOST_CONNECTIONS));
+		ConnManagerParams.setMaxConnectionsPerRoute(httpParams,
+				new ConnPerRouteBean(DEFAULT_HOST_CONNECTIONS));
 		// set max total connections
-		ConnManagerParams.setMaxTotalConnections(httpParams, DEFAULT_MAX_CONNECTIONS);
+		ConnManagerParams.setMaxTotalConnections(httpParams,
+				DEFAULT_MAX_CONNECTIONS);
 
 		// use expect-continue handshake
 		HttpProtocolParams.setUseExpectContinue(httpParams, true);
@@ -103,44 +102,50 @@ public final class NetworkService {
 		// disable Nagle algorithm
 		HttpConnectionParams.setTcpNoDelay(httpParams, true);
 
-		HttpConnectionParams.setSocketBufferSize(httpParams, DEFAULT_SOCKET_BUFFER_SIZE);
+		HttpConnectionParams.setSocketBufferSize(httpParams,
+				DEFAULT_SOCKET_BUFFER_SIZE);
 
 		// scheme: http and https
 		SchemeRegistry schemeRegistry = new SchemeRegistry();
-		schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-		schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+		schemeRegistry.register(new Scheme("http", PlainSocketFactory
+				.getSocketFactory(), 80));
+		schemeRegistry.register(new Scheme("https", SSLSocketFactory
+				.getSocketFactory(), 443));
 
-		ClientConnectionManager manager = new ThreadSafeClientConnManager(httpParams,
-		        schemeRegistry);
+		ClientConnectionManager manager = new ThreadSafeClientConnManager(
+				httpParams, schemeRegistry);
 		HTTP_CLIENT = new DefaultHttpClient(manager, httpParams);
 	}
 
 	/** The commands queue. */
-	private static final BlockingQueue<Runnable> COMMANDS = new ArrayBlockingQueue<Runnable>(200);
+	private static final BlockingQueue<Runnable> COMMANDS = new ArrayBlockingQueue<Runnable>(
+			200);
 	/** The thread pool. */
-	private static final ThreadPoolExecutor EXECUTOR = new ThreadPoolExecutor(2, 2, 15 * 60,
-	        TimeUnit.SECONDS, COMMANDS);
+	private static final ThreadPoolExecutor EXECUTOR = new ThreadPoolExecutor(
+			2, 2, 15 * 60, TimeUnit.SECONDS, COMMANDS);
 
 	/**
 	 * Read the HTTP response's content.
 	 * 
 	 * @param response
-	 *        The HTTP response.
+	 *            The HTTP response.
 	 * @return The response's content.
 	 * @throws IOException
-	 *         If an I/O error occurs.
+	 *             If an I/O error occurs.
 	 * @throws IllegalStateException
-	 *         If the response is in illegal state.
+	 *             If the response is in illegal state.
 	 * @throws UnsupportedEncodingException
-	 *         If the device doesn't support UTF-8 encode.
+	 *             If the device doesn't support UTF-8 encode.
 	 * @author Luo Yinzhuo
 	 */
-	private static String getContent(HttpResponse response) throws UnsupportedEncodingException,
-	        IllegalStateException, IOException {
+	private static String getContent(HttpResponse response)
+			throws UnsupportedEncodingException, IllegalStateException,
+			IOException {
 		StringBuffer sb = new StringBuffer();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity()
-		        .getContent(), "UTF-8"));
-		for (String temp = reader.readLine(); temp != null; temp = reader.readLine()) {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				response.getEntity().getContent(), "UTF-8"));
+		for (String temp = reader.readLine(); temp != null; temp = reader
+				.readLine()) {
 			sb.append(temp);
 		}
 		reader.close();
@@ -164,10 +169,12 @@ public final class NetworkService {
 		/**
 		 * Called when the business info list request execution is successful.
 		 * 
-		 * @param businessInfos The list of {@link BusinessInfo} from server.
+		 * @param businessInfos
+		 *            The list of {@link BusinessInfo} from server.
 		 * @author Luo Yinzhuo
 		 */
-		public void onBusinessInfoListResponseSuccess(List<BusinessInfo> businessInfos);
+		public void onBusinessInfoListResponseSuccess(
+				List<BusinessInfo> businessInfos);
 
 		/**
 		 * Called when the business info list request execution is failed.
@@ -192,11 +199,12 @@ public final class NetworkService {
 		 * Construct a new instance.
 		 * 
 		 * @param serverURL
-		 *        The server URL.
+		 *            The server URL.
 		 * @param listener
-		 *        The request listener.
+		 *            The request listener.
 		 */
-		private BusinessInfoListCommand(String serverURL, BusinessInfoListRequestListener listener) {
+		private BusinessInfoListCommand(String serverURL,
+				BusinessInfoListRequestListener listener) {
 			mServerURL = serverURL;
 			mListener = listener;
 		}
@@ -210,7 +218,8 @@ public final class NetworkService {
 		public void run() {
 			HttpPost request;
 			try {
-				request = RequestFactory.createBusinessInfoListRequest(mServerURL);
+				request = RequestFactory
+						.createBusinessInfoListRequest(mServerURL);
 			} catch (Exception e) {
 				e.printStackTrace();
 				mListener.onBusinessInfoListRequestFailed();
@@ -230,10 +239,12 @@ public final class NetworkService {
 			try {
 				JSONObject jsonResponse = new JSONObject(content);
 				if (jsonResponse.getInt(KEY_XCODE) == 0) {
-					JSONArray jsonBusinessInfo = jsonResponse.getJSONArray(KEY_XDATA);
+					JSONArray jsonBusinessInfo = jsonResponse
+							.getJSONArray(KEY_XDATA);
 					List<BusinessInfo> businessInfos = new ArrayList<BusinessInfo>();
 					for (int i = 0; i < jsonBusinessInfo.length(); i++) {
-						JSONObject businessInfo = jsonBusinessInfo.getJSONObject(i);
+						JSONObject businessInfo = jsonBusinessInfo
+								.getJSONObject(i);
 						if (BusinessInfo.isBusinessInfo(businessInfo)) {
 							businessInfos.add(BusinessInfo.parse(businessInfo));
 						}
@@ -253,16 +264,48 @@ public final class NetworkService {
 	 * Get the business info list.
 	 * 
 	 * @param serverURL
-	 *        The server URL.
+	 *            The server URL.
 	 * @param listener
-	 *        The request listener.
+	 *            The request listener.
 	 * @author Luo Yinzhuo
 	 */
 	public static void getBusinessInfoList(String serverURL,
-	        BusinessInfoListRequestListener listener) {
+			BusinessInfoListRequestListener listener) {
 		EXECUTOR.execute(new BusinessInfoListCommand(serverURL, listener));
 	}
-	
+
+	/**
+	 * Interface definition for a callback to be invoked when a enterprise info
+	 * list request is executed.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public interface EnterpriseInfoListRequestListener {
+		/**
+		 * Called when the enterprise info list request creation is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onEnterpriseInfoListRequestFailed();
+
+		/**
+		 * Called when the enterprise info list request execution is successful.
+		 * 
+		 * @param businessInfos
+		 *            The list of {@link EnterpriseInfo} from server.
+		 * @author Luo Yinzhuo
+		 */
+		public void onEnterpriseInfoListResponseSuccess(
+				List<EnterpriseInfo> businessInfos);
+
+		/**
+		 * Called when the business info list request execution is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onBusinessInfoListResponseFailed();
+	}
+
 	/**
 	 * Interface definition for a callback to be invoked when a user type info
 	 * list request is executed.
@@ -280,10 +323,12 @@ public final class NetworkService {
 		/**
 		 * Called when the user type info list request execution is successful.
 		 * 
-		 * @param userTypeInfos The list of {@link UserTypeInfo} from server.
+		 * @param userTypeInfos
+		 *            The list of {@link UserTypeInfo} from server.
 		 * @author Luo Yinzhuo
 		 */
-		public void onUserTypeInfoListResponseSuccess(List<UserTypeInfo> userTypeInfos);
+		public void onUserTypeInfoListResponseSuccess(
+				List<UserTypeInfo> userTypeInfos);
 
 		/**
 		 * Called when the user type info list request execution is failed.
@@ -308,11 +353,12 @@ public final class NetworkService {
 		 * Construct a new instance.
 		 * 
 		 * @param serverURL
-		 *        The server URL.
+		 *            The server URL.
 		 * @param listener
-		 *        The request listener.
+		 *            The request listener.
 		 */
-		private UserTypeInfoListCommand(String serverURL, UserTypeInfoListRequestListener listener) {
+		private UserTypeInfoListCommand(String serverURL,
+				UserTypeInfoListRequestListener listener) {
 			mServerURL = serverURL;
 			mListener = listener;
 		}
@@ -326,7 +372,8 @@ public final class NetworkService {
 		public void run() {
 			HttpPost request;
 			try {
-				request = RequestFactory.createUserTypeInfoListRequest(mServerURL);
+				request = RequestFactory
+						.createUserTypeInfoListRequest(mServerURL);
 			} catch (Exception e) {
 				e.printStackTrace();
 				mListener.onUserTypeInfoListRequestFailed();
@@ -346,10 +393,12 @@ public final class NetworkService {
 			try {
 				JSONObject jsonResponse = new JSONObject(content);
 				if (jsonResponse.getInt(KEY_XCODE) == 0) {
-					JSONArray jsonUserTypeInfo = jsonResponse.getJSONArray(KEY_XDATA);
+					JSONArray jsonUserTypeInfo = jsonResponse
+							.getJSONArray(KEY_XDATA);
 					List<UserTypeInfo> userTypeInfos = new ArrayList<UserTypeInfo>();
 					for (int i = 0; i < jsonUserTypeInfo.length(); i++) {
-						JSONObject userTypeInfo = jsonUserTypeInfo.getJSONObject(i);
+						JSONObject userTypeInfo = jsonUserTypeInfo
+								.getJSONObject(i);
 						if (UserTypeInfo.isUserTypeInfo(userTypeInfo)) {
 							userTypeInfos.add(UserTypeInfo.parse(userTypeInfo));
 						}
@@ -369,16 +418,16 @@ public final class NetworkService {
 	 * Get the user type info list.
 	 * 
 	 * @param serverURL
-	 *        The server URL.
+	 *            The server URL.
 	 * @param listener
-	 *        The request listener.
+	 *            The request listener.
 	 * @author Luo Yinzhuo
 	 */
 	public static void getUserTypeInfoList(String serverURL,
 			UserTypeInfoListRequestListener listener) {
 		EXECUTOR.execute(new UserTypeInfoListCommand(serverURL, listener));
 	}
-	
+
 	/**
 	 * Interface definition for a callback to be invoked when a column info list
 	 * request is executed.
@@ -398,7 +447,7 @@ public final class NetworkService {
 		 * Called when the column info list request execution is successful.
 		 * 
 		 * @param columnInfos
-		 *        The list of {@link ColumnInfo} from server.
+		 *            The list of {@link ColumnInfo} from server.
 		 * @author Luo Yinzhuo
 		 */
 		public void onColumnInfoListResponseSuccess(List<ColumnInfo> columnInfos);
@@ -428,14 +477,14 @@ public final class NetworkService {
 		 * Construct a new instance.
 		 * 
 		 * @param serverURL
-		 *        The server URL.
+		 *            The server URL.
 		 * @param account
-		 *        The account name.
+		 *            The account name.
 		 * @param listener
-		 *        The request listener.
+		 *            The request listener.
 		 */
 		private ColumnInfoListCommand(String serverURL, String account,
-		        ColumnInfoListRequestListener listener) {
+				ColumnInfoListRequestListener listener) {
 			mServerURL = serverURL;
 			mAccount = account;
 			mListener = listener;
@@ -450,7 +499,8 @@ public final class NetworkService {
 		public void run() {
 			HttpPost request;
 			try {
-				request = RequestFactory.createColumnInfoListRequest(mServerURL, mAccount);
+				request = RequestFactory.createColumnInfoListRequest(
+						mServerURL, mAccount);
 			} catch (Exception e) {
 				e.printStackTrace();
 				mListener.onColumnInfoListRequestFailed();
@@ -470,7 +520,8 @@ public final class NetworkService {
 			try {
 				JSONObject jsonResponse = new JSONObject(content);
 				if (jsonResponse.getInt(KEY_XCODE) == 0) {
-					JSONArray jsonColumnInfo = jsonResponse.getJSONArray(KEY_XDATA);
+					JSONArray jsonColumnInfo = jsonResponse
+							.getJSONArray(KEY_XDATA);
 					List<ColumnInfo> columnInfos = new ArrayList<ColumnInfo>();
 					for (int i = 0; i < jsonColumnInfo.length(); i++) {
 						JSONObject columnInfo = jsonColumnInfo.getJSONObject(i);
@@ -493,15 +544,15 @@ public final class NetworkService {
 	 * Get the whole column info list.
 	 * 
 	 * @param serverURL
-	 *        The server URL.
+	 *            The server URL.
 	 * @param account
-	 *        The account name.
+	 *            The account name.
 	 * @param listener
-	 *        The request listener.
+	 *            The request listener.
 	 * @author Luo Yinzhuo
 	 */
 	public static void getColumnInfoList(String serverURL, String account,
-	        ColumnInfoListRequestListener listener) {
+			ColumnInfoListRequestListener listener) {
 		EXECUTOR.execute(new ColumnInfoListCommand(serverURL, account, listener));
 	}
 
@@ -523,18 +574,19 @@ public final class NetworkService {
 		 * Called when the news list request execution is successful.
 		 * 
 		 * @param columnInfos
-		 *        The list of {@link NewsInfo} from server.
+		 *            The list of {@link NewsInfo} from server.
 		 * @param childColumnInfos
-		 *        The list of child {@link ColumnInfo} from server.
+		 *            The list of child {@link ColumnInfo} from server.
 		 * @author Luo Yinzhuo
 		 */
 		public void onNewsListResponseSuccess(List<NewsInfo> newsInfos,
-		        List<ColumnInfo> childColumnInfos);
+				List<ColumnInfo> childColumnInfos);
 
 		/**
 		 * Called when the news list request execution is failed.
 		 * 
-		 * @param columnID The request column ID.
+		 * @param columnID
+		 *            The request column ID.
 		 * @author Luo Yinzhuo
 		 */
 		public void onNewsListResponseFailed(String columnID);
@@ -557,13 +609,14 @@ public final class NetworkService {
 		 * Construct a new instance.
 		 * 
 		 * @param serverURL
-		 *        The server URL.
+		 *            The server URL.
 		 * @param columnID
-		 *        The column ID.
+		 *            The column ID.
 		 * @param listener
-		 *        The request listener.
+		 *            The request listener.
 		 */
-		private NewsListCommand(String serverURL, String columnID, NewsListRequestListener listener) {
+		private NewsListCommand(String serverURL, String columnID,
+				NewsListRequestListener listener) {
 			mServerURL = serverURL;
 			mColumnID = columnID;
 			mListener = listener;
@@ -580,7 +633,8 @@ public final class NetworkService {
 		public void run() {
 			HttpPost request;
 			try {
-				request = RequestFactory.createNewsInfoListRequest(mServerURL, mColumnID);
+				request = RequestFactory.createNewsInfoListRequest(mServerURL,
+						mColumnID);
 			} catch (Exception e) {
 				e.printStackTrace();
 				mListener.onNewsListRequestFailed();
@@ -600,24 +654,29 @@ public final class NetworkService {
 			try {
 				JSONObject jsonResponse = new JSONObject(content);
 				if (jsonResponse.getInt(KEY_XCODE) == 0) {
-					JSONArray jsonNewsInfo = jsonResponse.getJSONArray(KEY_XDATA);
+					JSONArray jsonNewsInfo = jsonResponse
+							.getJSONArray(KEY_XDATA);
 					List<NewsInfo> newsInfos = new ArrayList<NewsInfo>();
 					for (int i = 0; i < jsonNewsInfo.length(); i++) {
-						newsInfos.add(NewsInfo.parse(jsonNewsInfo.getJSONObject(i)));
+						newsInfos.add(NewsInfo.parse(jsonNewsInfo
+								.getJSONObject(i)));
 					}
 
 					List<ColumnInfo> childColumnInfos = new ArrayList<ColumnInfo>();
 					if (jsonResponse.has(KEY_CHILD_COLUMNS)) {
 						JSONArray jsonChildColumnInfo = jsonResponse
-						        .getJSONArray(KEY_CHILD_COLUMNS);
+								.getJSONArray(KEY_CHILD_COLUMNS);
 						for (int i = 0; i < jsonChildColumnInfo.length(); i++) {
-							JSONObject childColumnInfo = jsonChildColumnInfo.getJSONObject(i);
+							JSONObject childColumnInfo = jsonChildColumnInfo
+									.getJSONObject(i);
 							if (ColumnInfo.isColumnInfo(childColumnInfo)) {
-								childColumnInfos.add(ColumnInfo.parse(childColumnInfo));
+								childColumnInfos.add(ColumnInfo
+										.parse(childColumnInfo));
 							}
 						}
 					}
-					mListener.onNewsListResponseSuccess(newsInfos, childColumnInfos);
+					mListener.onNewsListResponseSuccess(newsInfos,
+							childColumnInfos);
 					return;
 				}
 			} catch (JSONException e) {
@@ -632,21 +691,21 @@ public final class NetworkService {
 	 * Get the news list.
 	 * 
 	 * @param serverURL
-	 *        The server URL.
+	 *            The server URL.
 	 * @param columnID
-	 *        The column's ID.
+	 *            The column's ID.
 	 * @param listener
-	 *        The request listener.
+	 *            The request listener.
 	 * @author Luo Yinzhuo
 	 */
 	public static void getNewsList(String serverURL, String columnID,
-	        NewsListRequestListener listener) {
+			NewsListRequestListener listener) {
 		EXECUTOR.execute(new NewsListCommand(serverURL, columnID, listener));
 	}
 
 	/** The image LRU cache. */
 	private static final Map<String, Bitmap> BITMAP_LRU_CACHE = new LinkedHashMap<String, Bitmap>(
-	        8, 0.75f, true) {
+			8, 0.75f, true) {
 
 		@Override
 		protected boolean removeEldestEntry(Entry<String, Bitmap> eldest) {
@@ -677,7 +736,8 @@ public final class NetworkService {
 		/**
 		 * Called when the image request execution is successful.
 		 * 
-		 * @param bitmap The image's bitmap.
+		 * @param bitmap
+		 *            The image's bitmap.
 		 * @author Luo Yinzhuo
 		 */
 		public void onImageResponseSuccess(Bitmap bitmap);
@@ -704,8 +764,10 @@ public final class NetworkService {
 		/**
 		 * Construct a new instance.
 		 * 
-		 * @param imageURL The image URL.
-		 * @param listener The request listener.
+		 * @param imageURL
+		 *            The image URL.
+		 * @param listener
+		 *            The request listener.
 		 */
 		private ImageCommand(String imageURL, ImageRequestListener listener) {
 			mImageURL = imageURL;
@@ -719,8 +781,8 @@ public final class NetworkService {
 			ByteArrayBuffer byteArrayBuffer = new ByteArrayBuffer(1024);
 			try {
 				HttpResponse response = HTTP_CLIENT.execute(request);
-				BufferedInputStream bufferedInputStream = new BufferedInputStream(response
-				        .getEntity().getContent());
+				BufferedInputStream bufferedInputStream = new BufferedInputStream(
+						response.getEntity().getContent());
 				int current = bufferedInputStream.read();
 				while (current != -1) {
 					byteArrayBuffer.append(current);
@@ -732,8 +794,8 @@ public final class NetworkService {
 				return;
 			}
 
-			Bitmap bitmap = BitmapFactory.decodeByteArray(byteArrayBuffer.toByteArray(), 0,
-			        byteArrayBuffer.length());
+			Bitmap bitmap = BitmapFactory.decodeByteArray(
+					byteArrayBuffer.toByteArray(), 0, byteArrayBuffer.length());
 			if (bitmap != null) {
 				BITMAP_LRU_CACHE.put(mImageURL, bitmap);
 			}
@@ -751,8 +813,10 @@ public final class NetworkService {
 	/**
 	 * Get the image.
 	 * 
-	 * @param imageURL The image URL.
-	 * @param listener The request listener.
+	 * @param imageURL
+	 *            The image URL.
+	 * @param listener
+	 *            The request listener.
 	 * @return The bitmap requested if exist in the cache, otherwise null.
 	 * @author Luo Yinzhuo
 	 */

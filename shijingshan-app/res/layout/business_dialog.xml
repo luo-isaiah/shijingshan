@@ -11,12 +11,12 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="match_parent"
+        android:fillViewport="true" >
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:layout_height="wrap_content" >
 
             <LinearLayout
                 android:id="@+id/business_layout"
@@ -25,11 +25,18 @@
                 android:orientation="vertical" >
             </LinearLayout>
 
-            <TextView
+            <com.panguso.android.shijingshan.widget.UnderlineButton
+                android:id="@+id/register"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Test" />
-        </LinearLayout>
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/business_layout"
+                android:background="@drawable/underline_button_background"
+                android:padding="15dp"
+                android:text="@string/log_register"
+                android:textColor="@color/log_underline_button_text"
+                android:textSize="14sp" />
+        </RelativeLayout>
     </ScrollView>
 
 </LinearLayout>

@@ -7,6 +7,7 @@ import com.panguso.android.shijingshan.dialog.WaitingDialog;
 import com.panguso.android.shijingshan.dialog.WaitingDialog.OnWaitingDialogListener;
 import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.BusinessInfoListRequestListener;
+import com.panguso.android.shijingshan.register.business.BusinessInfo;
 import com.panguso.android.shijingshan.widget.BlueTitleBar;
 import com.panguso.android.shijingshan.widget.BlueTitleBar.OnBackListener;
 
@@ -44,7 +45,7 @@ public class BusinessActivity extends Activity implements BusinessInfoListReques
 	    super.onCreate(savedInstanceState);
 	    showDialog(DIALOG_WAITING);
 	    
-	    setContentView(R.layout.business_activity);
+	    setContentView(R.layout.business_dialog);
 		mTitleBar = (BlueTitleBar) findViewById(R.id.title_bar);
 		
 		mTitleBar.setTitle(getResources().getString(R.string.business_title));

@@ -1,16 +1,18 @@
-package com.panguso.android.shijingshan.business;
+package com.panguso.android.shijingshan.register.business;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
+
 /**
- * Specific for store a {@link Business}'s information.
+ * Specific for store a business information.
  * 
  * @author Luo Yinzhuo
  */
 public class BusinessInfo {
 	/** The business id. */
-	private final String mId;
+	private final int mId;
 	/** The business name. */
 	private final String mName;
 
@@ -20,9 +22,22 @@ public class BusinessInfo {
 	 * @param id The business id.
 	 * @param name The business name.
 	 */
-	private BusinessInfo(String id, String name) {
+	private BusinessInfo(int id, String name) {
 		mId = id;
 		mName = name;
+	}
+	
+	/**
+	 * Get the {@link BusinessButton} based on the {@link BusinessInfo}.
+	 * 
+	 * @param context
+	 *            The context.
+	 * @return The {@link BusinessButton}.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public BusinessButton getBusinessButton(Context context) {
+		return new BusinessButton(context, mId, mName);
 	}
 
 	/** The key to get business id. */
@@ -51,7 +66,7 @@ public class BusinessInfo {
 	 * @author Luo Yinzhuo
 	 */
 	public static BusinessInfo parse(JSONObject json) throws JSONException {
-		return new BusinessInfo(json.getString(KEY_BUSINESS_ID), json.getString(KEY_BUSINESS_NAME));
+		return new BusinessInfo(json.getInt(KEY_BUSINESS_ID), json.getString(KEY_BUSINESS_NAME));
 	}
 
 	@Override

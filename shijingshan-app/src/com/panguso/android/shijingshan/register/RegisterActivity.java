@@ -18,6 +18,7 @@ import com.panguso.android.shijingshan.register.usertype.UserTypeDialog.OnUserTy
 import com.panguso.android.shijingshan.widget.BlueTitleBar;
 import com.panguso.android.shijingshan.widget.BlueTitleBar.OnBackListener;
 
+import android.R.integer;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -41,11 +42,22 @@ public class RegisterActivity extends Activity implements
 		OnEditorActionListener, OnBackListener, OnClickListener,
 		OnWaitingDialogListener, OnRegisterArrowButtonListener,
 		OnUserTypeDialogListener {
-	
+
 	/** The waiting dialog ID. */
-	private static final int DIALOG_WAITING = 0;
+	private static final int DIALOG_WAITING = -1;
+	/** The retry dialog ID. */
+	private static final int DIALOG_RETRY = -2;
+	/** The unsupported dialog ID. */
+	private static final int DIALOG_UNSUPPORTED = -3;
+
+	/** The business dialog ID. */
+	private static final int DIALOG_BUSINESS = 1;
+	/** The enterprise dialog ID. */
+	private static final int DIALOG_ENTERPRISE = 2;
+	/** The new enterprise dialog ID. */
+	private static final int DIALOG_NEW_ENTERPRISE = 3;
 	/** The user type dialog ID. */
-	private static final int DIALOG_USER_TYPE = 1;
+	private static final int DIALOG_USER_TYPE = 4;
 
 	/** The {@link WaitingDialog} visibility flag. */
 	private boolean mWaitingDialogVisible = false;
@@ -82,6 +94,12 @@ public class RegisterActivity extends Activity implements
 	private EditText mMobileNumber;
 	/** The enterprise. */
 	private RegisterArrowButton mEnterprise;
+	/** The business id. */
+	private String mBusinessId = "";
+	/** The enterprise id. */
+	private String mEnterpriseId = "";
+	/** The new enterprise id. */
+	private static final String NEW_ENTERPRISE_ID = "-1";
 	/** The user type. */
 	private RegisterArrowButton mUserType;
 	/** The user type id. */
@@ -137,6 +155,11 @@ public class RegisterActivity extends Activity implements
 	@Override
 	public void onRegisterArrowButtonClicked(RegisterArrowButton button) {
 		switch (button.getId()) {
+		case R.id.enterprise:
+			if (mEnterpriseId.length() == 0) {
+				showDialog(DIALOG_BUSINESS);
+			}
+			break;
 		case R.id.user_type:
 			showDialog(DIALOG_USER_TYPE);
 			mUserTypeDialogVisible = true;
@@ -173,5 +196,5 @@ public class RegisterActivity extends Activity implements
 		dismissDialog(DIALOG_USER_TYPE);
 		mUserTypeDialogVisible = false;
 	}
-	
+
 }

@@ -34,7 +34,7 @@ public final class UserTypeInfo {
 	}
 
 	/**
-	 * Get the {@link UserTypeButton} based on the {@link UserType}.
+	 * Get the {@link UserTypeButton} based on the {@link UserTypeInfo}.
 	 * 
 	 * @param context
 	 *            The context.

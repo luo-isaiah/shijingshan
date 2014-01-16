@@ -14,7 +14,7 @@ import android.widget.RelativeLayout;
  * 
  * @author Luo Yinzhuo
  */
-public class UserTypeButton extends RelativeLayout implements OnClickListener {
+public final class UserTypeButton extends RelativeLayout implements OnClickListener {
 
 	/**
 	 * Interface definition for a callback when the {@link UserTypeButton} is
