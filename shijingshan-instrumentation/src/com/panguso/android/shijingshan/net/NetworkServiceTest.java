@@ -2,7 +2,6 @@ package com.panguso.android.shijingshan.net;
 
 import java.util.List;
 
-import com.panguso.android.shijingshan.business.BusinessInfo;
 import com.panguso.android.shijingshan.column.ColumnInfo;
 import com.panguso.android.shijingshan.net.NetworkService.BusinessInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.ColumnInfoListRequestListener;
@@ -10,6 +9,7 @@ import com.panguso.android.shijingshan.net.NetworkService.ImageRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.NewsListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.UserTypeInfoListRequestListener;
 import com.panguso.android.shijingshan.news.NewsInfo;
+import com.panguso.android.shijingshan.register.business.BusinessInfo;
 import com.panguso.android.shijingshan.register.usertype.UserTypeInfo;
 
 import android.graphics.Bitmap;
