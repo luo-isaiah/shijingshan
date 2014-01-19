@@ -6,8 +6,6 @@ package com.panguso.android.shijingshan.register.enterprise;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.panguso.android.shijingshan.register.business.BusinessInfo;
-
 /**
  * Specific for store a enterprise information.
  * 
@@ -59,5 +57,10 @@ public class EnterpriseInfo {
 	 */
 	public static EnterpriseInfo parse(JSONObject json) throws JSONException {
 		return new EnterpriseInfo(json.getInt(KEY_ENTERPRISE_ID), json.getString(KEY_ENTERPRISE_NAME));
+	}
+
+	@Override
+	public String toString() {
+		return "EnterpriseInfo [mId=" + mId + ", mName=" + mName + "]";
 	}
 }

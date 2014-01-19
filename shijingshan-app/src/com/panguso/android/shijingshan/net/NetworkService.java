@@ -291,19 +291,119 @@ public final class NetworkService {
 		/**
 		 * Called when the enterprise info list request execution is successful.
 		 * 
-		 * @param businessInfos
+		 * @param enterpriseInfos
 		 *            The list of {@link EnterpriseInfo} from server.
 		 * @author Luo Yinzhuo
 		 */
 		public void onEnterpriseInfoListResponseSuccess(
-				List<EnterpriseInfo> businessInfos);
+				List<EnterpriseInfo> enterpriseInfos);
 
 		/**
-		 * Called when the business info list request execution is failed.
+		 * Called when the enterprise info list request execution is failed.
 		 * 
 		 * @author Luo Yinzhuo
 		 */
-		public void onBusinessInfoListResponseFailed();
+		public void onEnterpriseInfoListResponseFailed();
+	}
+
+	/**
+	 * Specified for execute enterprise info list request.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private static class EnterpriseInfoListCommand implements Runnable {
+		/** The server URL. */
+		private final String mServerURL;
+		/** The business id. */
+		private final int mBusinessId;
+		/** The request listener. */
+		private final EnterpriseInfoListRequestListener mListener;
+
+		/**
+		 * Construct a new instance.
+		 * 
+		 * @param serverURL
+		 *            The server URL.
+		 * @param businessId
+		 *            The business id.
+		 * @param listener
+		 *            The request listener.
+		 */
+		private EnterpriseInfoListCommand(String serverURL, int businessId,
+				EnterpriseInfoListRequestListener listener) {
+			mServerURL = serverURL;
+			mBusinessId = businessId;
+			mListener = listener;
+		}
+
+		/** The key to get xCode. */
+		private static final String KEY_XCODE = "xCode";
+		/** The key to get xData. */
+		private static final String KEY_XDATA = "xData";
+
+		@Override
+		public void run() {
+			HttpPost request;
+			try {
+				request = RequestFactory.createEnterpriseInfoListRequest(
+						mServerURL, mBusinessId);
+			} catch (Exception e) {
+				e.printStackTrace();
+				mListener.onEnterpriseInfoListRequestFailed();
+				return;
+			}
+
+			String content;
+			try {
+				HttpResponse response = HTTP_CLIENT.execute(request);
+				content = NetworkService.getContent(response);
+			} catch (IOException e) {
+				e.printStackTrace();
+				mListener.onEnterpriseInfoListResponseFailed();
+				return;
+			}
+
+			try {
+				JSONObject jsonResponse = new JSONObject(content);
+				if (jsonResponse.getInt(KEY_XCODE) == 0) {
+					JSONArray jsonEnterpriseInfo = jsonResponse
+							.getJSONArray(KEY_XDATA);
+					List<EnterpriseInfo> enterpriseInfos = new ArrayList<EnterpriseInfo>();
+					for (int i = 0; i < jsonEnterpriseInfo.length(); i++) {
+						JSONObject enterpriseInfo = jsonEnterpriseInfo
+								.getJSONObject(i);
+						if (EnterpriseInfo.isEnterpriseInfo(enterpriseInfo)) {
+							enterpriseInfos.add(EnterpriseInfo
+									.parse(enterpriseInfo));
+						}
+					}
+					mListener
+							.onEnterpriseInfoListResponseSuccess(enterpriseInfos);
+					return;
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			Log.e("EnterpriseInfoListCommand", content);
+			mListener.onEnterpriseInfoListResponseFailed();
+		}
+	}
+
+	/**
+	 * Get the enterprise info list.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param businessId
+	 *            The business id.
+	 * @param listener
+	 *            The request listener.
+	 * @author Luo Yinzhuo
+	 */
+	public static void getEnterpriseInfoList(String serverURL, int businessId,
+			EnterpriseInfoListRequestListener listener) {
+		EXECUTOR.execute(new EnterpriseInfoListCommand(serverURL, businessId,
+				listener));
 	}
 
 	/**
