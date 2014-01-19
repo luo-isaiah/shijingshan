@@ -67,6 +67,32 @@ public class RequestFactoryTest extends AndroidTestCase {
 		assertTrue("Create business info list request failed!", false);
 	}
 
+	/** The business id. */
+	private static final int BUSINESS_ID = 10301;
+
+	/**
+	 * Test {@link RequestFactory#createEnterpriseInfoListRequest(String, int)}.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testEnterpriseInfoListRequest() {
+		final String EXPECT_CONTENT = "transCode=102&param={\"code_id\":10301}";
+		try {
+			HttpPost request = RequestFactory.createEnterpriseInfoListRequest(
+					SERVER_URL, BUSINESS_ID);
+			assertNotNull(request);
+			String content = readContent(request.getEntity().getContent());
+			assertNotNull(content);
+			assertEquals(EXPECT_CONTENT, content);
+			return;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		assertTrue("Create enterprise info list request failed!", false);
+	}
+
 	/**
 	 * Test {@link RequestFactory#createUserTypeInfoListRequest(String)}.
 	 * 

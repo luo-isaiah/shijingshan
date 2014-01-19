@@ -5,11 +5,13 @@ import java.util.List;
 import com.panguso.android.shijingshan.column.ColumnInfo;
 import com.panguso.android.shijingshan.net.NetworkService.BusinessInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.ColumnInfoListRequestListener;
+import com.panguso.android.shijingshan.net.NetworkService.EnterpriseInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.ImageRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.NewsListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.UserTypeInfoListRequestListener;
 import com.panguso.android.shijingshan.news.NewsInfo;
 import com.panguso.android.shijingshan.register.business.BusinessInfo;
+import com.panguso.android.shijingshan.register.enterprise.EnterpriseInfo;
 import com.panguso.android.shijingshan.register.usertype.UserTypeInfo;
 
 import android.graphics.Bitmap;
@@ -72,6 +74,66 @@ public class NetworkServiceTest extends AndroidTestCase {
 			}
 		}
 	}
+	
+	/** The business id. */
+	private static final int BUSINESS_ID = 10301;
+	
+	/**
+	 * Test
+	 * {@link NetworkService#getEnterpriseInfoList(String, int, EnterpriseInfoListRequestListener)}.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testGetEnterpriseInfoList() {
+		/** The lock to synchronize. */
+		final Object LOCK = new Object();
+		NetworkService.getEnterpriseInfoList(SERVER_URL, BUSINESS_ID,
+				new EnterpriseInfoListRequestListener() {
+
+					@Override
+					public void onEnterpriseInfoListRequestFailed() {
+						assertTrue("Create Enterprise Info List Request Failed!",
+								false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onEnterpriseInfoListResponseSuccess(
+							List<EnterpriseInfo> enterpriseInfos) {
+						assertNotNull("Enterprise info is empty!", enterpriseInfos);
+						assertTrue("Enterprise info is empty!",
+								enterpriseInfos.size() > 0);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onEnterpriseInfoListResponseFailed() {
+						assertTrue("Get Enterprise Info List Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+				});
+
+		// Wait for the executor thread finish job.
+		synchronized (LOCK) {
+			try {
+				LOCK.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/** The enterprise id. */
+	private static final int ENTERPRISE_ID = 15;
 	
 	/**
 	 * Test
