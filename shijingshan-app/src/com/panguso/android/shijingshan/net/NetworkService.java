@@ -407,6 +407,191 @@ public final class NetworkService {
 	}
 
 	/**
+	 * Interface definition for a callback to be invoked when a register request
+	 * is executed.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public interface RegisterRequestListener {
+		/**
+		 * Called when the register request creation is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onRegisterRequestFailed();
+
+		/**
+		 * Called when the register request execution is successful.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onRegisterResponseSuccess();
+
+		/**
+		 * Called when the register request execution is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onRegisterResponseFailed();
+		
+		/**
+		 * Called when the register request execution is failed.
+		 * 
+		 * @param errorMessage
+		 *            The error message.
+		 * @author Luo Yinzhuo
+		 */
+		public void onRegisterResponseFailed(String errorMessage);
+	}
+
+	/**
+	 * Specified for execute register request.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private static class RegisterCommand implements Runnable {
+		/** The server URL. */
+		private final String mServerURL;
+		/** The account name. */
+		private final String mAccount;
+		/** The password. */
+		private final String mPassword;
+		/** The phone number. */
+		private final String mPhoneNum;
+		/** The enterprise id. */
+		private final int mEnterpriseId;
+		/** The enterprise name. */
+		private final String mEnterpriseName;
+		/** The device token. */
+		private final String mDeviceToken;
+		/** The terminal type. */
+		private final String mTerminalType;
+		/** The user type id. */
+		private final int mUserTypeId;
+		/** The request listener. */
+		private final RegisterRequestListener mListener;
+
+		/**
+		 * Construct a new instance.
+		 * 
+		 * @param serverURL
+		 *            The server URL.
+		 * @param account
+		 *            The account name.
+		 * @param password
+		 *            The password.
+		 * @param phoneNum
+		 *            The phone number.
+		 * @param enterpriseId
+		 *            The enterprise id.
+		 * @param enterpriseName
+		 *            The enterprise name.
+		 * @param deviceToken
+		 *            The device UUID.
+		 * @param terminalType
+		 *            The device terminal type.
+		 * @param userTypeId
+		 *            The user type id.
+		 * @param listener
+		 *            The request listener.
+		 */
+		private RegisterCommand(String serverURL, String account,
+				String password, String phoneNum, int enterpriseId,
+				String enterpriseName, String deviceToken, String terminalType,
+				int userTypeId, RegisterRequestListener listener) {
+			mServerURL = serverURL;
+			mAccount = account;
+			mPassword = password;
+			mPhoneNum = phoneNum;
+			mEnterpriseId = enterpriseId;
+			mEnterpriseName = enterpriseName;
+			mDeviceToken = deviceToken;
+			mTerminalType = terminalType;
+			mUserTypeId = userTypeId;
+			mListener = listener;
+		}
+
+		/** The key to get xCode. */
+		private static final String KEY_XCODE = "xCode";
+		/** The key to get error message. */
+		private static final String KEY_XMSG = "xMsg";
+
+		@Override
+		public void run() {
+			HttpPost request;
+			try {
+				request = RequestFactory.createRegisterRequest(mServerURL,
+						mAccount, mPassword, mPhoneNum, mEnterpriseId,
+						mEnterpriseName, mDeviceToken, mTerminalType,
+						mUserTypeId);
+			} catch (Exception e) {
+				e.printStackTrace();
+				mListener.onRegisterRequestFailed();
+				return;
+			}
+
+			String content;
+			try {
+				HttpResponse response = HTTP_CLIENT.execute(request);
+				content = NetworkService.getContent(response);
+			} catch (IOException e) {
+				e.printStackTrace();
+				mListener.onRegisterResponseFailed();
+				return;
+			}
+
+			try {
+				JSONObject jsonResponse = new JSONObject(content);
+				if (jsonResponse.getInt(KEY_XCODE) == 0) {
+					mListener.onRegisterResponseSuccess();
+					return;
+				} else {
+					mListener.onRegisterResponseFailed(jsonResponse
+							.getString(KEY_XMSG));
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			Log.e("RegisterCommand", content);
+			mListener.onRegisterResponseFailed();
+		}
+	}
+
+	/**
+	 * Register.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param account
+	 *            The account name.
+	 * @param password
+	 *            The password.
+	 * @param phoneNum
+	 *            The phone number.
+	 * @param enterpriseId
+	 *            The enterprise id.
+	 * @param enterpriseName
+	 *            The enterprise name.
+	 * @param deviceToken
+	 *            The device UUID.
+	 * @param terminalType
+	 *            The device terminal type.
+	 * @param userTypeId
+	 *            The user type id.
+	 * @param listener
+	 *            The request listener.
+	 * @author Luo Yinzhuo
+	 */
+	public static void register(String serverURL, String account,
+			String password, String phoneNum, int enterpriseId,
+			String enterpriseName, String deviceToken, String terminalType,
+			int userTypeId, RegisterRequestListener listener) {
+		EXECUTOR.execute(new RegisterCommand(serverURL, account, password,
+				phoneNum, enterpriseId, enterpriseName, deviceToken,
+				terminalType, userTypeId, listener));
+	}
+
+	/**
 	 * Interface definition for a callback to be invoked when a user type info
 	 * list request is executed.
 	 * 

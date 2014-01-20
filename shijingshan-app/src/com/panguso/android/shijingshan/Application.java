@@ -35,7 +35,7 @@ public class Application extends android.app.Application {
 		}
 		return mUUID;
 	}
-
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
