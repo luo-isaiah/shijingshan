@@ -21,8 +21,6 @@ import android.test.AndroidTestCase;
 public class RequestFactoryTest extends AndroidTestCase {
 	/** The server url. */
 	private static final String SERVER_URL = "http://s-94379.gotocdn.com/sjs/JsonAction";
-	/** The UUID. */
-	private static final String UUID = "ffffffff-aa13-3f0f-ffff-ffffd0fe3dcb";
 	/** The no user. */
 	private static final String NO_USER = "";
 
@@ -93,6 +91,47 @@ public class RequestFactoryTest extends AndroidTestCase {
 		assertTrue("Create enterprise info list request failed!", false);
 	}
 
+	/** The account name. */
+	private static final String ACCOUNT = "panguso";
+	/** The password. */
+	private static final String PASSWORD = "123456";
+	/** The phone number. */
+	private static final String PHONE_NUM = "13812345678";
+	/** The enterprise id. */
+	private static final int ENTERPRISE_ID = 13;
+	/** The enterprise name. */
+	private static final String ENTERPRISE_NAME = "";
+	/** The UUID. */
+	private static final String UUID = "ffffffff-aa13-3f0f-ffff-ffffd0fe3dcb";
+	/** The terminal type . */
+	private static final String TERMINAL_TYPE = "";
+	/** The user type id. */
+	private static final int USER_TYPE = 19;
+	
+	
+	/**
+	 * Test {@link RequestFactory#createRegisterRequest(String, String, String, String, int, String, String, String, int)}.
+	 *
+	 * @author Luo Yinzhuo
+	 */
+	public void testRegisterRequest() {
+		final String EXPECT_CONTENT = "transCode=102&param={\"code_id\":10301}";
+		try {
+			HttpPost request = RequestFactory.createRegisterRequest(
+					SERVER_URL, ACCOUNT, PASSWORD, PHONE_NUM, ENTERPRISE_ID, ENTERPRISE_NAME, UUID, TERMINAL_TYPE, USER_TYPE);
+			assertNotNull(request);
+			String content = readContent(request.getEntity().getContent());
+			assertNotNull(content);
+			assertEquals(EXPECT_CONTENT, content);
+			return;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		assertTrue("Create enterprise info list request failed!", false);
+	}
+	
 	/**
 	 * Test {@link RequestFactory#createUserTypeInfoListRequest(String)}.
 	 * 
