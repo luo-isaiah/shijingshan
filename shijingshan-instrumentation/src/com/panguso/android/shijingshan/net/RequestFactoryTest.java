@@ -10,6 +10,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.json.JSONException;
 
+import android.os.Build;
 import android.test.AndroidTestCase;
 
 /**
@@ -98,27 +99,29 @@ public class RequestFactoryTest extends AndroidTestCase {
 	/** The phone number. */
 	private static final String PHONE_NUM = "13812345678";
 	/** The enterprise id. */
-	private static final int ENTERPRISE_ID = 13;
+	private static final int ENTERPRISE_ID = 15;
 	/** The enterprise name. */
-	private static final String ENTERPRISE_NAME = "";
+	private static final String ENTERPRISE_NAME = "大唐国际发电股份有限公司";
 	/** The UUID. */
 	private static final String UUID = "ffffffff-aa13-3f0f-ffff-ffffd0fe3dcb";
 	/** The terminal type . */
-	private static final String TERMINAL_TYPE = "";
+	private static final String TERMINAL_TYPE = "HUAWEI G606-T00";
 	/** The user type id. */
-	private static final int USER_TYPE = 19;
-	
-	
+	private static final int USER_TYPE = 10601;
+
 	/**
-	 * Test {@link RequestFactory#createRegisterRequest(String, String, String, String, int, String, String, String, int)}.
-	 *
+	 * Test
+	 * {@link RequestFactory#createRegisterRequest(String, String, String, String, int, String, String, String, int)}
+	 * .
+	 * 
 	 * @author Luo Yinzhuo
 	 */
 	public void testRegisterRequest() {
-		final String EXPECT_CONTENT = "transCode=102&param={\"code_id\":10301}";
+		final String EXPECT_CONTENT = "transCode=103&param={\"deviceToken\":\"ffffffff-aa13-3f0f-ffff-ffffd0fe3dcb\",\"enterpriseid\":15,\"terminalType\":\"HUAWEI G606-T00\",\"account\":\"panguso\",\"usertype\":10601,\"enterprisename\":\"大唐国际发电股份有限公司\",\"phonenum\":\"13812345678\",\"password\":\"123456\"}";
 		try {
-			HttpPost request = RequestFactory.createRegisterRequest(
-					SERVER_URL, ACCOUNT, PASSWORD, PHONE_NUM, ENTERPRISE_ID, ENTERPRISE_NAME, UUID, TERMINAL_TYPE, USER_TYPE);
+			HttpPost request = RequestFactory.createRegisterRequest(SERVER_URL,
+					ACCOUNT, PASSWORD, PHONE_NUM, ENTERPRISE_ID,
+					ENTERPRISE_NAME, UUID, TERMINAL_TYPE, USER_TYPE);
 			assertNotNull(request);
 			String content = readContent(request.getEntity().getContent());
 			assertNotNull(content);
@@ -131,7 +134,7 @@ public class RequestFactoryTest extends AndroidTestCase {
 		}
 		assertTrue("Create enterprise info list request failed!", false);
 	}
-	
+
 	/**
 	 * Test {@link RequestFactory#createUserTypeInfoListRequest(String)}.
 	 * 

@@ -8,6 +8,7 @@ import com.panguso.android.shijingshan.net.NetworkService.ColumnInfoListRequestL
 import com.panguso.android.shijingshan.net.NetworkService.EnterpriseInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.ImageRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.NewsListRequestListener;
+import com.panguso.android.shijingshan.net.NetworkService.RegisterRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.UserTypeInfoListRequestListener;
 import com.panguso.android.shijingshan.news.NewsInfo;
 import com.panguso.android.shijingshan.register.business.BusinessInfo;
@@ -74,13 +75,14 @@ public class NetworkServiceTest extends AndroidTestCase {
 			}
 		}
 	}
-	
+
 	/** The business id. */
 	private static final int BUSINESS_ID = 10301;
-	
+
 	/**
 	 * Test
-	 * {@link NetworkService#getEnterpriseInfoList(String, int, EnterpriseInfoListRequestListener)}.
+	 * {@link NetworkService#getEnterpriseInfoList(String, int, EnterpriseInfoListRequestListener)}
+	 * .
 	 * 
 	 * @author Luo Yinzhuo
 	 */
@@ -92,7 +94,8 @@ public class NetworkServiceTest extends AndroidTestCase {
 
 					@Override
 					public void onEnterpriseInfoListRequestFailed() {
-						assertTrue("Create Enterprise Info List Request Failed!",
+						assertTrue(
+								"Create Enterprise Info List Request Failed!",
 								false);
 						// Let main thread finish.
 						synchronized (LOCK) {
@@ -103,7 +106,8 @@ public class NetworkServiceTest extends AndroidTestCase {
 					@Override
 					public void onEnterpriseInfoListResponseSuccess(
 							List<EnterpriseInfo> enterpriseInfos) {
-						assertNotNull("Enterprise info is empty!", enterpriseInfos);
+						assertNotNull("Enterprise info is empty!",
+								enterpriseInfos);
 						assertTrue("Enterprise info is empty!",
 								enterpriseInfos.size() > 0);
 						// Let main thread finish.
@@ -131,10 +135,85 @@ public class NetworkServiceTest extends AndroidTestCase {
 			}
 		}
 	}
-	
+
+	/** The account name. */
+	private static final String ACCOUNT = "panguso";
+	/** The password. */
+	private static final String PASSWORD = "123456";
+	/** The phone number. */
+	private static final String PHONE_NUM = "13812345678";
 	/** The enterprise id. */
 	private static final int ENTERPRISE_ID = 15;
-	
+	/** The enterprise name. */
+	private static final String ENTERPRISE_NAME = "大唐国际发电股份有限公司";
+	/** The UUID. */
+	private static final String UUID = "ffffffff-aa13-3f0f-ffff-ffffd0fe3dcb";
+	/** The terminal type . */
+	private static final String TERMINAL_TYPE = "HUAWEI G606-T00";
+	/** The user type id. */
+	private static final int USER_TYPE = 10601;
+
+	/**
+	 * Test
+	 * {@link NetworkService#getEnterpriseInfoList(String, int, EnterpriseInfoListRequestListener)}
+	 * .
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testRegister() {
+		/** The lock to synchronize. */
+		final Object LOCK = new Object();
+		NetworkService.register(SERVER_URL, ACCOUNT, PASSWORD, PHONE_NUM,
+				ENTERPRISE_ID, ENTERPRISE_NAME, UUID, TERMINAL_TYPE, USER_TYPE,
+				new RegisterRequestListener() {
+
+					@Override
+					public void onRegisterRequestFailed() {
+						assertTrue("Create Register Request Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onRegisterResponseSuccess() {
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onRegisterResponseFailed() {
+						assertTrue("Register Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onRegisterResponseFailed(String errorMessage) {
+						assertNotNull(errorMessage);
+						assertEquals("该用户名已存在", errorMessage);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+				});
+
+		// Wait for the executor thread finish job.
+		synchronized (LOCK) {
+			try {
+				LOCK.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	/**
 	 * Test
 	 * {@link NetworkService#getUserTypeInfoList(String, UserTypeInfoListRequestListener)}
@@ -149,7 +228,8 @@ public class NetworkServiceTest extends AndroidTestCase {
 
 					@Override
 					public void onUserTypeInfoListRequestFailed() {
-						assertTrue("Create User Type Info List Request Failed!",
+						assertTrue(
+								"Create User Type Info List Request Failed!",
 								false);
 						// Let main thread finish.
 						synchronized (LOCK) {
