@@ -25,9 +25,6 @@ public final class RequestFactory {
 	/** The parameter. */
 	private static final String PARAM = "param";
 
-	/** The deviceToken. */
-	private static final String DEVICE_TOKEN = "deviceToken";
-
 	/**
 	 * Create a business info list request.
 	 * 
@@ -76,6 +73,72 @@ public final class RequestFactory {
 		return post;
 	}
 
+	/** The account. */
+	private static final String ACCOUNT = "account";
+	/** The password. */
+	private static final String PASSWORD = "password";
+	/** The phone number. */
+	private static final String PHONE_NUM = "phonenum";
+	/** The enterprise id. */
+	private static final String ENTERPRISE_ID = "enterpriseid";
+	/** The enterprise name. */
+	private static final String ENTERPRISE_NAME = "enterprisename";
+	/** The deviceToken. */
+	private static final String DEVICE_TOKEN = "deviceToken";
+	/** The terminal type. */
+	private static final String TERMINAL_TYPE = "terminalType";
+	/** The user type. */
+	private static final String USER_TYPE = "usertype";
+
+	/**
+	 * Create a register request.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param account
+	 *            The account name.
+	 * @param password
+	 *            The password.
+	 * @param phoneNum
+	 *            The phone number.
+	 * @param enterpriseId
+	 *            The enterprise id.
+	 * @param enterpriseName
+	 *            The enterprise name.
+	 * @param deviceToken
+	 *            The device UUID.
+	 * @param terminalType
+	 *            The device terminal type.
+	 * @param userTypeId
+	 *            The user type id.
+	 * @return The register request.
+	 * @throws UnsupportedEncodingException
+	 *             If device doesn't support UTF-8 encode.
+	 * @throws JSONException
+	 *             If an error occurs when create JSON parameters.
+	 * @author Luo Yinzhuo
+	 */
+	static HttpPost createRegisterRequest(String serverURL, String account,
+			String password, String phoneNum, int enterpriseId,
+			String enterpriseName, String deviceToken, String terminalType,
+			int userTypeId) throws JSONException, UnsupportedEncodingException {
+		HttpPost post = new HttpPost(serverURL);
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair(TRANS_CODE, "103"));
+		JSONObject param = new JSONObject();
+		param.put(ACCOUNT, account);
+		param.put(PASSWORD, password);
+		param.put(PHONE_NUM, phoneNum);
+		param.put(ENTERPRISE_ID, enterpriseId);
+		param.put(ENTERPRISE_NAME, enterpriseName);
+		param.put(DEVICE_TOKEN, deviceToken);
+		param.put(TERMINAL_TYPE, terminalType);
+		param.put(USER_TYPE, userTypeId);
+		params.add(new BasicNameValuePair(PARAM, param.toString()));
+		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+		return post;
+	}
+
 	/**
 	 * Create a user type info list request.
 	 * 
@@ -94,9 +157,6 @@ public final class RequestFactory {
 		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
 		return post;
 	}
-
-	/** The account. */
-	private static final String ACCOUNT = "account";
 
 	/**
 	 * Create a column info list request.
