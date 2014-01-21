@@ -9,10 +9,6 @@ import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.BusinessInfoListRequestListener;
 import com.panguso.android.shijingshan.register.business.BusinessButton.OnBusinessButtonListener;
-import com.panguso.android.shijingshan.register.usertype.UserTypeButton;
-import com.panguso.android.shijingshan.register.usertype.UserTypeDialog;
-import com.panguso.android.shijingshan.register.usertype.UserTypeInfo;
-import com.panguso.android.shijingshan.register.usertype.UserTypeDialog.OnUserTypeDialogListener;
 import com.panguso.android.shijingshan.widget.BlueTitleBar;
 import com.panguso.android.shijingshan.widget.BlueTitleBar.OnBackListener;
 
@@ -73,7 +69,7 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 		 * 
 		 * @author Luo Yinzhuo
 		 */
-		public void onBusinessSelected(String id, String name);
+		public void onBusinessSelected(int id, String name);
 	}
 
 	/** The title bar. */
@@ -117,7 +113,14 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 
 	@Override
 	public void onBack() {
-
+		if (mListener != null) {
+			mListener.onBusinessDialogBack();
+		}
+	}
+	
+	@Override
+	public void onBackPressed() {
+		onBack();
 	}
 
 	@Override
@@ -156,7 +159,9 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 
 	@Override
 	public void onClicked(int id, String name) {
-		
+		if (mListener != null) {
+			mListener.onBusinessSelected(id, name);
+		}
 	}
 
 }
