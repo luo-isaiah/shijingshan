@@ -544,16 +544,16 @@ public final class NetworkService {
 				JSONObject jsonResponse = new JSONObject(content);
 				if (jsonResponse.getInt(KEY_XCODE) == 0) {
 					mListener.onRegisterResponseSuccess();
-					return;
 				} else {
 					mListener.onRegisterResponseFailed(jsonResponse
 							.getString(KEY_XMSG));
-					Log.e("RegisterCommand", content);
-					return;
 				}
+				return;
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
+			Log.e("RegisterCommand", content);
+			mListener.onRegisterResponseFailed();
 		}
 	}
 
