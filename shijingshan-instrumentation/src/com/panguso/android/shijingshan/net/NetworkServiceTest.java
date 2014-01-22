@@ -105,7 +105,9 @@ public class NetworkServiceTest extends AndroidTestCase {
 
 					@Override
 					public void onEnterpriseInfoListResponseSuccess(
-							List<EnterpriseInfo> enterpriseInfos) {
+							int businessId, List<EnterpriseInfo> enterpriseInfos) {
+						assertEquals("Business id doesn't match!", BUSINESS_ID,
+								businessId);
 						assertNotNull("Enterprise info is empty!",
 								enterpriseInfos);
 						assertTrue("Enterprise info is empty!",
