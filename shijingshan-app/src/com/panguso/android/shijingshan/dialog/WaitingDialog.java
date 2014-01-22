@@ -22,7 +22,7 @@ public class WaitingDialog extends Dialog {
 	 * @author Luo Yinzhuo
 	 */
 	public interface OnWaitingDialogListener {
-		
+
 		/**
 		 * Called when the back key is pressed.
 		 * 
@@ -30,7 +30,7 @@ public class WaitingDialog extends Dialog {
 		 */
 		public void onWaitingDialogBack();
 	}
-	
+
 	/** The listener. */
 	private final OnWaitingDialogListener mListener;
 
@@ -43,13 +43,15 @@ public class WaitingDialog extends Dialog {
 		super(context);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.waiting_dialog);
-		
+
 		getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
 		mListener = listener;
 	}
 
 	@Override
 	public void onBackPressed() {
-		mListener.onWaitingDialogBack();
+		if (mListener != null) {
+			mListener.onWaitingDialogBack();
+		}
 	}
 }

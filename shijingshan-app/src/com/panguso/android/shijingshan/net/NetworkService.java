@@ -291,11 +291,13 @@ public final class NetworkService {
 		/**
 		 * Called when the enterprise info list request execution is successful.
 		 * 
+		 * @param businessId
+		 *            The business id which the enterprises belong to.
 		 * @param enterpriseInfos
 		 *            The list of {@link EnterpriseInfo} from server.
 		 * @author Luo Yinzhuo
 		 */
-		public void onEnterpriseInfoListResponseSuccess(
+		public void onEnterpriseInfoListResponseSuccess(int businessId,
 				List<EnterpriseInfo> enterpriseInfos);
 
 		/**
@@ -377,8 +379,8 @@ public final class NetworkService {
 									.parse(enterpriseInfo));
 						}
 					}
-					mListener
-							.onEnterpriseInfoListResponseSuccess(enterpriseInfos);
+					mListener.onEnterpriseInfoListResponseSuccess(mBusinessId,
+							enterpriseInfos);
 					return;
 				}
 			} catch (JSONException e) {
@@ -433,7 +435,7 @@ public final class NetworkService {
 		 * @author Luo Yinzhuo
 		 */
 		public void onRegisterResponseFailed();
-		
+
 		/**
 		 * Called when the register request execution is failed.
 		 * 
@@ -991,6 +993,8 @@ public final class NetworkService {
 	/** The image LRU cache. */
 	private static final Map<String, Bitmap> BITMAP_LRU_CACHE = new LinkedHashMap<String, Bitmap>(
 			8, 0.75f, true) {
+		/** The serial id. */
+		private static final long serialVersionUID = 4274009940420181912L;
 
 		@Override
 		protected boolean removeEldestEntry(Entry<String, Bitmap> eldest) {

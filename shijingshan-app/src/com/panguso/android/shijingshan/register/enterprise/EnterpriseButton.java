@@ -14,7 +14,8 @@ import android.widget.RelativeLayout;
  * 
  * @author Luo Yinzhuo
  */
-public final class EnterpriseButton extends RelativeLayout implements OnClickListener {
+public final class EnterpriseButton extends RelativeLayout implements
+		OnClickListener {
 
 	/**
 	 * Interface definition for a callback when the {@link EnterpriseButton} is
@@ -38,7 +39,7 @@ public final class EnterpriseButton extends RelativeLayout implements OnClickLis
 	}
 
 	/** The enterprise id. */
-	private final int mId;
+	private int mId;
 	/** The button. */
 	private final Button mButton;
 	/** The listener. */
@@ -73,8 +74,31 @@ public final class EnterpriseButton extends RelativeLayout implements OnClickLis
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	public void setOnEnterpriseButtonListener(OnEnterpriseButtonListener listener) {
+	public void setOnEnterpriseButtonListener(
+			OnEnterpriseButtonListener listener) {
 		mListener = listener;
+	}
+
+	/**
+	 * Set the enterprise's name.
+	 * 
+	 * @param name
+	 *            The enterprise's name.
+	 * @author Luo Yinzhuo
+	 */
+	public void setEnterpriseName(String name) {
+		mButton.setText(name);
+	}
+
+	/**
+	 * Set the enterprise's id.
+	 * 
+	 * @param id
+	 *            The enterprise's id.
+	 * @author Luo Yinzhuo
+	 */
+	public void setEnterpriseId(int id) {
+		mId = id;
 	}
 
 	@Override

@@ -42,6 +42,9 @@
     <!-- business dialog -->
     <string name="business_title">选择行业</string>
     
+    <!-- enterprise dialog -->
+    <string name="enterprise_title">选择企业</string>
+    
     <!-- user type dialog -->
     <string name="user_type_title">选择用户类型</string>
 

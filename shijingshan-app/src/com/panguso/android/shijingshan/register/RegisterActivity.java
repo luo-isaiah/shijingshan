@@ -42,7 +42,8 @@ import android.widget.TextView.OnEditorActionListener;
 public class RegisterActivity extends Activity implements
 		OnEditorActionListener, OnBackListener, OnClickListener,
 		OnWaitingDialogListener, OnRegisterArrowButtonListener,
-		OnUserTypeDialogListener, OnBusinessDialogListener, OnEnterpriseDialogListener {
+		OnUserTypeDialogListener, OnBusinessDialogListener,
+		OnEnterpriseDialogListener {
 
 	/** The waiting dialog ID. */
 	private static final int DIALOG_WAITING = -1;
@@ -62,10 +63,12 @@ public class RegisterActivity extends Activity implements
 
 	/** The {@link WaitingDialog} visibility flag. */
 	private boolean mWaitingDialogVisible = false;
-	/** The {@link UserTypeDialog} visibility flag. */
-	private boolean mUserTypeDialogVisible = false;
 	/** The {@link BusinessDialog} visibility flag. */
 	private boolean mBusinessDialogVisible = false;
+	/** The {@link EnterpriseDialog} visibility flage. */
+	private boolean mEnterpriseDialogVisible = false;
+	/** The {@link UserTypeDialog} visibility flag. */
+	private boolean mUserTypeDialogVisible = false;
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -147,7 +150,18 @@ public class RegisterActivity extends Activity implements
 
 	@Override
 	public void onWaitingDialogBack() {
+		dismissDialog(DIALOG_WAITING);
+		mWaitingDialogVisible = false;
 
+		if (mBusinessDialogVisible) {
+			dismissDialog(DIALOG_BUSINESS);
+			mBusinessDialogVisible = false;
+		}
+
+		if (mUserTypeDialogVisible) {
+			dismissDialog(DIALOG_USER_TYPE);
+			mUserTypeDialogVisible = false;
+		}
 	}
 
 	@Override
@@ -182,17 +196,17 @@ public class RegisterActivity extends Activity implements
 			break;
 		}
 	}
-	
+
 	@Override
 	public void onBusinessDialogInitializing() {
 		showDialog(DIALOG_WAITING);
-		mWaitingDialogVisible = true;		
+		mWaitingDialogVisible = true;
 	}
 
 	@Override
 	public void onBusinessDialogInitialized() {
 		dismissDialog(DIALOG_WAITING);
-		mWaitingDialogVisible = false;		
+		mWaitingDialogVisible = false;
 	}
 
 	@Override
@@ -202,51 +216,49 @@ public class RegisterActivity extends Activity implements
 			mWaitingDialogVisible = false;
 		}
 		dismissDialog(DIALOG_BUSINESS);
-		mBusinessDialogVisible = false;		
+		mBusinessDialogVisible = false;
 	}
 
 	@Override
 	public void onBusinessSelected(int id, String name) {
 		mBusinessId = id;
 		showDialog(DIALOG_ENTERPRISE);
+		mEnterpriseDialogVisible = true;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.panguso.android.shijingshan.register.enterprise.EnterpriseDialog.OnEnterpriseDialogListener#onEnterpriseDialogInitializing()
-	 */
 	@Override
 	public void onEnterpriseDialogInitializing() {
-		// TODO Auto-generated method stub
-		
+		showDialog(DIALOG_WAITING);
+		mWaitingDialogVisible = true;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.panguso.android.shijingshan.register.enterprise.EnterpriseDialog.OnEnterpriseDialogListener#onEnterpriseDialogInitialized()
-	 */
 	@Override
 	public void onEnterpriseDialogInitialized() {
-		// TODO Auto-generated method stub
-		
+		if (mWaitingDialogVisible) {
+			dismissDialog(DIALOG_WAITING);
+			mWaitingDialogVisible = false;
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.panguso.android.shijingshan.register.enterprise.EnterpriseDialog.OnEnterpriseDialogListener#onEnterpriseDialogBack()
-	 */
 	@Override
 	public void onEnterpriseDialogBack() {
-		// TODO Auto-generated method stub
-		
+		dismissDialog(DIALOG_ENTERPRISE);
+		mEnterpriseDialogVisible = false;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.panguso.android.shijingshan.register.enterprise.EnterpriseDialog.OnEnterpriseDialogListener#onEnterpriseSelected(int, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.panguso.android.shijingshan.register.enterprise.EnterpriseDialog.
+	 * OnEnterpriseDialogListener#onEnterpriseSelected(int, java.lang.String)
 	 */
 	@Override
 	public void onEnterpriseSelected(int id, String name) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	@Override
 	public void onUserTypeDialogInitializing() {
 		showDialog(DIALOG_WAITING);
@@ -268,7 +280,7 @@ public class RegisterActivity extends Activity implements
 		dismissDialog(DIALOG_USER_TYPE);
 		mUserTypeDialogVisible = false;
 	}
-	
+
 	@Override
 	public void onUserTypeSelected(String id, String name) {
 		mUserTypeId = id;

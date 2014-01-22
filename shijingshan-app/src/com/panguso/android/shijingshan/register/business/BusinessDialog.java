@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.panguso.android.shijingshan.register.business;
 
 import java.util.List;
@@ -104,9 +101,6 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 		window.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 		
 		mListener = listener;
-		if (mListener != null) {
-			mListener.onBusinessDialogInitializing();
-		}
 		NetworkService.getBusinessInfoList(
 				context.getResources().getString(R.string.server_url), this);
 	}
@@ -125,8 +119,10 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 
 	@Override
 	public void show() {
-		// TODO Auto-generated method stub
 		super.show();
+		if (!mInitialized && mListener != null) {
+			mListener.onBusinessDialogInitializing();
+		}
 	}
 
 	@Override
