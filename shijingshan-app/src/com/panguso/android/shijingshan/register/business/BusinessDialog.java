@@ -124,6 +124,12 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 	}
 
 	@Override
+	public void show() {
+		// TODO Auto-generated method stub
+		super.show();
+	}
+
+	@Override
 	public void onBusinessInfoListRequestFailed() {
 		// TODO Auto-generated method stub
 		
