@@ -548,12 +548,12 @@ public final class NetworkService {
 				} else {
 					mListener.onRegisterResponseFailed(jsonResponse
 							.getString(KEY_XMSG));
+					Log.e("RegisterCommand", content);
+					return;
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-			Log.e("RegisterCommand", content);
-			mListener.onRegisterResponseFailed();
 		}
 	}
 

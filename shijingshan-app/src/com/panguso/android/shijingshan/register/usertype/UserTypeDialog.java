@@ -100,9 +100,6 @@ public final class UserTypeDialog extends Dialog implements OnBackListener,
 		window.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 
 		mListener = listener;
-		if (mListener != null) {
-			mListener.onUserTypeDialogInitializing();
-		}
 		NetworkService.getUserTypeInfoList(
 				context.getResources().getString(R.string.server_url), this);
 	}
@@ -117,6 +114,14 @@ public final class UserTypeDialog extends Dialog implements OnBackListener,
 	@Override
 	public void onBackPressed() {
 		onBack();
+	}
+	
+	@Override
+	public void show() {
+		super.show();
+		if (!mInitialized && mListener != null) {
+			mListener.onUserTypeDialogInitializing();
+		}
 	}
 
 	@Override

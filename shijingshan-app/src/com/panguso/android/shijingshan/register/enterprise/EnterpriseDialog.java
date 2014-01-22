@@ -4,9 +4,13 @@
 package com.panguso.android.shijingshan.register.enterprise;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.R.integer;
 import android.app.Dialog;
 import android.content.Context;
+import android.util.SparseArray;
 
 /**
  * Specific for the enterprise select dialog.
@@ -59,6 +63,11 @@ public class EnterpriseDialog extends Dialog {
 		public void onEnterpriseSelected(int id, String name);
 	}
 	
+	/** The array to store business enterprise info. */
+	private final SparseArray<List<EnterpriseInfo>> mBusinessEnterpriseArray = new SparseArray<List<EnterpriseInfo>>();
+	/** The enterprise button cache. */
+	private final List<EnterpriseButton> mEnterpriseButtonCache = new ArrayList<EnterpriseButton>();
+	
 	/**
 	 * Construct a new instance.
 	 * 
@@ -66,7 +75,12 @@ public class EnterpriseDialog extends Dialog {
 	 */
 	public EnterpriseDialog(Context context, int businessId, OnEnterpriseDialogListener listener) {
 		super(context);
-		// TODO Auto-generated constructor stub
+		
+		
+	}
+	
+	public void setBusinessId(int businessId) {
+		
 	}
 
 }

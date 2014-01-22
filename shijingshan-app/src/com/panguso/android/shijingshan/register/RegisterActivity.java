@@ -74,10 +74,10 @@ public class RegisterActivity extends Activity implements
 			return new WaitingDialog(this, this);
 		case DIALOG_BUSINESS:
 			return new BusinessDialog(this, this);
-		case DIALOG_USER_TYPE:
-			return new UserTypeDialog(this, this);
 		case DIALOG_ENTERPRISE:
 			return new EnterpriseDialog(this, mBusinessId, this);
+		case DIALOG_USER_TYPE:
+			return new UserTypeDialog(this, this);
 		default:
 			return null;
 		}
@@ -85,6 +85,9 @@ public class RegisterActivity extends Activity implements
 
 	@Override
 	protected void onPrepareDialog(int id, Dialog dialog) {
+		if (id == DIALOG_ENTERPRISE) {
+			((EnterpriseDialog) dialog).setBusinessId(mBusinessId);
+		}
 		super.onPrepareDialog(id, dialog);
 	}
 

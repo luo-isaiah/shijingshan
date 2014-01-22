@@ -12,8 +12,6 @@ import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.R.integer;
-
 /**
  * Factory to create requests.
  * 
