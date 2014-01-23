@@ -85,6 +85,7 @@ public class StartDialog extends Dialog {
 	 * 
 	 * @param context The context.
 	 */
+	@SuppressWarnings("deprecation")
 	public StartDialog(Context context, OnStartDialogListener listener) {
 		super(context);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);

@@ -10,13 +10,9 @@ import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.EnterpriseInfoListRequestListener;
 import com.panguso.android.shijingshan.register.enterprise.EnterpriseButton.OnEnterpriseButtonListener;
-import com.panguso.android.shijingshan.register.usertype.UserTypeButton;
-import com.panguso.android.shijingshan.register.usertype.UserTypeDialog;
-import com.panguso.android.shijingshan.register.usertype.UserTypeInfo;
 import com.panguso.android.shijingshan.widget.BlueTitleBar;
 import com.panguso.android.shijingshan.widget.BlueTitleBar.OnBackListener;
 
-import android.R.integer;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -98,6 +94,7 @@ public class EnterpriseDialog extends Dialog implements OnBackListener,
 	 * @param context
 	 *            The context.
 	 */
+	@SuppressWarnings("deprecation")
 	public EnterpriseDialog(Context context, int businessId,
 			OnEnterpriseDialogListener listener) {
 		super(context);

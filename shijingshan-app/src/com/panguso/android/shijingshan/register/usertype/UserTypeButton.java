@@ -34,11 +34,11 @@ public final class UserTypeButton extends RelativeLayout implements OnClickListe
 		 * 
 		 * @author Luo Yinzhuo
 		 */
-		public void onClicked(String id, String name);
+		public void onClicked(int id, String name);
 	}
 
 	/** The user type id. */
-	private final String mId;
+	private final int mId;
 	/** The button. */
 	private final Button mButton;
 	/** The listener. */
@@ -52,7 +52,7 @@ public final class UserTypeButton extends RelativeLayout implements OnClickListe
 	 * @param attrs
 	 *            The attributes.
 	 */
-	UserTypeButton(Context context, String id, String name) {
+	UserTypeButton(Context context, int id, String name) {
 		super(context);
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

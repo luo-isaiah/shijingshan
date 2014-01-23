@@ -86,6 +86,7 @@ public class RegisterActivity extends Activity implements
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onPrepareDialog(int id, Dialog dialog) {
 		if (id == DIALOG_ENTERPRISE) {
@@ -118,7 +119,7 @@ public class RegisterActivity extends Activity implements
 	/** The user type. */
 	private RegisterArrowButton mUserType;
 	/** The user type id. */
-	private String mUserTypeId = "";
+	private int mUserTypeId = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +149,7 @@ public class RegisterActivity extends Activity implements
 		finish();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onWaitingDialogBack() {
 		dismissDialog(DIALOG_WAITING);
@@ -178,6 +180,7 @@ public class RegisterActivity extends Activity implements
 		Log.d("RegisterActivity", "Enterprise button clicked!");
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onRegisterArrowButtonClicked(RegisterArrowButton button) {
 		switch (button.getId()) {
@@ -197,18 +200,21 @@ public class RegisterActivity extends Activity implements
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onBusinessDialogInitializing() {
 		showDialog(DIALOG_WAITING);
 		mWaitingDialogVisible = true;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onBusinessDialogInitialized() {
 		dismissDialog(DIALOG_WAITING);
 		mWaitingDialogVisible = false;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onBusinessDialogBack() {
 		if (mWaitingDialogVisible) {
@@ -219,6 +225,7 @@ public class RegisterActivity extends Activity implements
 		mBusinessDialogVisible = false;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onBusinessSelected(int id, String name) {
 		mBusinessId = id;
@@ -226,12 +233,14 @@ public class RegisterActivity extends Activity implements
 		mEnterpriseDialogVisible = true;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnterpriseDialogInitializing() {
 		showDialog(DIALOG_WAITING);
 		mWaitingDialogVisible = true;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnterpriseDialogInitialized() {
 		if (mWaitingDialogVisible) {
@@ -240,37 +249,48 @@ public class RegisterActivity extends Activity implements
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnterpriseDialogBack() {
+		if (mWaitingDialogVisible) {
+			dismissDialog(DIALOG_WAITING);
+			mWaitingDialogVisible = false;
+		}
 		dismissDialog(DIALOG_ENTERPRISE);
 		mEnterpriseDialogVisible = false;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.panguso.android.shijingshan.register.enterprise.EnterpriseDialog.
-	 * OnEnterpriseDialogListener#onEnterpriseSelected(int, java.lang.String)
-	 */
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnterpriseSelected(int id, String name) {
-		// TODO Auto-generated method stub
-
+		mEnterpriseId = id;
+		mEnterpriseName = name;
+		
+		mEnterprise.setText(name);
+		dismissDialog(DIALOG_ENTERPRISE);
+		mEnterpriseDialogVisible = false;
+		
+		if (mBusinessDialogVisible) {
+			dismissDialog(DIALOG_BUSINESS);
+			mBusinessDialogVisible = false;
+		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onUserTypeDialogInitializing() {
 		showDialog(DIALOG_WAITING);
 		mWaitingDialogVisible = true;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onUserTypeDialogInitialized() {
 		dismissDialog(DIALOG_WAITING);
 		mWaitingDialogVisible = false;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onUserTypeDialogBack() {
 		if (mWaitingDialogVisible) {
@@ -281,8 +301,9 @@ public class RegisterActivity extends Activity implements
 		mUserTypeDialogVisible = false;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public void onUserTypeSelected(String id, String name) {
+	public void onUserTypeSelected(int id, String name) {
 		mUserTypeId = id;
 		mUserType.setText(name);
 		dismissDialog(DIALOG_USER_TYPE);

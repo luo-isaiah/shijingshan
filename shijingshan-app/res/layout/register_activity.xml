@@ -14,7 +14,7 @@
         android:layout_height="fill_parent"
         android:background="@color/register_background" >
 
-        <TableLayout
+        <com.panguso.android.shijingshan.mock.MockTableLayout
             android:id="@+id/username_password_table"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -55,6 +55,7 @@
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:contentDescription="@null"
                 android:src="@color/delimiter" />
 
             <TableRow>
@@ -176,7 +177,7 @@
 
                 <com.panguso.android.shijingshan.register.RegisterArrowButton
                     android:id="@+id/enterprise"
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="15dp"
@@ -186,6 +187,7 @@
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:contentDescription="@null"
                 android:src="@color/delimiter" />
 
             <TableRow>
@@ -208,7 +210,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="6dp" />
             </TableRow>
-        </TableLayout>
+        </com.panguso.android.shijingshan.mock.MockTableLayout>
 
         <Button
             android:id="@+id/register"

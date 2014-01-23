@@ -1,24 +1,15 @@
 package com.panguso.android.shijingshan.news;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.panguso.android.shijingshan.R.id;
-import com.panguso.android.shijingshan.column.Column;
 import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.ImageRequestListener;
 
-import android.R.integer;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
-import android.util.LruCache;
 
 /**
  * Represent a piece of news.

@@ -84,6 +84,7 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 	 * @param context
 	 *            The context.
 	 */
+	@SuppressWarnings("deprecation")
 	public BusinessDialog(Context context, OnBusinessDialogListener listener) {
 		super(context);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);

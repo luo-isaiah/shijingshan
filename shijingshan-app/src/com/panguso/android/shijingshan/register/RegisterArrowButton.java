@@ -4,11 +4,14 @@
 package com.panguso.android.shijingshan.register;
 
 import com.panguso.android.shijingshan.R;
+import com.panguso.android.shijingshan.mock.MockButton;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -40,7 +43,8 @@ public class RegisterArrowButton extends RelativeLayout implements
 	}
 
 	/** The button. */
-	private Button mButton;
+	// private Button mButton;
+	private MockButton mButton;
 	/** The arrow. */
 	private ImageView mArrow;
 	/** The button listener. */
@@ -60,10 +64,20 @@ public class RegisterArrowButton extends RelativeLayout implements
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.register_arrow_button_widget, this);
 
-		mButton = (Button) findViewById(R.id.button);
+		mButton = (MockButton) findViewById(R.id.button);
 		mButton.setOnClickListener(this);
 
 		mArrow = (ImageView) findViewById(R.id.arrow);
+	}
+
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+		if (widthMode == MeasureSpec.EXACTLY) {
+			super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		} else {
+			super.onMeasure(MeasureSpec.EXACTLY, heightMeasureSpec);
+		}
 	}
 
 	/**
@@ -87,10 +101,10 @@ public class RegisterArrowButton extends RelativeLayout implements
 	 * @author Luo Yinzhuo
 	 */
 	public void setText(String text) {
-		mButton.setText(text);
 		if (mArrow.getVisibility() == View.VISIBLE) {
 			mArrow.setVisibility(View.INVISIBLE);
 		}
+		mButton.setText(text);
 	}
 
 	/**

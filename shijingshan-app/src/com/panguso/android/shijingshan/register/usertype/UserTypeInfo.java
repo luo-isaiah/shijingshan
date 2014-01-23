@@ -16,7 +16,7 @@ import android.content.Context;
  */
 public final class UserTypeInfo {
 	/** The user type id. */
-	private final String mId;
+	private final int mId;
 	/** The user type name. */
 	private final String mName;
 
@@ -28,7 +28,7 @@ public final class UserTypeInfo {
 	 * @param name
 	 *            The user type name.
 	 */
-	private UserTypeInfo(String id, String name) {
+	private UserTypeInfo(int id, String name) {
 		mId = id;
 		mName = name;
 	}
@@ -76,7 +76,7 @@ public final class UserTypeInfo {
 	 * @author Luo Yinzhuo
 	 */
 	public static UserTypeInfo parse(JSONObject json) throws JSONException {
-		return new UserTypeInfo(json.getString(KEY_USER_TYPE_ID),
+		return new UserTypeInfo(json.getInt(KEY_USER_TYPE_ID),
 				json.getString(KEY_USER_TYPE_NAME));
 	}
 

@@ -66,7 +66,7 @@ public final class UserTypeDialog extends Dialog implements OnBackListener,
 		 * 
 		 * @author Luo Yinzhuo
 		 */
-		public void onUserTypeSelected(String id, String name);
+		public void onUserTypeSelected(int id, String name);
 	}
 
 	/** The title bar. */
@@ -84,6 +84,7 @@ public final class UserTypeDialog extends Dialog implements OnBackListener,
 	 * @param context
 	 *            The context.
 	 */
+	@SuppressWarnings("deprecation")
 	public UserTypeDialog(Context context, OnUserTypeDialogListener listener) {
 		super(context);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -159,7 +160,7 @@ public final class UserTypeDialog extends Dialog implements OnBackListener,
 	}
 
 	@Override
-	public void onClicked(String id, String name) {
+	public void onClicked(int id, String name) {
 		if (mListener != null) {
 			mListener.onUserTypeSelected(id, name);
 		}
