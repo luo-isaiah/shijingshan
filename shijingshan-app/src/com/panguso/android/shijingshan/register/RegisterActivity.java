@@ -139,9 +139,9 @@ public class RegisterActivity extends Activity implements
 		mEnterprise.setTextHint(R.string.register_enterprise_hint);
 		mEnterprise.setOnRegisterArrowButtonListener(this);
 
-		mUserType = (RegisterArrowButton) findViewById(R.id.user_type);
-		mUserType.setTextHint(R.string.register_user_type_hint);
-		mUserType.setOnRegisterArrowButtonListener(this);
+//		mUserType = (RegisterArrowButton) findViewById(R.id.user_type);
+//		mUserType.setTextHint(R.string.register_user_type_hint);
+//		mUserType.setOnRegisterArrowButtonListener(this);
 	}
 
 	@Override
@@ -193,10 +193,10 @@ public class RegisterActivity extends Activity implements
 				showDialog(DIALOG_ENTERPRISE);
 			}
 			break;
-		case R.id.user_type:
-			showDialog(DIALOG_USER_TYPE);
-			mUserTypeDialogVisible = true;
-			break;
+//		case R.id.user_type:
+//			showDialog(DIALOG_USER_TYPE);
+//			mUserTypeDialogVisible = true;
+//			break;
 		}
 	}
 

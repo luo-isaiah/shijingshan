@@ -25,14 +25,16 @@ public class MockButton extends Button {
 	}
 
 	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+	protected boolean setFrame(int l, int t, int r, int b) {
 		// TODO Auto-generated method stub
-		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		return super.setFrame(l, t, r, b);
 	}
 
 	@Override
-	public void setText(CharSequence text, BufferType type) {
+	protected void onDraw(Canvas canvas) {
 		// TODO Auto-generated method stub
-		super.setText(text, type);
+		super.onDraw(canvas);
 	}
+
+	
 }
