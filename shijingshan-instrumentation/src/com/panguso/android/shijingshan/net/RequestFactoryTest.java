@@ -10,7 +10,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.json.JSONException;
 
-import android.os.Build;
 import android.test.AndroidTestCase;
 
 /**
