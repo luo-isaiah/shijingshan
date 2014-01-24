@@ -14,7 +14,7 @@
         android:layout_height="fill_parent"
         android:background="@color/register_background" >
 
-        <com.panguso.android.shijingshan.mock.MockTableLayout
+        <TableLayout
             android:id="@+id/username_password_table"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -34,22 +34,13 @@
                     android:textColor="@color/register_table_text"
                     android:textSize="18sp" />
 
-                <EditText
+                <com.panguso.android.shijingshan.register.RegisterCheckEditText
                     android:id="@+id/username"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="15dp"
-                    android:layout_marginRight="9dp"
-                    android:background="@null"
-                    android:digits="@string/digits_username"
-                    android:hint="@string/register_username_hint"
-                    android:inputType="text"
-                    android:maxLength="20"
-                    android:padding="5dp"
-                    android:singleLine="true"
-                    android:textColorHint="@color/register_table_edit_hint"
-                    android:textSize="16sp" />
+                    android:layout_marginRight="9dp" />
             </TableRow>
 
             <ImageView
@@ -70,27 +61,19 @@
                     android:textColor="@color/register_table_text"
                     android:textSize="18sp" />
 
-                <EditText
+                <com.panguso.android.shijingshan.register.RegisterCheckEditText
                     android:id="@+id/password"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="15dp"
-                    android:layout_marginRight="9dp"
-                    android:background="@null"
-                    android:digits="@string/digits_password"
-                    android:hint="@string/register_password_hint"
-                    android:inputType="textPassword"
-                    android:maxLength="20"
-                    android:padding="5dp"
-                    android:singleLine="true"
-                    android:textColorHint="@color/register_table_edit_hint"
-                    android:textSize="16sp" />
+                    android:layout_marginRight="9dp" />
             </TableRow>
 
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:contentDescription="@null"
                 android:src="@color/delimiter" />
 
             <TableRow>
@@ -105,27 +88,19 @@
                     android:textColor="@color/register_table_text"
                     android:textSize="18sp" />
 
-                <EditText
+                <com.panguso.android.shijingshan.register.RegisterCheckEditText
                     android:id="@+id/confirm_password"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="15dp"
-                    android:layout_marginRight="9dp"
-                    android:background="@null"
-                    android:digits="@string/digits_password"
-                    android:hint="@string/register_confirm_password_hint"
-                    android:inputType="textPassword"
-                    android:maxLength="20"
-                    android:padding="5dp"
-                    android:singleLine="true"
-                    android:textColorHint="@color/register_table_edit_hint"
-                    android:textSize="16sp" />
+                    android:layout_marginRight="9dp" />
             </TableRow>
 
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:contentDescription="@null"
                 android:src="@color/delimiter" />
 
             <TableRow>
@@ -140,27 +115,19 @@
                     android:textColor="@color/register_table_text"
                     android:textSize="18sp" />
 
-                <EditText
+                <com.panguso.android.shijingshan.register.RegisterCheckEditText
                     android:id="@+id/mobile_number"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="15dp"
-                    android:layout_marginRight="9dp"
-                    android:background="@null"
-                    android:digits="@string/digits_mobile_number"
-                    android:hint="@string/register_mobile_number_hint"
-                    android:inputType="number"
-                    android:maxLength="11"
-                    android:padding="5dp"
-                    android:singleLine="true"
-                    android:textColorHint="@color/register_table_edit_hint"
-                    android:textSize="16sp" />
+                    android:layout_marginRight="9dp" />
             </TableRow>
 
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:contentDescription="@null"
                 android:src="@color/delimiter" />
 
             <TableRow>
@@ -190,8 +157,9 @@
                 android:contentDescription="@null"
                 android:src="@color/delimiter" />
 
-            <!-- 
-            <TableRow>                <TextView
+            <TableRow>
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
@@ -208,8 +176,8 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="6dp" />
-            </TableRow> -->
-        </com.panguso.android.shijingshan.mock.MockTableLayout>
+            </TableRow>
+        </TableLayout>
 
         <Button
             android:id="@+id/register"

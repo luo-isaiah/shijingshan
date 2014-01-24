@@ -9,12 +9,18 @@
  */
 package com.panguso.android.shijingshan.register;
 
+import com.panguso.android.shijingshan.Application;
 import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.dialog.WaitingDialog;
 import com.panguso.android.shijingshan.dialog.WaitingDialog.OnWaitingDialogListener;
+import com.panguso.android.shijingshan.net.NetworkService;
+import com.panguso.android.shijingshan.net.NetworkService.RegisterRequestListener;
 import com.panguso.android.shijingshan.register.RegisterArrowButton.OnRegisterArrowButtonListener;
+import com.panguso.android.shijingshan.register.RegisterCheckEditText.OnRegisterCheckEditTextListener;
 import com.panguso.android.shijingshan.register.business.BusinessDialog;
 import com.panguso.android.shijingshan.register.business.BusinessDialog.OnBusinessDialogListener;
+import com.panguso.android.shijingshan.register.business.NewEnterpriseDialog;
+import com.panguso.android.shijingshan.register.business.NewEnterpriseDialog.OnNewEnterpriseDialogListener;
 import com.panguso.android.shijingshan.register.enterprise.EnterpriseDialog;
 import com.panguso.android.shijingshan.register.enterprise.EnterpriseDialog.OnEnterpriseDialogListener;
 import com.panguso.android.shijingshan.register.usertype.UserTypeDialog;
@@ -24,14 +30,14 @@ import com.panguso.android.shijingshan.widget.BlueTitleBar.OnBackListener;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
+import android.widget.Button;
 
 /**
  * Specified for register new user.
@@ -39,11 +45,12 @@ import android.widget.TextView.OnEditorActionListener;
  * @author Luo Yinzhuo
  * @date 2013-10-21
  */
-public class RegisterActivity extends Activity implements
-		OnEditorActionListener, OnBackListener, OnClickListener,
-		OnWaitingDialogListener, OnRegisterArrowButtonListener,
-		OnUserTypeDialogListener, OnBusinessDialogListener,
-		OnEnterpriseDialogListener {
+public class RegisterActivity extends Activity implements OnBackListener,
+		OnClickListener, OnWaitingDialogListener,
+		OnRegisterArrowButtonListener, OnUserTypeDialogListener,
+		OnBusinessDialogListener, OnEnterpriseDialogListener,
+		OnNewEnterpriseDialogListener, OnRegisterCheckEditTextListener,
+		RegisterRequestListener {
 
 	/** The waiting dialog ID. */
 	private static final int DIALOG_WAITING = -1;
@@ -65,7 +72,9 @@ public class RegisterActivity extends Activity implements
 	private boolean mWaitingDialogVisible = false;
 	/** The {@link BusinessDialog} visibility flag. */
 	private boolean mBusinessDialogVisible = false;
-	/** The {@link EnterpriseDialog} visibility flage. */
+	/** The {@link NewEnterpriseDialog} visibility flag. */
+	private boolean mNewEnterpriseDialogVisible = false;
+	/** The {@link EnterpriseDialog} visibility flag. */
 	private boolean mEnterpriseDialogVisible = false;
 	/** The {@link UserTypeDialog} visibility flag. */
 	private boolean mUserTypeDialogVisible = false;
@@ -77,6 +86,8 @@ public class RegisterActivity extends Activity implements
 			return new WaitingDialog(this, this);
 		case DIALOG_BUSINESS:
 			return new BusinessDialog(this, this);
+		case DIALOG_NEW_ENTERPRISE:
+			return new NewEnterpriseDialog(this, this);
 		case DIALOG_ENTERPRISE:
 			return new EnterpriseDialog(this, mBusinessId, this);
 		case DIALOG_USER_TYPE:
@@ -99,19 +110,33 @@ public class RegisterActivity extends Activity implements
 	private BlueTitleBar mTitleBar;
 
 	/** The user name. */
-	private EditText mUserName;
+	private RegisterCheckEditText mUsername;
+	/** The repeat user name. */
+	private final StringBuilder mRepeatUsername = new StringBuilder();
+	/** The user name valid flag. */
+	private boolean mUsernameValid = false;
+
 	/** The password. */
-	private EditText mPassword;
+	private RegisterCheckEditText mPassword;
+	/** The password valid flag. */
+	private boolean mPasswordValid = false;
+
 	/** The confirm password. */
-	private EditText mConfirmPassword;
+	private RegisterCheckEditText mConfirmPassword;
+	/** The confirm valid flag. */
+	private boolean mConfirmPasswordValid = false;
+
 	/** The mobile number. */
-	private EditText mMobileNumber;
+	private RegisterCheckEditText mMobileNumber;
+	/** The confirm valid flag. */
+	private boolean mMobileNumberValid = false;
+
 	/** The enterprise. */
 	private RegisterArrowButton mEnterprise;
 	/** The business id. */
 	private int mBusinessId = 0;
 	/** The enterprise id. */
-	private int mEnterpriseId = 0;
+	private Integer mEnterpriseId;
 	/** The new enterprise id. */
 	private static final int NEW_ENTERPRISE_ID = -1;
 	/** The enterprise name. */
@@ -119,7 +144,11 @@ public class RegisterActivity extends Activity implements
 	/** The user type. */
 	private RegisterArrowButton mUserType;
 	/** The user type id. */
-	private int mUserTypeId = 0;
+	private Integer mUserTypeId;
+	/** The register button. */
+	private Button mRegister;
+	/** The register request running flag. */
+	private boolean mRegistering = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -130,18 +159,53 @@ public class RegisterActivity extends Activity implements
 		mTitleBar.setTitle(getResources().getString(R.string.register_title));
 		mTitleBar.setOnBackListener(this);
 
-		mUserName = (EditText) findViewById(R.id.username);
-		mPassword = (EditText) findViewById(R.id.password);
-		mConfirmPassword = (EditText) findViewById(R.id.confirm_password);
-		mMobileNumber = (EditText) findViewById(R.id.mobile_number);
+		Resources resources = getResources();
+
+		mUsername = (RegisterCheckEditText) findViewById(R.id.username);
+		mUsername.setTextHint(R.string.register_username_hint);
+		mUsername.setInputType(InputType.TYPE_CLASS_TEXT
+				| InputType.TYPE_TEXT_VARIATION_NORMAL);
+		mUsername.setMaxLength(resources
+				.getInteger(R.integer.max_length_username));
+		mUsername.setDigits(R.string.digits_username);
+		mUsername.setOnRegisterCheckEditTextListenerListener(this);
+
+		mPassword = (RegisterCheckEditText) findViewById(R.id.password);
+		mPassword.setTextHint(R.string.register_password_hint);
+		mPassword.setInputType(InputType.TYPE_CLASS_TEXT
+				| InputType.TYPE_TEXT_VARIATION_PASSWORD);
+		mPassword.setMaxLength(resources
+				.getInteger(R.integer.max_length_password));
+		mPassword.setDigits(R.string.digits_password);
+		mPassword.setOnRegisterCheckEditTextListenerListener(this);
+
+		mConfirmPassword = (RegisterCheckEditText) findViewById(R.id.confirm_password);
+		mConfirmPassword.setTextHint(R.string.register_confirm_password_hint);
+		mConfirmPassword.setInputType(InputType.TYPE_CLASS_TEXT
+				| InputType.TYPE_TEXT_VARIATION_PASSWORD);
+		mConfirmPassword.setMaxLength(resources
+				.getInteger(R.integer.max_length_password));
+		mConfirmPassword.setDigits(R.string.digits_password);
+		mConfirmPassword.setOnRegisterCheckEditTextListenerListener(this);
+
+		mMobileNumber = (RegisterCheckEditText) findViewById(R.id.mobile_number);
+		mMobileNumber.setTextHint(R.string.register_mobile_number_hint);
+		mMobileNumber.setInputType(InputType.TYPE_CLASS_NUMBER);
+		mMobileNumber.setMaxLength(resources
+				.getInteger(R.integer.length_mobile_number));
+		mMobileNumber.setDigits(R.string.digits_mobile_number);
+		mMobileNumber.setOnRegisterCheckEditTextListenerListener(this);
 
 		mEnterprise = (RegisterArrowButton) findViewById(R.id.enterprise);
 		mEnterprise.setTextHint(R.string.register_enterprise_hint);
 		mEnterprise.setOnRegisterArrowButtonListener(this);
 
-//		mUserType = (RegisterArrowButton) findViewById(R.id.user_type);
-//		mUserType.setTextHint(R.string.register_user_type_hint);
-//		mUserType.setOnRegisterArrowButtonListener(this);
+		mUserType = (RegisterArrowButton) findViewById(R.id.user_type);
+		mUserType.setTextHint(R.string.register_user_type_hint);
+		mUserType.setOnRegisterArrowButtonListener(this);
+
+		mRegister = (Button) findViewById(R.id.register);
+		mRegister.setOnClickListener(this);
 	}
 
 	@Override
@@ -149,9 +213,56 @@ public class RegisterActivity extends Activity implements
 		finish();
 	}
 
+	@Override
+	public void onRegisterCheckEditTextChanged(int id, String text) {
+		switch (id) {
+		case R.id.username:
+			mUsernameValid = text.length() >= getResources().getInteger(
+					R.integer.min_length_username)
+					&& mRepeatUsername.indexOf(text) == -1;
+			break;
+		case R.id.password:
+			mPasswordValid = text.length() >= getResources().getInteger(
+					R.integer.min_length_password);
+			String confirmPassword = mConfirmPassword.getText();
+			mConfirmPasswordValid = confirmPassword.equals(text);
+			mConfirmPassword.setCheck(mConfirmPasswordValid);
+			break;
+		case R.id.confirm_password:
+			mConfirmPasswordValid = text.length() >= getResources().getInteger(
+					R.integer.min_length_password)
+					&& text.equals(mPassword.getText());
+			break;
+		case R.id.mobile_number:
+			mMobileNumberValid = text.length() == getResources().getInteger(
+					R.integer.length_mobile_number);
+			break;
+		}
+		checkIfRegisterEnabled();
+	}
+
+	@Override
+	public boolean onRegisterCheckEditTextLostFocus(int id) {
+		switch (id) {
+		case R.id.username:
+			return mUsernameValid;
+		case R.id.password:
+			return mPasswordValid;
+		case R.id.confirm_password:
+			return mConfirmPasswordValid;
+		case R.id.mobile_number:
+			return mMobileNumberValid;
+		}
+		return false;
+	}
+
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onWaitingDialogBack() {
+		if (mRegistering) {
+			return;
+		}
+
 		dismissDialog(DIALOG_WAITING);
 		mWaitingDialogVisible = false;
 
@@ -166,37 +277,28 @@ public class RegisterActivity extends Activity implements
 		}
 	}
 
-	@Override
-	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-		Log.d("RegisterActivity",
-				"KeyEvent "
-						+ Boolean.valueOf(KeyEvent.KEYCODE_ENTER == event
-								.getKeyCode()));
-		return false;
-	}
-
-	@Override
-	public void onClick(View v) {
-		Log.d("RegisterActivity", "Enterprise button clicked!");
-	}
-
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onRegisterArrowButtonClicked(RegisterArrowButton button) {
 		switch (button.getId()) {
 		case R.id.enterprise:
-			if (mEnterpriseName.length() == 0
-					|| mEnterpriseId == NEW_ENTERPRISE_ID) {
+			if (mEnterpriseId == null) {
 				showDialog(DIALOG_BUSINESS);
 				mBusinessDialogVisible = true;
+			} else if (mEnterpriseId == NEW_ENTERPRISE_ID) {
+				showDialog(DIALOG_BUSINESS);
+				mBusinessDialogVisible = true;
+				showDialog(DIALOG_NEW_ENTERPRISE);
+				mNewEnterpriseDialogVisible = true;
 			} else {
 				showDialog(DIALOG_ENTERPRISE);
+				mEnterpriseDialogVisible = true;
 			}
 			break;
-//		case R.id.user_type:
-//			showDialog(DIALOG_USER_TYPE);
-//			mUserTypeDialogVisible = true;
-//			break;
+		case R.id.user_type:
+			showDialog(DIALOG_USER_TYPE);
+			mUserTypeDialogVisible = true;
+			break;
 		}
 	}
 
@@ -235,6 +337,33 @@ public class RegisterActivity extends Activity implements
 
 	@SuppressWarnings("deprecation")
 	@Override
+	public void onNewEnterpriseClicked() {
+		showDialog(DIALOG_NEW_ENTERPRISE);
+		mNewEnterpriseDialogVisible = true;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void onNewEnterpriseDialogBack() {
+		dismissDialog(DIALOG_NEW_ENTERPRISE);
+		mNewEnterpriseDialogVisible = false;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void onNewEnterpriseCreated(String newEnterprise) {
+		mEnterpriseId = NEW_ENTERPRISE_ID;
+		mEnterpriseName = newEnterprise;
+		mEnterprise.setText(newEnterprise);
+		dismissDialog(DIALOG_NEW_ENTERPRISE);
+		mNewEnterpriseDialogVisible = false;
+		dismissDialog(DIALOG_BUSINESS);
+		mBusinessDialogVisible = false;
+		checkIfRegisterEnabled();
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
 	public void onEnterpriseDialogInitializing() {
 		showDialog(DIALOG_WAITING);
 		mWaitingDialogVisible = true;
@@ -265,15 +394,16 @@ public class RegisterActivity extends Activity implements
 	public void onEnterpriseSelected(int id, String name) {
 		mEnterpriseId = id;
 		mEnterpriseName = name;
-		
+
 		mEnterprise.setText(name);
 		dismissDialog(DIALOG_ENTERPRISE);
 		mEnterpriseDialogVisible = false;
-		
+
 		if (mBusinessDialogVisible) {
 			dismissDialog(DIALOG_BUSINESS);
 			mBusinessDialogVisible = false;
 		}
+		checkIfRegisterEnabled();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -308,5 +438,53 @@ public class RegisterActivity extends Activity implements
 		mUserType.setText(name);
 		dismissDialog(DIALOG_USER_TYPE);
 		mUserTypeDialogVisible = false;
+		checkIfRegisterEnabled();
+	}
+
+	/**
+	 * Check if the register button could be enabled or not.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private void checkIfRegisterEnabled() {
+		mRegister.setEnabled(mUsernameValid && mPasswordValid
+				&& mConfirmPasswordValid && mMobileNumberValid
+				&& mEnterpriseId != null && mUserTypeId != null);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void onClick(View v) {
+		mRegistering = true;
+
+		showDialog(DIALOG_WAITING);
+		mWaitingDialogVisible = true;
+
+		NetworkService.register(getResources().getString(R.string.server_url),
+				mUsername.getText(), mPassword.getText(),
+				mMobileNumber.getText(), mEnterpriseId, mEnterpriseName,
+				((Application) getApplication()).getUUID(), Build.MODEL,
+				mUserTypeId, this);
+	}
+
+	@Override
+	public void onRegisterRequestFailed() {
+		mRegistering = false;
+	}
+
+	@Override
+	public void onRegisterResponseSuccess() {
+		mRegistering = false;
+	}
+
+	@Override
+	public void onRegisterResponseFailed() {
+		mRegistering = false;
+	}
+
+	@Override
+	public void onRegisterResponseFailed(String errorMessage) {
+		Log.e("RegisterActivity", "Register failed: " + errorMessage);
+		mRegistering = false;
 	}
 }

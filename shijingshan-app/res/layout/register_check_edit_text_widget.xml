@@ -1,29 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="wrap_content" >
 
-    <com.panguso.android.shijingshan.register.RegisterMarqueeButton
-        android:id="@+id/button"
+    <EditText
+        android:id="@+id/edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:background="@drawable/register_arrow_button_background"
-        android:ellipsize="marquee"
-        android:gravity="left"
-        android:marqueeRepeatLimit="marquee_forever"
+        android:hint="@null"
         android:padding="5dp"
         android:singleLine="true"
         android:textColorHint="@color/register_table_edit_hint"
         android:textSize="16sp" />
 
     <ImageView
-        android:id="@+id/arrow"
+        android:id="@+id/check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:contentDescription="@null"
-        android:src="@drawable/arrow_normal" />
+        android:layout_marginRight="2dp"
+        android:contentDescription="@null" />
 
 </RelativeLayout>

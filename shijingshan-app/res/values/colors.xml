@@ -18,6 +18,9 @@
     <!-- underline button background color -->
     <color name="underline_button_background_press">#007DFF</color>
     <color name="underline_button_background_normal">#FFFFFF</color>
+    
+    <!-- register check edit text -->
+    <color name="editbox_background_normal">#FFFFFF</color>
 
     <!-- column page activity -->
     <color name="column_blue">#BF005AC8</color>
@@ -43,6 +46,12 @@
 
     <!-- business dialog -->
     <color name="business_button_background_pressed">#83B8F0</color>
+    
+    <!-- new enterprise dialog -->
+    <color name="new_enterprise_title_background">#007DFF</color>
+    <color name="new_enterprise_title">#FFFFFF</color>
+    <color name="new_enterprise_text">#545454</color>
+    <color name="new_enterprise_edit_hint">#BBBBBB</color>
 
     <!-- user type dialog -->
     <color name="user_type_button_background_pressed">#83B8F0</color>

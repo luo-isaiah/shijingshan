@@ -35,16 +35,30 @@
 
     <!-- username password mobile number enterprise id constraints -->
     <string name="digits_username">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
+
+    <integer name="min_length_username">6</integer>
+    <integer name="max_length_username">20</integer>
+
     <string name="digits_password">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
+
+    <integer name="min_length_password">6</integer>
+    <integer name="max_length_password">20</integer>
+
     <string name="digits_mobile_number">0123456789</string>
-    <string name="digits_enterprise_id">0123456789</string>
+    <integer name="length_mobile_number">11</integer>
 
     <!-- business dialog -->
     <string name="business_title">选择行业</string>
-    
+    <string name="add_new_enterprise">没有您的企业？点击添加</string>
+
+    <!-- new enterprise dialog -->
+    <string name="new_enterprise_title">添加企业</string>
+    <string name="new_enterprise_hint">企业、单位、公司名称</string>
+    <string name="new_enterprise_confirm">确定</string>
+
     <!-- enterprise dialog -->
     <string name="enterprise_title">选择企业</string>
-    
+
     <!-- user type dialog -->
     <string name="user_type_title">选择用户类型</string>
 

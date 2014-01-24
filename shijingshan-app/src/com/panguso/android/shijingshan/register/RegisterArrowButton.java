@@ -4,16 +4,12 @@
 package com.panguso.android.shijingshan.register;
 
 import com.panguso.android.shijingshan.R;
-import com.panguso.android.shijingshan.mock.MockButton;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -43,8 +39,7 @@ public class RegisterArrowButton extends RelativeLayout implements
 	}
 
 	/** The button. */
-	// private Button mButton;
-	private MockButton mButton;
+	private RegisterMarqueeButton mButton;
 	/** The arrow. */
 	private ImageView mArrow;
 	/** The button listener. */
@@ -64,20 +59,10 @@ public class RegisterArrowButton extends RelativeLayout implements
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.register_arrow_button_widget, this);
 
-		mButton = (MockButton) findViewById(R.id.button);
+		mButton = (RegisterMarqueeButton) findViewById(R.id.button);
 		mButton.setOnClickListener(this);
 
 		mArrow = (ImageView) findViewById(R.id.arrow);
-	}
-
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-		if (widthMode == MeasureSpec.EXACTLY) {
-			super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-		} else {
-			super.onMeasure(MeasureSpec.EXACTLY, heightMeasureSpec);
-		}
 	}
 
 	/**

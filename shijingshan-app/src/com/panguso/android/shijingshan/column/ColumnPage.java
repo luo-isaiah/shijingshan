@@ -18,7 +18,6 @@ import org.json.JSONObject;
 
 import com.panguso.android.shijingshan.column.ColumnPageView.OnPressDownColumnListener;
 
-import android.R.integer;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.RectF;

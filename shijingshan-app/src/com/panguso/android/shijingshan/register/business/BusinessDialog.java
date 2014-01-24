@@ -7,12 +7,15 @@ import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.BusinessInfoListRequestListener;
 import com.panguso.android.shijingshan.register.business.BusinessButton.OnBusinessButtonListener;
 import com.panguso.android.shijingshan.widget.BlueTitleBar;
+import com.panguso.android.shijingshan.widget.UnderlineButton;
 import com.panguso.android.shijingshan.widget.BlueTitleBar.OnBackListener;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 import android.widget.LinearLayout;
@@ -24,7 +27,8 @@ import android.widget.LinearLayout;
  * 
  */
 public class BusinessDialog extends Dialog implements OnBackListener,
-		BusinessInfoListRequestListener, OnBusinessButtonListener {
+		BusinessInfoListRequestListener, OnBusinessButtonListener,
+		OnClickListener {
 
 	/**
 	 * Interface definition for a callback to be invoked during the request for
@@ -67,12 +71,21 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 		 * @author Luo Yinzhuo
 		 */
 		public void onBusinessSelected(int id, String name);
+
+		/**
+		 * Called when the new enterprise button is clicked.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onNewEnterpriseClicked();
 	}
 
 	/** The title bar. */
-	private BlueTitleBar mTitleBar;
+	private final BlueTitleBar mTitleBar;
 	/** The business layout. */
-	private LinearLayout mBusiness;
+	private final LinearLayout mBusiness;
+	/** The new enterprise button. */
+	private final UnderlineButton mNewEnterprise;
 	/** The initialize flag. */
 	private boolean mInitialized = false;
 	/** The listener. */
@@ -96,11 +109,14 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 		mTitleBar.setOnBackListener(this);
 
 		mBusiness = (LinearLayout) findViewById(R.id.business_layout);
-		
+
+		mNewEnterprise = (UnderlineButton) findViewById(R.id.new_enterprise);
+		mNewEnterprise.setOnClickListener(this);
+
 		Window window = getWindow();
 		window.setLayout(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
 		window.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-		
+
 		mListener = listener;
 		NetworkService.getBusinessInfoList(
 				context.getResources().getString(R.string.server_url), this);
@@ -112,7 +128,7 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 			mListener.onBusinessDialogBack();
 		}
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		onBack();
@@ -129,7 +145,7 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 	@Override
 	public void onBusinessInfoListRequestFailed() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -148,22 +164,29 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 				if (mListener != null) {
 					mListener.onBusinessDialogInitialized();
 				}
-				
+
 				mInitialized = true;
 			}
-		});		
+		});
 	}
 
 	@Override
 	public void onBusinessInfoListResponseFailed() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onClicked(int id, String name) {
 		if (mListener != null) {
 			mListener.onBusinessSelected(id, name);
+		}
+	}
+
+	@Override
+	public void onClick(View v) {
+		if (mListener != null) {
+			mListener.onNewEnterpriseClicked();
 		}
 	}
 

@@ -3,6 +3,7 @@ package com.panguso.android.shijingshan.register.enterprise;
 import com.panguso.android.shijingshan.R;
 
 import android.content.Context;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -50,8 +51,10 @@ public final class EnterpriseButton extends RelativeLayout implements
 	 * 
 	 * @param context
 	 *            The context.
-	 * @param attrs
-	 *            The attributes.
+	 * @param id
+	 *            The enterprise id.
+	 * @param name
+	 *            The enterprise name.
 	 */
 	EnterpriseButton(Context context, int id, String name) {
 		super(context);
@@ -64,6 +67,24 @@ public final class EnterpriseButton extends RelativeLayout implements
 		mButton = (Button) findViewById(R.id.button);
 		mButton.setOnClickListener(this);
 		mButton.setText(name);
+	}
+
+	/**
+	 * Construct a new instance.
+	 * 
+	 * @param context
+	 *            The context.
+	 * @param attrs
+	 *            The attributes.
+	 */
+	public EnterpriseButton(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		LayoutInflater inflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		inflater.inflate(R.layout.enterprise_button_widget, this);
+
+		mButton = (Button) findViewById(R.id.button);
+		mButton.setOnClickListener(this);
 	}
 
 	/**

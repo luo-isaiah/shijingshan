@@ -26,14 +26,14 @@
             </LinearLayout>
 
             <com.panguso.android.shijingshan.widget.UnderlineButton
-                android:id="@+id/register"
+                android:id="@+id/new_enterprise"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/business_layout"
                 android:background="@drawable/underline_button_background"
                 android:padding="15dp"
-                android:text="@string/log_register"
+                android:text="@string/add_new_enterprise"
                 android:textColor="@color/log_underline_button_text"
                 android:textSize="14sp" />
         </RelativeLayout>

@@ -80,9 +80,9 @@ public class EnterpriseDialog extends Dialog implements OnBackListener,
 	private final List<EnterpriseButton> mEnterpriseButtonCache = new ArrayList<EnterpriseButton>();
 
 	/** The title bar. */
-	private BlueTitleBar mTitleBar;
+	private final BlueTitleBar mTitleBar;
 	/** The enterprise layout. */
-	private LinearLayout mEnterprise;
+	private final LinearLayout mEnterprise;
 	/** The business id. */
 	private int mBusinessId;
 	/** The listener. */
