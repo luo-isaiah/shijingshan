@@ -179,7 +179,11 @@ public class NetworkServiceTest extends AndroidTestCase {
 					}
 
 					@Override
-					public void onRegisterResponseSuccess() {
+					public void onRegisterResponseSuccess(String account,
+							String password) {
+						assertEquals("Account doesn't match!", ACCOUNT, account);
+						assertEquals("Password doesn't match!", PASSWORD,
+								password);
 						// Let main thread finish.
 						synchronized (LOCK) {
 							LOCK.notify();
@@ -194,11 +198,21 @@ public class NetworkServiceTest extends AndroidTestCase {
 							LOCK.notify();
 						}
 					}
+					
+					@Override
+					public void onRegisterResponseAccountExist(String account,
+							String errorMessage) {
+						assertEquals("Account doesn't match!", ACCOUNT, account);
+						assertEquals("Error message doesn't match!", "该用户名已存在", errorMessage);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
 
 					@Override
-					public void onRegisterResponseFailed(String errorMessage) {
-						assertNotNull(errorMessage);
-						assertEquals("该用户名已存在", errorMessage);
+					public void onRegisterResponseDatabaseError(String errorMessage) {
+						assertTrue("Register Failed!", false);
 						// Let main thread finish.
 						synchronized (LOCK) {
 							LOCK.notify();
