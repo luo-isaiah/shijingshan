@@ -8,8 +8,9 @@ import org.json.JSONException;
 import com.panguso.android.shijingshan.Application;
 import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.account.AccountManager;
-import com.panguso.android.shijingshan.dialog.StartDialog;
-import com.panguso.android.shijingshan.dialog.StartDialog.OnStartDialogListener;
+import com.panguso.android.shijingshan.column.StartDialog.OnStartDialogListener;
+import com.panguso.android.shijingshan.dialog.MessageDialog;
+import com.panguso.android.shijingshan.dialog.MessageDialog.OnMessageDialogListener;
 import com.panguso.android.shijingshan.dialog.WaitingDialog;
 import com.panguso.android.shijingshan.dialog.WaitingDialog.OnWaitingDialogListener;
 import com.panguso.android.shijingshan.log.LogActivity;
@@ -21,6 +22,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,7 +36,7 @@ import android.widget.ImageButton;
  */
 public class ColumnPageActivity extends Activity implements
 		ColumnInfoListRequestListener, OnClickListener, OnStartDialogListener,
-		OnWaitingDialogListener {
+		OnWaitingDialogListener, OnMessageDialogListener {
 	/** The initialize flag. */
 	private boolean mInitialized = false;
 	/** The {@link WaitingDialog} visibility flag. */
@@ -54,6 +56,12 @@ public class ColumnPageActivity extends Activity implements
 			return new StartDialog(this, this);
 		case DIALOG_WAITING:
 			return new WaitingDialog(this, this);
+		case DIALOG_RETRY:
+			Resources resources = getResources();
+			return new MessageDialog(this, DIALOG_RETRY,
+					resources.getString(R.string.retry_title),
+					resources.getString(R.string.retry_text),
+					resources.getString(R.string.retry_button), this);
 		default:
 			return null;
 		}
@@ -257,4 +265,13 @@ public class ColumnPageActivity extends Activity implements
 		}
 	}
 
+	@Override
+	public void onMessageDialogBack(int id) {
+		finish();
+	}
+
+	@Override
+	public void onMessageDialogConfirmed(int id) {
+		
+	}
 }

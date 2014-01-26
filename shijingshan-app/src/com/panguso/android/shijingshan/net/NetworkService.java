@@ -152,6 +152,13 @@ public final class NetworkService {
 		return sb.toString();
 	}
 
+	/** The xCode to identify the response is successful. */
+	private static final int XCODE_SUCCESS = 0;
+	/** The xCode to identify the request's account name already exist. */
+	private static final int XCODE_ACCOUNT_EXIST = 201;
+	/** The xCode to identify the request execution encounters database error. */
+	private static final int XCODE_DATABASE_ERROR = 998;
+
 	/**
 	 * Interface definition for a callback to be invoked when a business info
 	 * list request is executed.
@@ -425,9 +432,13 @@ public final class NetworkService {
 		/**
 		 * Called when the register request execution is successful.
 		 * 
+		 * @param account
+		 *            The account name has been registered successfully.
+		 * @param password
+		 *            The password followed by the account.
 		 * @author Luo Yinzhuo
 		 */
-		public void onRegisterResponseSuccess();
+		public void onRegisterResponseSuccess(String account, String password);
 
 		/**
 		 * Called when the register request execution is failed.
@@ -437,13 +448,25 @@ public final class NetworkService {
 		public void onRegisterResponseFailed();
 
 		/**
-		 * Called when the register request execution is failed.
+		 * Called when the register request's account name has already exist.
+		 * 
+		 * @param account
+		 *            The account name already exist.
+		 * @param errorMessage
+		 *            The error message.
+		 * @author Luo Yinzhuo
+		 */
+		public void onRegisterResponseAccountExist(String account,
+				String errorMessage);
+
+		/**
+		 * Called when the register request execution encounters database error.
 		 * 
 		 * @param errorMessage
 		 *            The error message.
 		 * @author Luo Yinzhuo
 		 */
-		public void onRegisterResponseFailed(String errorMessage);
+		public void onRegisterResponseDatabaseError(String errorMessage);
 	}
 
 	/**
@@ -544,13 +567,20 @@ public final class NetworkService {
 
 			try {
 				JSONObject jsonResponse = new JSONObject(content);
-				if (jsonResponse.getInt(KEY_XCODE) == 0) {
-					mListener.onRegisterResponseSuccess();
-				} else {
-					mListener.onRegisterResponseFailed(jsonResponse
+				int xCode = jsonResponse.getInt(KEY_XCODE);
+				switch (xCode) {
+				case XCODE_SUCCESS:
+					mListener.onRegisterResponseSuccess(mAccount, mPassword);
+					return;
+				case XCODE_ACCOUNT_EXIST:
+					mListener.onRegisterResponseAccountExist(mAccount,
+							jsonResponse.getString(KEY_XMSG));
+					return;
+				case XCODE_DATABASE_ERROR:
+					mListener.onRegisterResponseDatabaseError(jsonResponse
 							.getString(KEY_XMSG));
+					return;
 				}
-				return;
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}

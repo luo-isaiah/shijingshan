@@ -68,10 +68,10 @@ public class RegisterActivity extends Activity implements OnBackListener,
 	/** The user type dialog ID. */
 	private static final int DIALOG_USER_TYPE = 4;
 
-	/** The {@link WaitingDialog} visibility flag. */
-	private boolean mWaitingDialogVisible = false;
-	/** The {@link BusinessDialog} visibility flag. */
-	private boolean mBusinessDialogVisible = false;
+	/** The waiting dialog. */
+	private WaitingDialog mWaitingDialog;
+	/** The business dialog. */
+	private BusinessDialog mBusinessDialog;
 	/** The {@link NewEnterpriseDialog} visibility flag. */
 	private boolean mNewEnterpriseDialogVisible = false;
 	/** The {@link EnterpriseDialog} visibility flag. */
@@ -81,11 +81,14 @@ public class RegisterActivity extends Activity implements OnBackListener,
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
+		super.onCreateDialog(id);
 		switch (id) {
 		case DIALOG_WAITING:
-			return new WaitingDialog(this, this);
+			mWaitingDialog = new WaitingDialog(this, this);
+			return mWaitingDialog;
 		case DIALOG_BUSINESS:
-			return new BusinessDialog(this, this);
+			mBusinessDialog = new BusinessDialog(this, this);
+			return mBusinessDialog;
 		case DIALOG_NEW_ENTERPRISE:
 			return new NewEnterpriseDialog(this, this);
 		case DIALOG_ENTERPRISE:
@@ -111,8 +114,8 @@ public class RegisterActivity extends Activity implements OnBackListener,
 
 	/** The user name. */
 	private RegisterCheckEditText mUsername;
-	/** The repeat user name. */
-	private final StringBuilder mRepeatUsername = new StringBuilder();
+	/** The user name already exist. */
+	private final StringBuilder mUsernameExist = new StringBuilder();
 	/** The user name valid flag. */
 	private boolean mUsernameValid = false;
 
@@ -219,7 +222,7 @@ public class RegisterActivity extends Activity implements OnBackListener,
 		case R.id.username:
 			mUsernameValid = text.length() >= getResources().getInteger(
 					R.integer.min_length_username)
-					&& mRepeatUsername.indexOf(text) == -1;
+					&& mUsernameExist.indexOf(text) == -1;
 			break;
 		case R.id.password:
 			mPasswordValid = text.length() >= getResources().getInteger(
@@ -264,11 +267,9 @@ public class RegisterActivity extends Activity implements OnBackListener,
 		}
 
 		dismissDialog(DIALOG_WAITING);
-		mWaitingDialogVisible = false;
 
-		if (mBusinessDialogVisible) {
+		if (mBusinessDialog.isShowing()) {
 			dismissDialog(DIALOG_BUSINESS);
-			mBusinessDialogVisible = false;
 		}
 
 		if (mUserTypeDialogVisible) {
@@ -284,10 +285,8 @@ public class RegisterActivity extends Activity implements OnBackListener,
 		case R.id.enterprise:
 			if (mEnterpriseId == null) {
 				showDialog(DIALOG_BUSINESS);
-				mBusinessDialogVisible = true;
 			} else if (mEnterpriseId == NEW_ENTERPRISE_ID) {
 				showDialog(DIALOG_BUSINESS);
-				mBusinessDialogVisible = true;
 				showDialog(DIALOG_NEW_ENTERPRISE);
 				mNewEnterpriseDialogVisible = true;
 			} else {
@@ -306,25 +305,23 @@ public class RegisterActivity extends Activity implements OnBackListener,
 	@Override
 	public void onBusinessDialogInitializing() {
 		showDialog(DIALOG_WAITING);
-		mWaitingDialogVisible = true;
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onBusinessDialogInitialized() {
-		dismissDialog(DIALOG_WAITING);
-		mWaitingDialogVisible = false;
+		if (mWaitingDialog.isShowing()) {
+			dismissDialog(DIALOG_WAITING);
+		}
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onBusinessDialogBack() {
-		if (mWaitingDialogVisible) {
+		if (mWaitingDialog.isShowing()) {
 			dismissDialog(DIALOG_WAITING);
-			mWaitingDialogVisible = false;
 		}
 		dismissDialog(DIALOG_BUSINESS);
-		mBusinessDialogVisible = false;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -358,7 +355,6 @@ public class RegisterActivity extends Activity implements OnBackListener,
 		dismissDialog(DIALOG_NEW_ENTERPRISE);
 		mNewEnterpriseDialogVisible = false;
 		dismissDialog(DIALOG_BUSINESS);
-		mBusinessDialogVisible = false;
 		checkIfRegisterEnabled();
 	}
 
@@ -366,24 +362,21 @@ public class RegisterActivity extends Activity implements OnBackListener,
 	@Override
 	public void onEnterpriseDialogInitializing() {
 		showDialog(DIALOG_WAITING);
-		mWaitingDialogVisible = true;
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnterpriseDialogInitialized() {
-		if (mWaitingDialogVisible) {
+		if (mWaitingDialog.isShowing()) {
 			dismissDialog(DIALOG_WAITING);
-			mWaitingDialogVisible = false;
 		}
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnterpriseDialogBack() {
-		if (mWaitingDialogVisible) {
+		if (mWaitingDialog.isShowing()) {
 			dismissDialog(DIALOG_WAITING);
-			mWaitingDialogVisible = false;
 		}
 		dismissDialog(DIALOG_ENTERPRISE);
 		mEnterpriseDialogVisible = false;
@@ -399,9 +392,8 @@ public class RegisterActivity extends Activity implements OnBackListener,
 		dismissDialog(DIALOG_ENTERPRISE);
 		mEnterpriseDialogVisible = false;
 
-		if (mBusinessDialogVisible) {
+		if (mBusinessDialog.isShowing()) {
 			dismissDialog(DIALOG_BUSINESS);
-			mBusinessDialogVisible = false;
 		}
 		checkIfRegisterEnabled();
 	}
@@ -410,22 +402,21 @@ public class RegisterActivity extends Activity implements OnBackListener,
 	@Override
 	public void onUserTypeDialogInitializing() {
 		showDialog(DIALOG_WAITING);
-		mWaitingDialogVisible = true;
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onUserTypeDialogInitialized() {
-		dismissDialog(DIALOG_WAITING);
-		mWaitingDialogVisible = false;
+		if (mWaitingDialog.isShowing()) {
+			dismissDialog(DIALOG_WAITING);
+		}
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onUserTypeDialogBack() {
-		if (mWaitingDialogVisible) {
+		if (mWaitingDialog.isShowing()) {
 			dismissDialog(DIALOG_WAITING);
-			mWaitingDialogVisible = false;
 		}
 		dismissDialog(DIALOG_USER_TYPE);
 		mUserTypeDialogVisible = false;
@@ -458,7 +449,6 @@ public class RegisterActivity extends Activity implements OnBackListener,
 		mRegistering = true;
 
 		showDialog(DIALOG_WAITING);
-		mWaitingDialogVisible = true;
 
 		NetworkService.register(getResources().getString(R.string.server_url),
 				mUsername.getText(), mPassword.getText(),
@@ -473,7 +463,7 @@ public class RegisterActivity extends Activity implements OnBackListener,
 	}
 
 	@Override
-	public void onRegisterResponseSuccess() {
+	public void onRegisterResponseSuccess(String account, String password) {
 		mRegistering = false;
 	}
 
@@ -482,9 +472,25 @@ public class RegisterActivity extends Activity implements OnBackListener,
 		mRegistering = false;
 	}
 
+	/** The mark to seperate two user name. */
+	private final String USERNAME_DELIMITER = "|";
+
+	@SuppressWarnings("deprecation")
 	@Override
-	public void onRegisterResponseFailed(String errorMessage) {
-		Log.e("RegisterActivity", "Register failed: " + errorMessage);
+	public void onRegisterResponseAccountExist(String account,
+			String errorMessage) {
+		if (mUsernameExist.length() > 0) {
+			mUsernameExist.append(USERNAME_DELIMITER);
+		}
+		mUsernameExist.append(account);
+		mUsername.setCheck(false);
+
+		dismissDialog(DIALOG_WAITING);
+		mRegistering = false;
+	}
+
+	@Override
+	public void onRegisterResponseDatabaseError(String errorMessage) {
 		mRegistering = false;
 	}
 }

@@ -9,7 +9,6 @@ import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.column.Column;
 import com.panguso.android.shijingshan.column.ColumnInfo;
 import com.panguso.android.shijingshan.column.ColumnPage;
-import com.panguso.android.shijingshan.dialog.StartDialog;
 import com.panguso.android.shijingshan.dialog.WaitingDialog;
 import com.panguso.android.shijingshan.dialog.WaitingDialog.OnWaitingDialogListener;
 import com.panguso.android.shijingshan.net.NetworkService;
