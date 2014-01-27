@@ -198,10 +198,7 @@ public class ColumnPageActivity extends Activity implements
 
 	@Override
 	public void onColumnInfoListResponseFailed() {
-		// TODO change the dialog to let the user to retry.
-		NetworkService.getColumnInfoList(
-				getResources().getString(R.string.server_url),
-				((Application) getApplication()).getUUID(), this);
+		showDialog(DIALOG_RETRY);
 	}
 
 	/**
@@ -274,6 +271,10 @@ public class ColumnPageActivity extends Activity implements
 
 	@Override
 	public void onMessageDialogConfirmed(int id) {
-
+		if (id == DIALOG_RETRY) {
+			NetworkService.getColumnInfoList(
+					getResources().getString(R.string.server_url),
+					((Application) getApplication()).getUUID(), this);
+		}
 	}
 }
