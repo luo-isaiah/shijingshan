@@ -122,12 +122,14 @@ public class ColumnPageActivity extends Activity implements
 
 	@Override
 	protected void onDestroy() {
-		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-		try {
-			mColumnPageView.save(sharedPreferences,
-					AccountManager.getUserName() + KEY_COLUMN_PAGES);
-		} catch (JSONException e) {
-			e.printStackTrace();
+		if (!mInitialized) {
+			SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+			try {
+				mColumnPageView.save(sharedPreferences,
+						AccountManager.getUserName() + KEY_COLUMN_PAGES);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		}
 		super.onDestroy();
 	}
@@ -272,6 +274,6 @@ public class ColumnPageActivity extends Activity implements
 
 	@Override
 	public void onMessageDialogConfirmed(int id) {
-		
+
 	}
 }
