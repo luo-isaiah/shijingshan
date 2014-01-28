@@ -19,9 +19,9 @@
     <color name="underline_button_background_press">#007DFF</color>
     <color name="underline_button_background_normal">#FFFFFF</color>
     
-    <!-- register check edit text -->
-    <color name="editbox_background_normal">#FFFFFF</color>
-
+    <!-- message dialog text color -->
+    <color name="message_dialog_text">#545454</color>
+    
     <!-- column page activity -->
     <color name="column_blue">#BF005AC8</color>
     <color name="column_orange">#BFFF5000</color>
@@ -43,7 +43,7 @@
     <color name="register_table_text">#545454</color>
     <color name="register_table_edit_hint">#BBBBBB</color>
     <color name="register_arrow_button_background_pressed">#83B8F0</color>
-
+    
     <!-- business dialog -->
     <color name="business_button_background_pressed">#83B8F0</color>
     

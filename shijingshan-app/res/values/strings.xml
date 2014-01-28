@@ -7,6 +7,11 @@
     <string name="retry_title">网络错误</string>
     <string name="retry_text">请检查网络连接并重试</string>
     <string name="retry_button">重试</string>
+    
+    <!-- unsupported dialog -->
+    <string name="unsupported_title">设备故障</string>
+    <string name="unsupported_text">您的设备不支持UTF-8编码</string>
+    <string name="unsupported_button">退出</string>
 
     <!-- log activity -->
     <string name="log_title">登录</string>

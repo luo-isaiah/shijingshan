@@ -30,7 +30,7 @@ public class StartDialog extends Dialog {
 		 * 
 		 * @author Luo Yinzhuo
 		 */
-		public void onWaitingDialogBack();
+		public void onStartDialogBack();
 
 		/**
 		 * Called when the dialog is timed out.
@@ -123,6 +123,6 @@ public class StartDialog extends Dialog {
 
 	@Override
 	public void onBackPressed() {
-		mListener.onWaitingDialogBack();
+		mListener.onStartDialogBack();
 	}
 }

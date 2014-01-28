@@ -27,13 +27,13 @@ public final class AccountManager {
 	}
 
 	/**
-	 * Get the current user's name.
+	 * Get the current account's name.
 	 * 
-	 * @return The current user's name.
+	 * @return The current account's name.
 	 * @author Luo Yinzhuo
 	 */
-	public static String getUserName() {
-		return ACCOUNT.getName();
+	public static String getAccount() {
+		return ACCOUNT.getAccount();
 	}
 
 	/** The key to store last login user's name. */

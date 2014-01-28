@@ -24,7 +24,7 @@
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
         android:gravity="center"
-        android:textColorHint="@color/new_enterprise_edit_hint"
+        android:textColor="@color/message_dialog_text"
         android:textSize="16sp" />
 
     <Button

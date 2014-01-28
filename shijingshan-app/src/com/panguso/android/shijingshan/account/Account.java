@@ -31,7 +31,7 @@ public class Account {
 	 * @return The account's name.
 	 * @author Luo Yinzhuo
 	 */
-	public final String getName() {
+	public final String getAccount() {
 		return mName;
 	}
 

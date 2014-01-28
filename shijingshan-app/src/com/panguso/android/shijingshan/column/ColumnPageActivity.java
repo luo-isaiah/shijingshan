@@ -39,8 +39,12 @@ public class ColumnPageActivity extends Activity implements
 		OnWaitingDialogListener, OnMessageDialogListener {
 	/** The initialize flag. */
 	private boolean mInitialized = false;
-	/** The {@link WaitingDialog} visibility flag. */
-	private boolean mWaitingDialogVisible = false;
+	/** The waiting dialog. */
+	private WaitingDialog mWaitingDialog;
+	/** The retry dialog. */
+	private MessageDialog mRetryDialog;
+	/** The unsupported dialog. */
+	private MessageDialog mUnsupportedDialog;
 
 	/** The start dialog ID. */
 	private static final int DIALOG_START = 0;
@@ -48,6 +52,8 @@ public class ColumnPageActivity extends Activity implements
 	private static final int DIALOG_WAITING = 1;
 	/** The retry dialog ID. */
 	private static final int DIALOG_RETRY = 2;
+	/** The unsupported dialog ID. */
+	private static final int DIALOG_UNSUPPORTED = 3;
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -55,13 +61,22 @@ public class ColumnPageActivity extends Activity implements
 		case DIALOG_START:
 			return new StartDialog(this, this);
 		case DIALOG_WAITING:
-			return new WaitingDialog(this, this);
+			mWaitingDialog = new WaitingDialog(this, this);
+			return mWaitingDialog;
 		case DIALOG_RETRY:
 			Resources resources = getResources();
-			return new MessageDialog(this, DIALOG_RETRY,
+			mRetryDialog = new MessageDialog(this, DIALOG_RETRY,
 					resources.getString(R.string.retry_title),
 					resources.getString(R.string.retry_text),
 					resources.getString(R.string.retry_button), this);
+			return mRetryDialog;
+		case DIALOG_UNSUPPORTED:
+			resources = getResources();
+			mUnsupportedDialog = new MessageDialog(this, DIALOG_UNSUPPORTED,
+					resources.getString(R.string.unsupported_title),
+					resources.getString(R.string.unsupported_text),
+					resources.getString(R.string.unsupported_button), this);
+			return mUnsupportedDialog;
 		default:
 			return null;
 		}
@@ -83,6 +98,7 @@ public class ColumnPageActivity extends Activity implements
 	/** The notice button. */
 	private ImageButton mNotice;
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -95,29 +111,40 @@ public class ColumnPageActivity extends Activity implements
 		mSetting.setOnClickListener(this);
 		mSubscribe = (ImageButton) findViewById(R.id.subscribe);
 		mNotice = (ImageButton) findViewById(R.id.notice);
-
 		mColumnPageView = (ColumnPageView) findViewById(R.id.column_page);
 
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-		// First, get the last logged in account's info.
 		String lastAccountLogin = sharedPreferences.getString(KEY_LAST_ACCOUNT,
 				"");
 		if (lastAccountLogin.length() > 0) {
-			// There's a last logged in user.
-			try {
-				AccountManager.parse(lastAccountLogin);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
 
-			// Check whether the user needs to re-login.
-			if (AccountManager.needReLogin()) {
-				// TODO: Make the user to login.
-				return;
+		} else {
+			String columnPages = sharedPreferences.getString(KEY_COLUMN_PAGES,
+					"");
+			if (columnPages.length() > 0) {
+
+			} else {
+				NetworkService
+						.getColumnInfoList(
+								getResources().getString(R.string.server_url),
+								"", this);
 			}
 		}
 
-		displayColumnPages();
+		/*
+		 * SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+		 * // First, get the last logged in account's info. String
+		 * lastAccountLogin = sharedPreferences.getString(KEY_LAST_ACCOUNT, "");
+		 * if (lastAccountLogin.length() > 0) { // There's a last logged in
+		 * user. try { AccountManager.parse(lastAccountLogin); } catch
+		 * (JSONException e) { e.printStackTrace(); }
+		 * 
+		 * // Check whether the user needs to re-login. if
+		 * (AccountManager.needReLogin()) { // TODO: Make the user to login.
+		 * return; } }
+		 * 
+		 * displayColumnPages();
+		 */
 	}
 
 	@Override
@@ -126,7 +153,7 @@ public class ColumnPageActivity extends Activity implements
 			SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 			try {
 				mColumnPageView.save(sharedPreferences,
-						AccountManager.getUserName() + KEY_COLUMN_PAGES);
+						AccountManager.getAccount() + KEY_COLUMN_PAGES);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -142,7 +169,7 @@ public class ColumnPageActivity extends Activity implements
 	private void displayColumnPages() {
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 		String columnPages = sharedPreferences.getString(
-				AccountManager.getUserName() + KEY_COLUMN_PAGES, "");
+				AccountManager.getAccount() + KEY_COLUMN_PAGES, "");
 		if (columnPages.length() > 0) {
 			try {
 				mColumnPageView.initialize(columnPages);
@@ -151,14 +178,14 @@ public class ColumnPageActivity extends Activity implements
 				e.printStackTrace();
 			}
 		} else {
-			if (mColumnInfos.isEmpty()) {
-				NetworkService.getColumnInfoList(
-						getResources().getString(R.string.server_url),
-						AccountManager.getUserName(), this);
-			} else {
-				mColumnPageView.initialize(createColumnPages(mColumnInfos), 0);
-				onInitialized();
-			}
+//			if (mColumnInfos.isEmpty()) {
+//				NetworkService.getColumnInfoList(
+//						getResources().getString(R.string.server_url),
+//						AccountManager.getUserName(), this);
+//			} else {
+//				mColumnPageView.initialize(createColumnPages(mColumnInfos), 0);
+//				onInitialized();
+//			}
 		}
 	}
 
@@ -168,18 +195,16 @@ public class ColumnPageActivity extends Activity implements
 	 * @author Luo Yinzhuo
 	 */
 	private void onInitialized() {
-		if (mWaitingDialogVisible) {
+		if (mWaitingDialog.isShowing()) {
 			dismissDialog(DIALOG_WAITING);
 		}
 		mInitialized = true;
 	}
 
-	/** The list of column info. */
-	private final List<ColumnInfo> mColumnInfos = new ArrayList<ColumnInfo>();
-
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onColumnInfoListRequestFailed() {
-
+		showDialog(DIALOG_UNSUPPORTED);
 	}
 
 	@Override
@@ -188,9 +213,8 @@ public class ColumnPageActivity extends Activity implements
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				mColumnInfos.clear();
-				mColumnInfos.addAll(columnInfos);
-				mColumnPageView.initialize(createColumnPages(mColumnInfos), 0);
+				
+				mColumnPageView.initialize(createColumnPages(columnInfos), 0);
 				onInitialized();
 			}
 		});
@@ -198,7 +222,13 @@ public class ColumnPageActivity extends Activity implements
 
 	@Override
 	public void onColumnInfoListResponseFailed() {
-		showDialog(DIALOG_RETRY);
+		runOnUiThread(new Runnable() {
+			@SuppressWarnings("deprecation")
+			@Override
+			public void run() {
+				showDialog(DIALOG_RETRY);
+			}
+		});
 	}
 
 	/**
@@ -251,17 +281,25 @@ public class ColumnPageActivity extends Activity implements
 	}
 
 	@Override
-	public void onWaitingDialogBack() {
+	public void onStartDialogBack() {
 		finish();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onTimeout() {
 		dismissDialog(DIALOG_START);
-		if (!mInitialized) {
+
+		if ((mRetryDialog == null || !mRetryDialog.isShowing())
+				&& (mUnsupportedDialog == null || !mUnsupportedDialog
+						.isShowing()) && !mInitialized) {
 			showDialog(DIALOG_WAITING);
-			mWaitingDialogVisible = true;
 		}
+	}
+
+	@Override
+	public void onWaitingDialogBack() {
+		finish();
 	}
 
 	@Override
@@ -269,12 +307,19 @@ public class ColumnPageActivity extends Activity implements
 		finish();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onMessageDialogConfirmed(int id) {
-		if (id == DIALOG_RETRY) {
+		switch (id) {
+		case DIALOG_RETRY:
 			NetworkService.getColumnInfoList(
-					getResources().getString(R.string.server_url),
-					((Application) getApplication()).getUUID(), this);
+					getResources().getString(R.string.server_url), "", this);
+			showDialog(DIALOG_WAITING);
+			dismissDialog(DIALOG_RETRY);
+			break;
+		case DIALOG_UNSUPPORTED:
+			finish();
+			break;
 		}
 	}
 }

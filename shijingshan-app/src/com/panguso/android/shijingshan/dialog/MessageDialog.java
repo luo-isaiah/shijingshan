@@ -7,6 +7,8 @@ import com.panguso.android.shijingshan.R;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -89,6 +91,9 @@ public class MessageDialog extends Dialog implements
 		mConfirm = (Button) findViewById(R.id.confirm);
 		mConfirm.setText(confirm);
 		mConfirm.setOnClickListener(this);
+		
+		getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+		
 		mListener = listener;
 	}
 
