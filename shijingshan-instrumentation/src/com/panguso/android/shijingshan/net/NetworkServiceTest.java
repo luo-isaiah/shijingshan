@@ -9,11 +9,13 @@ import com.panguso.android.shijingshan.net.NetworkService.EnterpriseInfoListRequ
 import com.panguso.android.shijingshan.net.NetworkService.ImageRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.NewsListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.RegisterRequestListener;
+import com.panguso.android.shijingshan.net.NetworkService.SearchSubscribeColumnInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.UserTypeInfoListRequestListener;
 import com.panguso.android.shijingshan.news.NewsInfo;
 import com.panguso.android.shijingshan.register.business.BusinessInfo;
 import com.panguso.android.shijingshan.register.enterprise.EnterpriseInfo;
 import com.panguso.android.shijingshan.register.usertype.UserTypeInfo;
+import com.panguso.android.shijingshan.subscribe.SubscribeColumnInfo;
 
 import android.graphics.Bitmap;
 import android.test.AndroidTestCase;
@@ -198,12 +200,13 @@ public class NetworkServiceTest extends AndroidTestCase {
 							LOCK.notify();
 						}
 					}
-					
+
 					@Override
 					public void onRegisterResponseAccountExist(String account,
 							String errorMessage) {
 						assertEquals("Account doesn't match!", ACCOUNT, account);
-						assertEquals("Error message doesn't match!", "该用户名已存在", errorMessage);
+						assertEquals("Error message doesn't match!", "该用户名已存在",
+								errorMessage);
 						// Let main thread finish.
 						synchronized (LOCK) {
 							LOCK.notify();
@@ -211,7 +214,8 @@ public class NetworkServiceTest extends AndroidTestCase {
 					}
 
 					@Override
-					public void onRegisterResponseDatabaseError(String errorMessage) {
+					public void onRegisterResponseDatabaseError(
+							String errorMessage) {
 						assertTrue("Register Failed!", false);
 						// Let main thread finish.
 						synchronized (LOCK) {
@@ -324,6 +328,64 @@ public class NetworkServiceTest extends AndroidTestCase {
 					@Override
 					public void onColumnInfoListResponseFailed() {
 						assertTrue("Get Column Info List Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+				});
+
+		// Wait for the executor thread finish job.
+		synchronized (LOCK) {
+			try {
+				LOCK.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Test
+	 * {@link NetworkService#getSearchSubscribeColumnInfoList(String, String, com.panguso.android.shijingshan.net.NetworkService.SearchSubscribeColumnInfoListRequestListener)}
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testGetSearchSubscribeColumnInfoList() {
+		/** The lock to synchronize. */
+		final Object LOCK = new Object();
+		NetworkService.getSearchSubscribeColumnInfoList(SERVER_URL, ACCOUNT,
+				new SearchSubscribeColumnInfoListRequestListener() {
+
+					@Override
+					public void onSearchSubscribeColumnInfoListRequestFailed() {
+						assertTrue(
+								"Create Search Subscribe Column Info List Request Failed!",
+								false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onSearchSubscribeColumnInfoListResponseSuccess(
+							List<SubscribeColumnInfo> subscribeColumnInfos) {
+						assertNotNull("Subscribe column info is empty!",
+								subscribeColumnInfos);
+						assertTrue("Subscribe column info is empty!",
+								subscribeColumnInfos.size() > 0);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onSearchSubscribeColumnInfoListResponseFailed() {
+						assertTrue(
+								"Get Search Subscribe Column Info List Failed!",
+								false);
 						// Let main thread finish.
 						synchronized (LOCK) {
 							LOCK.notify();

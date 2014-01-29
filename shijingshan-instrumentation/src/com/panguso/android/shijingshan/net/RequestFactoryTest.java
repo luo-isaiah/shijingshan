@@ -111,7 +111,6 @@ public class RequestFactoryTest extends AndroidTestCase {
 	/**
 	 * Test
 	 * {@link RequestFactory#createRegisterRequest(String, String, String, String, int, String, String, String, int)}
-	 * .
 	 * 
 	 * @author Luo Yinzhuo
 	 */
@@ -178,19 +177,18 @@ public class RequestFactoryTest extends AndroidTestCase {
 		assertTrue("Create column list Request with no user failed!", false);
 	}
 
-	/** The column ID. */
-	private static final String COLUMN_ID = "100";
-
 	/**
-	 * Test {@link RequestFactory#createArticalListRequest(String, String)}.
+	 * Test
+	 * {@link RequestFactory#createSearchSubscribeColumnInfoListRequest(String, String)}
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	public void testArticleListRequest() {
-		final String EXPECT_CONTENT = "transCode=202&param={\"columnId\":\"100\"}";
+	public void testSearchSubscribeColumnInfoListRequest() {
+		final String EXPECT_CONTENT = "transCode=205&param={\"account\":\"panguso\"}";
 		try {
-			HttpPost request = RequestFactory.createNewsInfoListRequest(
-					SERVER_URL, COLUMN_ID);
+			HttpPost request = RequestFactory
+					.createSearchSubscribeColumnInfoListRequest(SERVER_URL,
+							ACCOUNT);
 			assertNotNull(request);
 			String content = readContent(request.getEntity().getContent());
 			assertNotNull(content);
@@ -201,7 +199,8 @@ public class RequestFactoryTest extends AndroidTestCase {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		assertTrue("Create article list Request failed!", false);
+		assertTrue(
+				"Create search subscribe column list Request with no user failed!",
+				false);
 	}
-
 }
