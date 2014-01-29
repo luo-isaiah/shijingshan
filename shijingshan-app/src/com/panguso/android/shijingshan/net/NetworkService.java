@@ -50,6 +50,7 @@ import com.panguso.android.shijingshan.news.NewsInfo;
 import com.panguso.android.shijingshan.register.business.BusinessInfo;
 import com.panguso.android.shijingshan.register.enterprise.EnterpriseInfo;
 import com.panguso.android.shijingshan.register.usertype.UserTypeInfo;
+import com.panguso.android.shijingshan.subscribe.SubscribeColumnInfo;
 
 /**
  * Provide network service.
@@ -910,7 +911,7 @@ public final class NetworkService {
 	}
 
 	/**
-	 * Specified for execute article list request.
+	 * Specified for execute news list request.
 	 * 
 	 * @author Luo Yinzhuo
 	 */
@@ -1018,6 +1019,149 @@ public final class NetworkService {
 	public static void getNewsList(String serverURL, String columnID,
 			NewsListRequestListener listener) {
 		EXECUTOR.execute(new NewsListCommand(serverURL, columnID, listener));
+	}
+
+	/**
+	 * Interface definition for a callback to be invoked when a search subscribe
+	 * column info list request is executed.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public interface SearchSubscribeColumnInfoListRequestListener {
+
+		/**
+		 * Called when the search subscribe column info list request creation is
+		 * failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onSearchSubscribeColumnInfoListRequestFailed();
+
+		/**
+		 * Called when the search subscribe column info list request execution
+		 * is successful.
+		 * 
+		 * @param subscribeColumnInfos
+		 *            The list of {@link SubscribeColumnInfo} from server.
+		 * @author Luo Yinzhuo
+		 */
+		public void onSearchSubscribeColumnInfoListResponseSuccess(
+				List<SubscribeColumnInfo> subscribeColumnInfos);
+
+		/**
+		 * Called when the search subscribe column info list request execution
+		 * is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onSearchSubscribeColumnInfoListResponseFailed();
+	}
+
+	/**
+	 * Specified for execute search subscribe column list request.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private static class SearchSubscribeColumnInfoListCommand implements
+			Runnable {
+		/** The server URL. */
+		private final String mServerURL;
+		/** The account. */
+		private final String mAccount;
+		/** The request listener. */
+		private final SearchSubscribeColumnInfoListRequestListener mListener;
+
+		/**
+		 * Construct a new instance.
+		 * 
+		 * @param serverURL
+		 *            The server URL.
+		 * @param account
+		 *            The account.
+		 * @param listener
+		 *            The request listener.
+		 */
+		private SearchSubscribeColumnInfoListCommand(String serverURL,
+				String account,
+				SearchSubscribeColumnInfoListRequestListener listener) {
+			mServerURL = serverURL;
+			mAccount = account;
+			mListener = listener;
+		}
+
+		/** The key to get xCode. */
+		private static final String KEY_XCODE = "xCode";
+		/** The key to get xData. */
+		private static final String KEY_XDATA = "xData";
+
+		@Override
+		public void run() {
+			HttpPost request;
+			try {
+				request = RequestFactory
+						.createSearchSubscribeColumnInfoListRequest(mServerURL,
+								mAccount);
+			} catch (Exception e) {
+				e.printStackTrace();
+				mListener.onSearchSubscribeColumnInfoListRequestFailed();
+				return;
+			}
+
+			String content;
+			try {
+				HttpResponse response = HTTP_CLIENT.execute(request);
+				content = NetworkService.getContent(response);
+			} catch (IOException e) {
+				e.printStackTrace();
+				mListener.onSearchSubscribeColumnInfoListResponseFailed();
+				return;
+			}
+
+			try {
+				JSONObject jsonResponse = new JSONObject(content);
+				int xCode = jsonResponse.getInt(KEY_XCODE);
+				switch (xCode) {
+				case XCODE_SUCCESS:
+					JSONArray jsonSubscribeColumnInfo = jsonResponse
+							.getJSONArray(KEY_XDATA);
+					List<SubscribeColumnInfo> subscribeColumnInfos = new ArrayList<SubscribeColumnInfo>();
+					for (int i = 0; i < jsonSubscribeColumnInfo.length(); i++) {
+						JSONObject subscribeColumnInfo = jsonSubscribeColumnInfo
+								.getJSONObject(i);
+						if (SubscribeColumnInfo
+								.isSubscribeColumnInfo(subscribeColumnInfo)) {
+							subscribeColumnInfos.add(SubscribeColumnInfo
+									.parse(subscribeColumnInfo));
+						}
+					}
+					mListener
+							.onSearchSubscribeColumnInfoListResponseSuccess(subscribeColumnInfos);
+					return;
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			Log.e("SearchSubscribeColumnInfoListCommand", content);
+			mListener.onSearchSubscribeColumnInfoListResponseFailed();
+		}
+	}
+
+	/**
+	 * Get the account's subscribe column info list.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param account
+	 *            The account name.
+	 * @param listener
+	 *            The request listener.
+	 * @author Luo Yinzhuo
+	 */
+	public static void getSearchSubscribeColumnInfoList(String serverURL,
+			String account,
+			SearchSubscribeColumnInfoListRequestListener listener) {
+		EXECUTOR.execute(new SearchSubscribeColumnInfoListCommand(serverURL,
+				account, listener));
 	}
 
 	/** The image LRU cache. */

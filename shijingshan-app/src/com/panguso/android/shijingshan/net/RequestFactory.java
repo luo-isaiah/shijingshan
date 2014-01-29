@@ -211,4 +211,32 @@ public final class RequestFactory {
 		return post;
 	}
 
+	/**
+	 * Create a search subscribe column info list request based on specified
+	 * account.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param account
+	 *            The account name.
+	 * @return The search subscribe column info list request.
+	 * @throws JSONException
+	 *             If an error occurs when create JSON parameters.
+	 * @throws UnsupportedEncodingException
+	 *             If device doesn't support UTF-8 encode.
+	 * @author Luo Yinzhuo
+	 */
+	static HttpPost createSearchSubscribeColumnInfoListRequest(
+			String serverURL, String account) throws JSONException,
+			UnsupportedEncodingException {
+		HttpPost post = new HttpPost(serverURL);
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair(TRANS_CODE, "205"));
+		JSONObject param = new JSONObject();
+		param.put(ACCOUNT, account);
+		params.add(new BasicNameValuePair(PARAM, param.toString()));
+		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+		return post;
+	}
+
 }

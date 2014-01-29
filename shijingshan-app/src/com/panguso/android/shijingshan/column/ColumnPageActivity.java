@@ -114,15 +114,15 @@ public class ColumnPageActivity extends Activity implements
 		mColumnPageView = (ColumnPageView) findViewById(R.id.column_page);
 
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-		String lastAccount = sharedPreferences.getString(KEY_LAST_ACCOUNT,
-				"");
+		String lastAccount = sharedPreferences.getString(KEY_LAST_ACCOUNT, "");
 		Log.d("ColumnPageActivity", "onCreate last account:" + lastAccount);
 		if (lastAccount.length() > 0) {
 
 		} else {
 			String columnPages = sharedPreferences.getString(KEY_COLUMN_PAGES,
 					"");
-			Log.d("ColumnPageActivity", "No account, column pages:" + columnPages);
+			Log.d("ColumnPageActivity", "No account, column pages:"
+					+ columnPages);
 			if (columnPages.length() > 0) {
 
 			} else {
@@ -135,7 +135,9 @@ public class ColumnPageActivity extends Activity implements
 
 	@Override
 	protected void onDestroy() {
-		Log.d("ColumnPageActivity", "onDestroy last account:" + AccountManager.getAccount() + " Initialized:" + mInitialized);
+		Log.d("ColumnPageActivity",
+				"onDestroy last account:" + AccountManager.getAccount()
+						+ " Initialized:" + mInitialized);
 		if (mInitialized) {
 			SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 			try {
@@ -198,8 +200,9 @@ public class ColumnPageActivity extends Activity implements
 	@Override
 	public void onColumnInfoListResponseSuccess(
 			final List<ColumnInfo> columnInfos) {
-		Log.d("ColumnPageActivity", "onColumnInfoListResponseSuccess:" + columnInfos.toString());
-		
+		Log.d("ColumnPageActivity", "onColumnInfoListResponseSuccess:"
+				+ columnInfos.toString());
+
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -212,15 +215,13 @@ public class ColumnPageActivity extends Activity implements
 
 	@Override
 	public void onColumnInfoListResponseFailed() {
-		Log.d("ColumnPageActivity", "onColumnInfoListResponseFailed is finishing:" + isFinishing());
-		if (isFinishing()) {
-			return;
-		}
 		runOnUiThread(new Runnable() {
 			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
-				showDialog(DIALOG_RETRY);
+				if (!isFinishing()) {
+					showDialog(DIALOG_RETRY);
+				}
 			}
 		});
 	}
