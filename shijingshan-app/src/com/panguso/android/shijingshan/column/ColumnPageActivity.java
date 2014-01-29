@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.json.JSONException;
 
-import com.panguso.android.shijingshan.Application;
 import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.account.AccountManager;
 import com.panguso.android.shijingshan.column.StartDialog.OnStartDialogListener;
@@ -24,6 +23,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -114,42 +114,29 @@ public class ColumnPageActivity extends Activity implements
 		mColumnPageView = (ColumnPageView) findViewById(R.id.column_page);
 
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-		String lastAccountLogin = sharedPreferences.getString(KEY_LAST_ACCOUNT,
+		String lastAccount = sharedPreferences.getString(KEY_LAST_ACCOUNT,
 				"");
-		if (lastAccountLogin.length() > 0) {
+		Log.d("ColumnPageActivity", "onCreate last account:" + lastAccount);
+		if (lastAccount.length() > 0) {
 
 		} else {
 			String columnPages = sharedPreferences.getString(KEY_COLUMN_PAGES,
 					"");
+			Log.d("ColumnPageActivity", "No account, column pages:" + columnPages);
 			if (columnPages.length() > 0) {
 
 			} else {
-				NetworkService
-						.getColumnInfoList(
-								getResources().getString(R.string.server_url),
-								"", this);
+				NetworkService.getColumnInfoList(
+						getResources().getString(R.string.server_url),
+						AccountManager.getAccount(), this);
 			}
 		}
-
-		/*
-		 * SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-		 * // First, get the last logged in account's info. String
-		 * lastAccountLogin = sharedPreferences.getString(KEY_LAST_ACCOUNT, "");
-		 * if (lastAccountLogin.length() > 0) { // There's a last logged in
-		 * user. try { AccountManager.parse(lastAccountLogin); } catch
-		 * (JSONException e) { e.printStackTrace(); }
-		 * 
-		 * // Check whether the user needs to re-login. if
-		 * (AccountManager.needReLogin()) { // TODO: Make the user to login.
-		 * return; } }
-		 * 
-		 * displayColumnPages();
-		 */
 	}
 
 	@Override
 	protected void onDestroy() {
-		if (!mInitialized) {
+		Log.d("ColumnPageActivity", "onDestroy last account:" + AccountManager.getAccount() + " Initialized:" + mInitialized);
+		if (mInitialized) {
 			SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 			try {
 				mColumnPageView.save(sharedPreferences,
@@ -178,14 +165,14 @@ public class ColumnPageActivity extends Activity implements
 				e.printStackTrace();
 			}
 		} else {
-//			if (mColumnInfos.isEmpty()) {
-//				NetworkService.getColumnInfoList(
-//						getResources().getString(R.string.server_url),
-//						AccountManager.getUserName(), this);
-//			} else {
-//				mColumnPageView.initialize(createColumnPages(mColumnInfos), 0);
-//				onInitialized();
-//			}
+			// if (mColumnInfos.isEmpty()) {
+			// NetworkService.getColumnInfoList(
+			// getResources().getString(R.string.server_url),
+			// AccountManager.getUserName(), this);
+			// } else {
+			// mColumnPageView.initialize(createColumnPages(mColumnInfos), 0);
+			// onInitialized();
+			// }
 		}
 	}
 
@@ -194,8 +181,9 @@ public class ColumnPageActivity extends Activity implements
 	 * 
 	 * @author Luo Yinzhuo
 	 */
+	@SuppressWarnings("deprecation")
 	private void onInitialized() {
-		if (mWaitingDialog.isShowing()) {
+		if (mWaitingDialog != null && mWaitingDialog.isShowing()) {
 			dismissDialog(DIALOG_WAITING);
 		}
 		mInitialized = true;
@@ -210,10 +198,12 @@ public class ColumnPageActivity extends Activity implements
 	@Override
 	public void onColumnInfoListResponseSuccess(
 			final List<ColumnInfo> columnInfos) {
+		Log.d("ColumnPageActivity", "onColumnInfoListResponseSuccess:" + columnInfos.toString());
+		
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				
+
 				mColumnPageView.initialize(createColumnPages(columnInfos), 0);
 				onInitialized();
 			}
@@ -222,6 +212,10 @@ public class ColumnPageActivity extends Activity implements
 
 	@Override
 	public void onColumnInfoListResponseFailed() {
+		Log.d("ColumnPageActivity", "onColumnInfoListResponseFailed is finishing:" + isFinishing());
+		if (isFinishing()) {
+			return;
+		}
 		runOnUiThread(new Runnable() {
 			@SuppressWarnings("deprecation")
 			@Override
@@ -313,7 +307,8 @@ public class ColumnPageActivity extends Activity implements
 		switch (id) {
 		case DIALOG_RETRY:
 			NetworkService.getColumnInfoList(
-					getResources().getString(R.string.server_url), "", this);
+					getResources().getString(R.string.server_url),
+					AccountManager.getAccount(), this);
 			showDialog(DIALOG_WAITING);
 			dismissDialog(DIALOG_RETRY);
 			break;
