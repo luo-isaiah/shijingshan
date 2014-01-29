@@ -191,24 +191,45 @@ public class ColumnPageActivity extends Activity implements
 		mInitialized = true;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onColumnInfoListRequestFailed() {
-		showDialog(DIALOG_UNSUPPORTED);
+		runOnUiThread(new Runnable() {
+			@SuppressWarnings("deprecation")
+			@Override
+			public void run() {
+				if (!isFinishing()) {
+					showDialog(DIALOG_UNSUPPORTED);
+				}
+			}
+		});
 	}
 
 	@Override
 	public void onColumnInfoListResponseSuccess(
 			final List<ColumnInfo> columnInfos) {
-		Log.d("ColumnPageActivity", "onColumnInfoListResponseSuccess:"
-				+ columnInfos.toString());
-
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
+				if (!isFinishing()) {
+					List<ColumnPage> columnPages = new ArrayList<ColumnPage>();
+					ColumnPage page = new ColumnPage();
+					columnPages.add(page);
 
-				mColumnPageView.initialize(createColumnPages(columnInfos), 0);
-				onInitialized();
+					for (int i = 0; i < columnInfos.size(); i++) {
+						ColumnInfo columnInfo = columnInfos.get(i);
+						if (page.isFull()) {
+							page = new ColumnPage();
+							columnPages.add(page);
+						}
+						page.addColumn(columnInfo
+								.getColumn(ColumnPageActivity.this));
+					}
+
+					// TODO: Maybe check if the account is not empty, add an add
+					// column here.
+					mColumnPageView.initialize(columnPages, 0);
+					onInitialized();
+				}
 			}
 		});
 	}
@@ -224,40 +245,6 @@ public class ColumnPageActivity extends Activity implements
 				}
 			}
 		});
-	}
-
-	/**
-	 * Create the list of {@link ColumnPage} from list of {@link ColumnInfo}.
-	 * 
-	 * @param columnInfos
-	 *            The list of {@link ColumnInfo}.
-	 * @return The list of {@link ColumnPage} with current user state.
-	 * @author Luo Yinzhuo
-	 */
-	private List<ColumnPage> createColumnPages(List<ColumnInfo> columnInfos) {
-		// final boolean login = UserManager.isLogin();
-		final boolean login = true;
-		List<ColumnPage> columnPages = new ArrayList<ColumnPage>();
-		ColumnPage page = new ColumnPage();
-		columnPages.add(page);
-
-		for (int i = 0; i < columnInfos.size(); i++) {
-			ColumnInfo columnInfo = columnInfos.get(i);
-			if (columnInfo.isOpen() || login) {
-				if (page.isFull()) {
-					page = new ColumnPage();
-					columnPages.add(page);
-				}
-				page.addColumn(columnInfo.getColumn(this));
-			}
-		}
-
-		if (page.isFull()) {
-			page = new ColumnPage();
-			columnPages.add(page);
-		}
-		page.addColumn(AddColumn.getInstance(this));
-		return columnPages;
 	}
 
 	@Override
