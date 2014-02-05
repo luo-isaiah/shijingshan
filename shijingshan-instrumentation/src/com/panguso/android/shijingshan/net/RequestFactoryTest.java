@@ -130,7 +130,31 @@ public class RequestFactoryTest extends AndroidTestCase {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		assertTrue("Create enterprise info list request failed!", false);
+		assertTrue("Create register request failed!", false);
+	}
+
+	/**
+	 * Test
+	 * {@link RequestFactory#createLoginRequest(String, String, String, String, String)}
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testLoginRequest() {
+		final String EXPECT_CONTENT = "transCode=104&param={\"terminalType\":\"HUAWEI G606-T00\",\"password\":\"123456\",\"account\":\"panguso\",\"deviceToken\":\"ffffffff-aa13-3f0f-ffff-ffffd0fe3dcb\"}";
+		try {
+			HttpPost request = RequestFactory.createLoginRequest(SERVER_URL,
+					ACCOUNT, PASSWORD, UUID, TERMINAL_TYPE);
+			assertNotNull(request);
+			String content = readContent(request.getEntity().getContent());
+			assertNotNull(content);
+			assertEquals(EXPECT_CONTENT, content);
+			return;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		assertTrue("Create login request failed!", false);
 	}
 
 	/**

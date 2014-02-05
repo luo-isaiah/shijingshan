@@ -7,6 +7,7 @@ import com.panguso.android.shijingshan.net.NetworkService.BusinessInfoListReques
 import com.panguso.android.shijingshan.net.NetworkService.ColumnInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.EnterpriseInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.ImageRequestListener;
+import com.panguso.android.shijingshan.net.NetworkService.LoginRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.NewsListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.RegisterRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.SearchSubscribeColumnInfoListRequestListener;
@@ -159,8 +160,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 
 	/**
 	 * Test
-	 * {@link NetworkService#getEnterpriseInfoList(String, int, EnterpriseInfoListRequestListener)}
-	 * .
+	 * {@link NetworkService#register(String, String, String, String, int, String, String, String, int, RegisterRequestListener)}
 	 * 
 	 * @author Luo Yinzhuo
 	 */
@@ -216,6 +216,122 @@ public class NetworkServiceTest extends AndroidTestCase {
 					@Override
 					public void onRegisterResponseDatabaseError(
 							String errorMessage) {
+						assertTrue("Register Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+				});
+
+		// Wait for the executor thread finish job.
+		synchronized (LOCK) {
+			try {
+				LOCK.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Test
+	 * {@link NetworkService#login(String, String, String, String, String, LoginRequestListener)}
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testLogin() {
+		/** The lock to synchronize. */
+		final Object LOCK = new Object();
+		NetworkService.login(SERVER_URL, ACCOUNT, PASSWORD, UUID,
+				TERMINAL_TYPE, new LoginRequestListener() {
+
+					@Override
+					public void onLoginRequestFailed() {
+						assertTrue("Create Register Request Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseSuccess(String account,
+							String password) {
+						assertEquals("Account doesn't match!", ACCOUNT, account);
+						assertEquals("Password doesn't match!", PASSWORD,
+								password);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseFailed() {
+						assertTrue("Register Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseAccountNotExist(
+							String errorMessage) {
+						assertEquals("Error message doesn't match!", "该用户名已存在",
+								errorMessage);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseAccountCanceled(
+							String errorMessage) {
+						assertEquals("Error message doesn't match!", "该用户名已存在",
+								errorMessage);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseAccountFrozen(String errorMessage) {
+						assertEquals("Error message doesn't match!", "该用户名已存在",
+								errorMessage);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseAccountNotActivated(
+							String errorMessage) {
+						assertEquals("Error message doesn't match!", "该用户名已存在",
+								errorMessage);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseAccountPasswordNotMatch(
+							String errorMessage) {
+						assertEquals("Error message doesn't match!", "该用户名已存在",
+								errorMessage);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseDatabaseError(String errorMessage) {
 						assertTrue("Register Failed!", false);
 						// Let main thread finish.
 						synchronized (LOCK) {
@@ -410,7 +526,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 */
 	public void testGetNewsInfoList() {
 		/** The column ID. */
-		final String COLUMN_ID = "100";
+		final int COLUMN_ID = 100;
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
 		NetworkService.getNewsList(SERVER_URL, COLUMN_ID,
@@ -439,7 +555,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 					}
 
 					@Override
-					public void onNewsListResponseFailed(String columnID) {
+					public void onNewsListResponseFailed(int columnID) {
 						assertTrue("Get News Info List Failed!", false);
 						// Let main thread finish.
 						synchronized (LOCK) {
