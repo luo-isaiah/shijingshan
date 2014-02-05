@@ -23,8 +23,8 @@
     <color name="message_dialog_text">#545454</color>
     
     <!-- column page activity -->
-    <color name="column_blue">#BF005AC8</color>
-    <color name="column_orange">#BFFF5000</color>
+    <color name="column_subscribe">#BF005AC8</color>
+    <color name="column_public">#BFFF5000</color>
 
     <!-- news page activity -->
     <color name="news_page_title_bar_background">#FFFFFF</color>

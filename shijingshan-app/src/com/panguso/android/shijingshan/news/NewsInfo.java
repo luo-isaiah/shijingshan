@@ -3,9 +3,6 @@ package com.panguso.android.shijingshan.news;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.panguso.android.shijingshan.column.Column;
-import com.panguso.android.shijingshan.column.ColumnInfo;
-
 /**
  * Specific for store a {@link News}'s information.
  * 

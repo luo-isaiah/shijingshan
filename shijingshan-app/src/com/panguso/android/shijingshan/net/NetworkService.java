@@ -157,6 +157,16 @@ public final class NetworkService {
 	private static final int XCODE_SUCCESS = 0;
 	/** The xCode to identify the request's account name already exist. */
 	private static final int XCODE_ACCOUNT_EXIST = 201;
+	/** The xCode to identify the request's account name doesn't exist. */
+	private static final int XCODE_ACCOUNT_NOT_EXIST = 204;
+	/** The xCode to identify the request's account has been canceled. */
+	private static final int XCODE_ACCOUNT_CANCELED = 205;
+	/** The xCode to identify the request's account has been frozen. */
+	private static final int XCODE_ACCOUNT_FROZEN = 206;
+	/** The xCode to identify the request's account has not been activated. */
+	private static final int XCODE_ACCOUNT_NOT_ACTIVATED = 207;
+	/** The xCode to identify the request's account and password not match. */
+	private static final int XCODE_ACCOUNT_PASSWORD_NOT_MATCH = 208;
 	/** The xCode to identify the request execution encounters database error. */
 	private static final int XCODE_DATABASE_ERROR = 998;
 
@@ -625,6 +635,235 @@ public final class NetworkService {
 	}
 
 	/**
+	 * Interface definition for a callback to be invoked when a login request is
+	 * executed.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public interface LoginRequestListener {
+		/**
+		 * Called when the login request creation is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onLoginRequestFailed();
+
+		/**
+		 * Called when the login request execution is successful.
+		 * 
+		 * @param account
+		 *            The account name has been logged in successfully.
+		 * @param password
+		 *            The password followed by the account.
+		 * @author Luo Yinzhuo
+		 */
+		public void onLoginResponseSuccess(String account, String password);
+
+		/**
+		 * Called when the login request execution is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onLoginResponseFailed();
+
+		/**
+		 * Called when the login request's account name not exist.
+		 * 
+		 * @param errorMessage
+		 *            The error message.
+		 * @author Luo Yinzhuo
+		 */
+		public void onLoginResponseAccountNotExist(String errorMessage);
+
+		/**
+		 * Called when the login request's account has been canceled.
+		 * 
+		 * @param errorMessage
+		 *            The error message.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onLoginResponseAccountCanceled(String errorMessage);
+
+		/**
+		 * Called when the login request's account has been frozen.
+		 * 
+		 * @param errorMessage
+		 *            The error message.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onLoginResponseAccountFrozen(String errorMessage);
+
+		/**
+		 * Called when the login request's account has not been activated.
+		 * 
+		 * @param errorMessage
+		 *            The error message.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onLoginResponseAccountNotActivated(String errorMessage);
+
+		/**
+		 * Called when the login request's account and password not match.
+		 * 
+		 * @param errorMessage
+		 *            The error message.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onLoginResponseAccountPasswordNotMatch(String errorMessage);
+
+		/**
+		 * Called when the login request execution encounters database error.
+		 * 
+		 * @param errorMessage
+		 *            The error message.
+		 * @author Luo Yinzhuo
+		 */
+		public void onLoginResponseDatabaseError(String errorMessage);
+	}
+
+	/**
+	 * Specified for execute login request.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private static class LoginCommand implements Runnable {
+		/** The server URL. */
+		private final String mServerURL;
+		/** The account name. */
+		private final String mAccount;
+		/** The password. */
+		private final String mPassword;
+		/** The device token. */
+		private final String mDeviceToken;
+		/** The terminal type. */
+		private final String mTerminalType;
+		/** The request listener. */
+		private final LoginRequestListener mListener;
+
+		/**
+		 * Construct a new instance.
+		 * 
+		 * @param serverURL
+		 *            The server URL.
+		 * @param account
+		 *            The account name.
+		 * @param password
+		 *            The password.
+		 * @param deviceToken
+		 *            The device UUID.
+		 * @param terminalType
+		 *            The device terminal type.
+		 * @param listener
+		 *            The request listener.
+		 */
+		private LoginCommand(String serverURL, String account, String password,
+				String deviceToken, String terminalType,
+				LoginRequestListener listener) {
+			mServerURL = serverURL;
+			mAccount = account;
+			mPassword = password;
+			mDeviceToken = deviceToken;
+			mTerminalType = terminalType;
+			mListener = listener;
+		}
+
+		/** The key to get xCode. */
+		private static final String KEY_XCODE = "xCode";
+		/** The key to get error message. */
+		private static final String KEY_XMSG = "xMsg";
+
+		@Override
+		public void run() {
+			HttpPost request;
+			try {
+				request = RequestFactory.createLoginRequest(mServerURL,
+						mAccount, mPassword, mDeviceToken, mTerminalType);
+			} catch (Exception e) {
+				e.printStackTrace();
+				mListener.onLoginRequestFailed();
+				return;
+			}
+
+			String content;
+			try {
+				HttpResponse response = HTTP_CLIENT.execute(request);
+				content = NetworkService.getContent(response);
+			} catch (IOException e) {
+				e.printStackTrace();
+				mListener.onLoginResponseFailed();
+				return;
+			}
+
+			try {
+				JSONObject jsonResponse = new JSONObject(content);
+				int xCode = jsonResponse.getInt(KEY_XCODE);
+				switch (xCode) {
+				case XCODE_SUCCESS:
+					mListener.onLoginResponseSuccess(mAccount, mPassword);
+					return;
+				case XCODE_ACCOUNT_NOT_EXIST:
+					mListener.onLoginResponseAccountNotExist(jsonResponse
+							.getString(KEY_XMSG));
+					return;
+				case XCODE_ACCOUNT_CANCELED:
+					mListener.onLoginResponseAccountCanceled(jsonResponse
+							.getString(KEY_XMSG));
+					return;
+				case XCODE_ACCOUNT_FROZEN:
+					mListener.onLoginResponseAccountFrozen(jsonResponse
+							.getString(KEY_XMSG));
+					return;
+				case XCODE_ACCOUNT_NOT_ACTIVATED:
+					mListener.onLoginResponseAccountNotActivated(jsonResponse
+							.getString(KEY_XMSG));
+					return;
+				case XCODE_ACCOUNT_PASSWORD_NOT_MATCH:
+					mListener
+							.onLoginResponseAccountPasswordNotMatch(jsonResponse
+									.getString(KEY_XMSG));
+					return;
+				case XCODE_DATABASE_ERROR:
+					mListener.onLoginResponseDatabaseError(jsonResponse
+							.getString(KEY_XMSG));
+					return;
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			Log.e("LoginCommand", content);
+			mListener.onLoginResponseFailed();
+		}
+	}
+
+	/**
+	 * Login.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param account
+	 *            The account name.
+	 * @param password
+	 *            The password.
+	 * @param deviceToken
+	 *            The device UUID.
+	 * @param terminalType
+	 *            The device terminal type.
+	 * @param listener
+	 *            The request listener.
+	 * @author Luo Yinzhuo
+	 */
+	public static void login(String serverURL, String account, String password,
+			String deviceToken, String terminalType,
+			LoginRequestListener listener) {
+		EXECUTOR.execute(new LoginCommand(serverURL, account, password,
+				deviceToken, terminalType, listener));
+	}
+
+	/**
 	 * Interface definition for a callback to be invoked when a user type info
 	 * list request is executed.
 	 * 
@@ -907,7 +1146,7 @@ public final class NetworkService {
 		 *            The request column ID.
 		 * @author Luo Yinzhuo
 		 */
-		public void onNewsListResponseFailed(String columnID);
+		public void onNewsListResponseFailed(int columnID);
 	}
 
 	/**
@@ -919,7 +1158,7 @@ public final class NetworkService {
 		/** The server URL. */
 		private final String mServerURL;
 		/** The column ID. */
-		private final String mColumnID;
+		private final int mColumnID;
 		/** The request listener. */
 		private final NewsListRequestListener mListener;
 
@@ -933,7 +1172,7 @@ public final class NetworkService {
 		 * @param listener
 		 *            The request listener.
 		 */
-		private NewsListCommand(String serverURL, String columnID,
+		private NewsListCommand(String serverURL, int columnID,
 				NewsListRequestListener listener) {
 			mServerURL = serverURL;
 			mColumnID = columnID;
@@ -1016,7 +1255,7 @@ public final class NetworkService {
 	 *            The request listener.
 	 * @author Luo Yinzhuo
 	 */
-	public static void getNewsList(String serverURL, String columnID,
+	public static void getNewsList(String serverURL, int columnID,
 			NewsListRequestListener listener) {
 		EXECUTOR.execute(new NewsListCommand(serverURL, columnID, listener));
 	}

@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.panguso.android.shijingshan.R;
-import com.panguso.android.shijingshan.column.Column;
 import com.panguso.android.shijingshan.column.ColumnInfo;
-import com.panguso.android.shijingshan.column.ColumnPage;
+import com.panguso.android.shijingshan.column.Column;
 import com.panguso.android.shijingshan.dialog.WaitingDialog;
-import com.panguso.android.shijingshan.dialog.WaitingDialog.OnWaitingDialogListener;
 import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.NewsListRequestListener;
 import com.panguso.android.shijingshan.news.NewsPageTitleBar.OnBackListener;
@@ -26,7 +24,7 @@ import android.os.Bundle;
  * @author Luo Yinzhuo
  */
 public class NewsPageActivity extends Activity implements OnBackListener,
-		NewsListRequestListener, OnWaitingDialogListener {
+		NewsListRequestListener {
 	/** The waiting dialog ID. */
 	private static final int DIALOG_WAITING = 0;
 	/** The retry dialog ID. */
@@ -36,7 +34,7 @@ public class NewsPageActivity extends Activity implements OnBackListener,
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 			case DIALOG_WAITING:
-				return new WaitingDialog(this, this);
+				return new WaitingDialog(this);
 			default:
 				return null;
 		}
@@ -47,6 +45,7 @@ public class NewsPageActivity extends Activity implements OnBackListener,
 	/** The news page view. */
 	private NewsPageView mNewsPageView;
 	
+	@SuppressWarnings("deprecation")
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -61,12 +60,12 @@ public class NewsPageActivity extends Activity implements OnBackListener,
 	    
 	    mNewsPageView = (NewsPageView) findViewById(R.id.news_page);
 	    
-	    final String columnID = intent.getStringExtra(Column.KEY_ID);
+	    final int columnID = intent.getIntExtra(Column.KEY_ID, 0);
 	    NetworkService.getNewsList(getResources().getString(R.string.server_url), columnID, this);
     }
 
 	@Override
-    public void onWaitingDialogBack() {
+    public void onTitleBarBack() {
 		finish();
     }
 	
@@ -88,7 +87,7 @@ public class NewsPageActivity extends Activity implements OnBackListener,
 	}
 
 	@Override
-	public void onNewsListResponseFailed(String columnID) {
+	public void onNewsListResponseFailed(int columnID) {
 		NetworkService.getNewsList(getResources().getString(R.string.server_url), columnID, this);		
 	}
 	

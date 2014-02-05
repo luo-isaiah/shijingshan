@@ -35,7 +35,7 @@
                     android:textSize="18sp" />
 
                 <EditText
-                    android:id="@+id/username"
+                    android:id="@+id/account"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -55,6 +55,7 @@
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:contentDescription="@null"
                 android:src="@color/delimiter" />
 
             <TableRow>
@@ -89,7 +90,7 @@
         </TableLayout>
 
         <Button
-            android:id="@+id/log_in"
+            android:id="@+id/login"
             android:layout_width="fill_parent"
             android:layout_height="56dp"
             android:layout_below="@id/username_password_table"
@@ -106,9 +107,11 @@
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/log_in"
+            android:layout_below="@id/login"
             android:layout_margin="5dp" >
 
+            <!-- Maybe add this button till the server has this function -->
+            
             <com.panguso.android.shijingshan.widget.UnderlineButton
                 android:id="@+id/find_password"
                 android:layout_width="wrap_content"

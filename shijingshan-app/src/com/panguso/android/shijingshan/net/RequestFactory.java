@@ -138,6 +138,43 @@ public final class RequestFactory {
 	}
 
 	/**
+	 * Create a login request.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param account
+	 *            The account name.
+	 * @param password
+	 *            The password.
+	 * @param deviceToken
+	 *            The device UUID.
+	 * @param terminalType
+	 *            The device terminal type.
+	 * @return The log in request.
+	 * @throws UnsupportedEncodingException
+	 *             If device doesn't support UTF-8 encode.
+	 * @throws JSONException
+	 *             If an error occurs when create JSON parameters.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	static HttpPost createLoginRequest(String serverURL, String account,
+			String password, String deviceToken, String terminalType)
+			throws JSONException, UnsupportedEncodingException {
+		HttpPost post = new HttpPost(serverURL);
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair(TRANS_CODE, "104"));
+		JSONObject param = new JSONObject();
+		param.put(ACCOUNT, account);
+		param.put(PASSWORD, password);
+		param.put(DEVICE_TOKEN, deviceToken);
+		param.put(TERMINAL_TYPE, terminalType);
+		params.add(new BasicNameValuePair(PARAM, param.toString()));
+		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+		return post;
+	}
+
+	/**
 	 * Create a user type info list request.
 	 * 
 	 * @param serverURL
@@ -199,7 +236,7 @@ public final class RequestFactory {
 	 *             If an error occurs when create JSON parameters.
 	 * @author Luo Yinzhuo
 	 */
-	static HttpPost createNewsInfoListRequest(String serverURL, String columnID)
+	static HttpPost createNewsInfoListRequest(String serverURL, int columnID)
 			throws UnsupportedEncodingException, JSONException {
 		HttpPost post = new HttpPost(serverURL);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();

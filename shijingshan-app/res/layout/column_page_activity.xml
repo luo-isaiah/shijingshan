@@ -19,7 +19,7 @@
         android:background="@null"
         android:contentDescription="@null"
         android:padding="10dp"
-        android:src="@drawable/log_off" />
+        android:src="@drawable/logout" />
 
     <ImageButton
         android:id="@+id/setting"

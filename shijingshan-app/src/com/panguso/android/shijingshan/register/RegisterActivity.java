@@ -12,7 +12,6 @@ package com.panguso.android.shijingshan.register;
 import com.panguso.android.shijingshan.Application;
 import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.dialog.WaitingDialog;
-import com.panguso.android.shijingshan.dialog.WaitingDialog.OnWaitingDialogListener;
 import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.RegisterRequestListener;
 import com.panguso.android.shijingshan.register.RegisterArrowButton.OnRegisterArrowButtonListener;
@@ -34,7 +33,6 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -46,11 +44,10 @@ import android.widget.Button;
  * @date 2013-10-21
  */
 public class RegisterActivity extends Activity implements OnBackListener,
-		OnClickListener, OnWaitingDialogListener,
-		OnRegisterArrowButtonListener, OnUserTypeDialogListener,
-		OnBusinessDialogListener, OnEnterpriseDialogListener,
-		OnNewEnterpriseDialogListener, OnRegisterCheckEditTextListener,
-		RegisterRequestListener {
+		OnClickListener, OnRegisterArrowButtonListener,
+		OnUserTypeDialogListener, OnBusinessDialogListener,
+		OnEnterpriseDialogListener, OnNewEnterpriseDialogListener,
+		OnRegisterCheckEditTextListener, RegisterRequestListener {
 
 	/** The waiting dialog ID. */
 	private static final int DIALOG_WAITING = -1;
@@ -72,19 +69,14 @@ public class RegisterActivity extends Activity implements OnBackListener,
 	private WaitingDialog mWaitingDialog;
 	/** The business dialog. */
 	private BusinessDialog mBusinessDialog;
-	/** The {@link NewEnterpriseDialog} visibility flag. */
-	private boolean mNewEnterpriseDialogVisible = false;
-	/** The {@link EnterpriseDialog} visibility flag. */
-	private boolean mEnterpriseDialogVisible = false;
 	/** The {@link UserTypeDialog} visibility flag. */
 	private boolean mUserTypeDialogVisible = false;
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
-		super.onCreateDialog(id);
 		switch (id) {
 		case DIALOG_WAITING:
-			mWaitingDialog = new WaitingDialog(this, this);
+			mWaitingDialog = new WaitingDialog(this);
 			return mWaitingDialog;
 		case DIALOG_BUSINESS:
 			mBusinessDialog = new BusinessDialog(this, this);
@@ -261,25 +253,6 @@ public class RegisterActivity extends Activity implements OnBackListener,
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public void onWaitingDialogBack() {
-		if (mRegistering) {
-			return;
-		}
-
-		dismissDialog(DIALOG_WAITING);
-
-		if (mBusinessDialog.isShowing()) {
-			dismissDialog(DIALOG_BUSINESS);
-		}
-
-		if (mUserTypeDialogVisible) {
-			dismissDialog(DIALOG_USER_TYPE);
-			mUserTypeDialogVisible = false;
-		}
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
 	public void onRegisterArrowButtonClicked(RegisterArrowButton button) {
 		switch (button.getId()) {
 		case R.id.enterprise:
@@ -288,10 +261,8 @@ public class RegisterActivity extends Activity implements OnBackListener,
 			} else if (mEnterpriseId == NEW_ENTERPRISE_ID) {
 				showDialog(DIALOG_BUSINESS);
 				showDialog(DIALOG_NEW_ENTERPRISE);
-				mNewEnterpriseDialogVisible = true;
 			} else {
 				showDialog(DIALOG_ENTERPRISE);
-				mEnterpriseDialogVisible = true;
 			}
 			break;
 		case R.id.user_type:
@@ -329,21 +300,18 @@ public class RegisterActivity extends Activity implements OnBackListener,
 	public void onBusinessSelected(int id, String name) {
 		mBusinessId = id;
 		showDialog(DIALOG_ENTERPRISE);
-		mEnterpriseDialogVisible = true;
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onNewEnterpriseClicked() {
 		showDialog(DIALOG_NEW_ENTERPRISE);
-		mNewEnterpriseDialogVisible = true;
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onNewEnterpriseDialogBack() {
 		dismissDialog(DIALOG_NEW_ENTERPRISE);
-		mNewEnterpriseDialogVisible = false;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -353,7 +321,6 @@ public class RegisterActivity extends Activity implements OnBackListener,
 		mEnterpriseName = newEnterprise;
 		mEnterprise.setText(newEnterprise);
 		dismissDialog(DIALOG_NEW_ENTERPRISE);
-		mNewEnterpriseDialogVisible = false;
 		dismissDialog(DIALOG_BUSINESS);
 		checkIfRegisterEnabled();
 	}
@@ -379,7 +346,6 @@ public class RegisterActivity extends Activity implements OnBackListener,
 			dismissDialog(DIALOG_WAITING);
 		}
 		dismissDialog(DIALOG_ENTERPRISE);
-		mEnterpriseDialogVisible = false;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -390,7 +356,6 @@ public class RegisterActivity extends Activity implements OnBackListener,
 
 		mEnterprise.setText(name);
 		dismissDialog(DIALOG_ENTERPRISE);
-		mEnterpriseDialogVisible = false;
 
 		if (mBusinessDialog.isShowing()) {
 			dismissDialog(DIALOG_BUSINESS);

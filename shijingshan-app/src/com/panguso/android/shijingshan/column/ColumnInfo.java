@@ -1,15 +1,9 @@
 package com.panguso.android.shijingshan.column;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-
-import com.panguso.android.shijingshan.R;
 
 /**
  * Specific for store a {@link Column}'s information.
@@ -17,36 +11,12 @@ import com.panguso.android.shijingshan.R;
  * @author Luo Yinzhuo
  */
 public final class ColumnInfo {
-	/** The column icon map. */
-	private static final Map<String, Integer> COLUMN_ICON_MAP = new HashMap<String, Integer>();
-
-	static {
-		// zheng ce fa gui
-		COLUMN_ICON_MAP.put("100", R.drawable.column_zcfg);
-		// gong gao lan
-		COLUMN_ICON_MAP.put("101", R.drawable.column_ggl);
-		// hang ye dong tai
-		COLUMN_ICON_MAP.put("102", R.drawable.column_hydt);
-		// ren cai fu wu
-		COLUMN_ICON_MAP.put("103", R.drawable.column_rcfw);
-		// tou zi xuan chuan
-		COLUMN_ICON_MAP.put("104", R.drawable.column_tzxc);
-		// cai gou zhao biao
-		COLUMN_ICON_MAP.put("105", R.drawable.column_cgzb);
-		// yi jian fan kui
-		COLUMN_ICON_MAP.put("106", R.drawable.column_yjfk);
-		// ling dao xin xiang
-		COLUMN_ICON_MAP.put("107", R.drawable.column_ldxx);
-		// ban shi zhi nan
-		COLUMN_ICON_MAP.put("108", R.drawable.column_bszn);
-	}
-
 	/** The column ID. */
-	private final String mID;
+	private final int mId;
 	/** The column name. */
 	private final String mName;
-	/** Whether the column is open or not. */
-	private final boolean mOpen;
+	/** Whether the column need subscribe or not. */
+	private final boolean mSubscribe;
 
 	/**
 	 * Construct a new instance.
@@ -58,20 +28,10 @@ public final class ColumnInfo {
 	 * @param open
 	 *            The column is open or not.
 	 */
-	private ColumnInfo(String id, String name, boolean open) {
-		mID = id;
+	private ColumnInfo(int id, String name, boolean open) {
+		mId = id;
 		mName = name;
-		mOpen = open;
-	}
-
-	/**
-	 * Check if it is an open column.
-	 * 
-	 * @return True if it is an open column, otherwise false.
-	 * @author Luo Yinzhuo
-	 */
-	public boolean isOpen() {
-		return mOpen;
+		mSubscribe = !open;
 	}
 
 	/**
@@ -83,29 +43,7 @@ public final class ColumnInfo {
 	 * @author Luo Yinzhuo
 	 */
 	public final Column getColumn(Context context) {
-		Integer iconId = COLUMN_ICON_MAP.get(mID);
-		Drawable icon = iconId == null ? null : context.getResources()
-				.getDrawable(iconId);
-		return new Column(mID, mName, icon);
-	}
-
-	/**
-	 * Get the {@link Column} based on the id and name.
-	 * 
-	 * @param id
-	 *            The column's id.
-	 * @param name
-	 *            The column's name.
-	 * @param context
-	 *            The system context.
-	 * @return The {@link Column}.
-	 * @author Luo Yinzhuo
-	 */
-	public static Column getColumn(String id, String name, Context context) {
-		Integer iconId = COLUMN_ICON_MAP.get(id);
-		Drawable icon = iconId == null ? null : context.getResources()
-				.getDrawable(iconId);
-		return new Column(id, name, icon);
+		return new Column(context, mId, mName, mSubscribe);
 	}
 
 	/** The key to get column ID. */
@@ -142,14 +80,14 @@ public final class ColumnInfo {
 	 * @author Luo Yinzhuo
 	 */
 	public static ColumnInfo parse(JSONObject json) throws JSONException {
-		return new ColumnInfo(json.getString(KEY_COLUMN_ID),
+		return new ColumnInfo(json.getInt(KEY_COLUMN_ID),
 				json.getString(KEY_COLUMN_NAME), json.getString(KEY_SFGK)
 						.equals(VALUE_SFGK_YES));
 	}
 
 	@Override
 	public String toString() {
-		return "ColumnInfo [mID=" + mID + ", mName=" + mName + ", mOpen="
-				+ mOpen + "]";
+		return "ColumnInfo [mID=" + mId + ", mName=" + mName + ", mSubscribe="
+				+ mSubscribe + "]";
 	}
 }

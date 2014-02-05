@@ -17,6 +17,25 @@ public final class AccountManager {
 	private static boolean LOGIN = false;
 
 	/**
+	 * The account has logged in.
+	 * 
+	 * @param account
+	 *            The account name.
+	 * @param password
+	 *            The password.
+	 * @return The account data in JSON format.
+	 * @throws JSONException
+	 *             If there's error in JSON data.
+	 * @author Luo Yinzhuo
+	 */
+	public static String login(String account, String password)
+			throws JSONException {
+		ACCOUNT = new Account(account, password);
+		LOGIN_TIME = System.currentTimeMillis();
+		return ACCOUNT.getJson();
+	}
+
+	/**
 	 * Check if the user has logged in.
 	 * 
 	 * @return True if the user has logged in, otherwise false.
@@ -46,9 +65,10 @@ public final class AccountManager {
 	/**
 	 * Parse the last login user data to update the manager.
 	 * 
-	 * @param json The last login user data in JSON format.
-	 * @throws JSONException If there are JSON format error in the last login
-	 *         user data.
+	 * @param json
+	 *            The last login user data in JSON format.
+	 * @throws JSONException
+	 *             If there are JSON format error in the last login user data.
 	 * @author Luo Yinzhuo
 	 */
 	public static void parse(String json) throws JSONException {

@@ -39,13 +39,18 @@ public final class ColumnPage {
 	/**
 	 * Initialize the column rectangles.
 	 * 
-	 * @param offsetLeft The first {@link Column}'s left offset.
-	 * @param offsetTop The first {@link Column}'s top offset.
-	 * @param margin The margin between two {@link Column}.
-	 * @param size The size of {@link Column}.
+	 * @param offsetLeft
+	 *            The first {@link Column}'s left offset.
+	 * @param offsetTop
+	 *            The first {@link Column}'s top offset.
+	 * @param margin
+	 *            The margin between two {@link Column}.
+	 * @param size
+	 *            The size of {@link Column}.
 	 * @author Luo Yinzhuo
 	 */
-	public static void initialize(float offsetLeft, float offsetTop, float margin, float size) {
+	public static void initialize(float offsetLeft, float offsetTop,
+			float margin, float size) {
 		COLUMN_RECTS.clear();
 		for (int i = 0; i < MAX_COLUMN_SIZE; i++) {
 			final float left = offsetLeft + i % 2 * (size + margin);
@@ -54,23 +59,30 @@ public final class ColumnPage {
 		}
 	}
 
+	/** The page's column. */
+	private final List<Column> mColumns = new ArrayList<Column>(MAX_COLUMN_SIZE);
+
 	/**
 	 * Check if the rectangle releases the column's position.
 	 * 
-	 * @param position The column's position.
-	 * @param rectF The rectangle.
+	 * @param position
+	 *            The column's position.
+	 * @param rectF
+	 *            The rectangle.
 	 * @return True if the rectangle releases the column's position, otherwise
 	 *         false.
 	 * @author Luo Yinzhuo
 	 */
 	public boolean isReleasePosition(int position, RectF rectF) {
-		return position >= mColumns.size() || !RectF.intersects(rectF, COLUMN_RECTS.get(position));
+		return position >= mColumns.size()
+				|| !RectF.intersects(rectF, COLUMN_RECTS.get(position));
 	}
 
 	/**
 	 * Check if the rectangle takes one of the column's position.
 	 * 
-	 * @param rectF The rectangle.
+	 * @param rectF
+	 *            The rectangle.
 	 * @return The take position.
 	 * @author Luo Yinzhuo
 	 */
@@ -85,14 +97,12 @@ public final class ColumnPage {
 		return Math.min(i, MAX_COLUMN_SIZE - 1);
 	}
 
-	/** The page's column. */
-	private final List<Column> mColumns = new ArrayList<Column>(MAX_COLUMN_SIZE);
-
 	/**
 	 * Get the column page's data in JSON format.
 	 * 
 	 * @return The column page's data in JSON format.
-	 * @throws JSONException If error occurs in JSON format.
+	 * @throws JSONException
+	 *             If error occurs in JSON format.
 	 * @author Luo Yinzhuo
 	 */
 	public String getJson() throws JSONException {
@@ -106,13 +116,17 @@ public final class ColumnPage {
 	/**
 	 * Construct a {@link ColumnPage} from its data in JSON format.
 	 * 
-	 * @param context The context.
-	 * @param json The JSON format data.
+	 * @param context
+	 *            The context.
+	 * @param json
+	 *            The JSON format data.
 	 * @return The {@link ColumnPage}.
-	 * @throws JSONException If error occurs in JSON format.
+	 * @throws JSONException
+	 *             If error occurs in JSON format.
 	 * @author Luo Yinzhuo
 	 */
-	public static ColumnPage parse(Context context, String json) throws JSONException {
+	public static ColumnPage parse(Context context, String json)
+			throws JSONException {
 		JSONArray columns = new JSONArray(json);
 		ColumnPage page = new ColumnPage();
 		for (int i = 0; i < columns.length(); i++) {
@@ -122,9 +136,21 @@ public final class ColumnPage {
 	}
 
 	/**
+	 * Exclude the {@link Column}s which this {@link ColumnPage} contains from
+	 * the specified {@link Column} list.
+	 * 
+	 * @param columns The columns.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void exclude(List<Column> columns) {
+		columns.removeAll(mColumns);
+	}
+
+	/**
 	 * Check if the page is empty.
 	 * 
-	 * @return True if it is empty, otherwise false��
+	 * @return True if it is empty, otherwise false.
 	 * @author Luo Yinzhuo
 	 */
 	public boolean isEmpty() {
@@ -145,7 +171,8 @@ public final class ColumnPage {
 	/**
 	 * Add a column to the page.
 	 * 
-	 * @param column The column.
+	 * @param column
+	 *            The column.
 	 * @author Luo Yinzhuo
 	 */
 	public void addColumn(Column column) {
@@ -155,8 +182,10 @@ public final class ColumnPage {
 	/**
 	 * Add a column to the page with the specific index.
 	 * 
-	 * @param index The index.
-	 * @param column The column.
+	 * @param index
+	 *            The index.
+	 * @param column
+	 *            The column.
 	 * @author Luo Yinzhuo
 	 */
 	public void addColumn(int index, Column column) {
@@ -171,9 +200,12 @@ public final class ColumnPage {
 	 * Add a column to the page with the specific index and add a
 	 * {@link ColumnAnimation}.
 	 * 
-	 * @param index The index.
-	 * @param column The column.
-	 * @param rectF The initial rectangle.
+	 * @param index
+	 *            The index.
+	 * @param column
+	 *            The column.
+	 * @param rectF
+	 *            The initial rectangle.
 	 * @author Luo Yinzhuo
 	 */
 	public void addColumn(int index, Column column, RectF rectF) {
@@ -187,8 +219,8 @@ public final class ColumnPage {
 
 		RectF targetRectF = COLUMN_RECTS.get(position);
 		if (!RectF.intersects(rectF, targetRectF)) {
-			mColumnAnimationArray.put(position,
-			        new ColumnAnimation(rectF, System.currentTimeMillis(), targetRectF));
+			mColumnAnimationArray.put(position, new ColumnAnimation(rectF,
+					System.currentTimeMillis(), targetRectF));
 		}
 	}
 
@@ -205,15 +237,21 @@ public final class ColumnPage {
 	/**
 	 * Draw the column page.
 	 * 
-	 * @param canvas The {@link ColumnPageView}'s canvas.
-	 * @param offsetX The offset on X axis of this page.
-	 * @param width The {@link ColumnPageView}'s width.
-	 * @param jumpPosition The position need to be jumped.
-	 * @param editing True if the column page is editing, otherwise false.
+	 * @param canvas
+	 *            The {@link ColumnPageView}'s canvas.
+	 * @param offsetX
+	 *            The offset on X axis of this page.
+	 * @param width
+	 *            The {@link ColumnPageView}'s width.
+	 * @param jumpPosition
+	 *            The position need to be jumped.
+	 * @param rotation
+	 *            The canvas rotation before drawing.
 	 * @author Luo Yinzhuo
 	 * @date 2013-8-22
 	 */
-	public void draw(Canvas canvas, float offsetX, int width, int jumpPosition, boolean editing) {
+	public void draw(Canvas canvas, float offsetX, int width, int jumpPosition,
+			float rotation) {
 		final long time = System.currentTimeMillis();
 
 		for (int i = 0; i < mColumns.size(); i++) {
@@ -236,15 +274,17 @@ public final class ColumnPage {
 			}
 
 			// TODO: Use offsetX to reduce draw items.
-			column.draw(canvas, rectF, editing);
+			column.draw(canvas, rectF, rotation);
 		}
 	}
 
 	/**
 	 * Invoked when a down event occurs on the page.
 	 * 
-	 * @param e The event.
-	 * @param listener The press down column listener.
+	 * @param e
+	 *            The event.
+	 * @param listener
+	 *            The press down column listener.
 	 */
 	public void onDown(MotionEvent e, OnPressDownColumnListener listener) {
 		for (int i = 0; i < mColumns.size(); i++) {
@@ -289,11 +329,15 @@ public final class ColumnPage {
 		/**
 		 * Construct a new instance.
 		 * 
-		 * @param startRectF The start rectangle.
-		 * @param startTime The start time.
-		 * @param targetRectF The target rectangle.
+		 * @param startRectF
+		 *            The start rectangle.
+		 * @param startTime
+		 *            The start time.
+		 * @param targetRectF
+		 *            The target rectangle.
 		 */
-		public ColumnAnimation(RectF startRectF, long startTime, RectF targetRectF) {
+		public ColumnAnimation(RectF startRectF, long startTime,
+				RectF targetRectF) {
 			mStartRectF.set(startRectF);
 			mStartTime = startTime;
 			mTargetRectF.set(targetRectF);
@@ -302,8 +346,10 @@ public final class ColumnPage {
 		/**
 		 * Animate to a new target rectangle.
 		 * 
-		 * @param startTime The start time.
-		 * @param targetRectF The target rectangle.
+		 * @param startTime
+		 *            The start time.
+		 * @param targetRectF
+		 *            The target rectangle.
 		 * @author Luo Yinzhuo
 		 */
 		public void animate(long startTime, RectF targetRectF) {
@@ -315,7 +361,8 @@ public final class ColumnPage {
 		/**
 		 * Get the current rectangle.
 		 * 
-		 * @param time The current time.
+		 * @param time
+		 *            The current time.
 		 * @return The current rectangle.
 		 * @author Luo Yinzhuo
 		 */
@@ -326,10 +373,10 @@ public final class ColumnPage {
 				return mTargetRectF;
 			} else {
 				RectF rectF = new RectF(mStartRectF);
-				final float offsetX = (mTargetRectF.centerX() - mStartRectF.centerX()) * passTime
-				        / DURATION_BASE;
-				final float offsetY = (mTargetRectF.centerY() - mStartRectF.centerY()) * passTime
-				        / DURATION_BASE;
+				final float offsetX = (mTargetRectF.centerX() - mStartRectF
+						.centerX()) * passTime / DURATION_BASE;
+				final float offsetY = (mTargetRectF.centerY() - mStartRectF
+						.centerY()) * passTime / DURATION_BASE;
 				rectF.offset(offsetX, offsetY);
 				return rectF;
 			}
@@ -349,8 +396,10 @@ public final class ColumnPage {
 	/**
 	 * Invoked when the position has been released by a {@link Column}.
 	 * 
-	 * @param position The position released.
-	 * @param width The {@link ColumnPageView}'s width.
+	 * @param position
+	 *            The position released.
+	 * @param width
+	 *            The {@link ColumnPageView}'s width.
 	 * @author Luo Yinzhuo
 	 */
 	public void onReleasePosition(int position, int width) {
@@ -363,11 +412,14 @@ public final class ColumnPage {
 				if (i == MAX_COLUMN_SIZE - 1) {
 					RectF startRectF = new RectF(COLUMN_RECTS.get(0));
 					startRectF.offset(width, 0);
-					mColumnAnimationArray.put(i,
-					        new ColumnAnimation(startRectF, time, COLUMN_RECTS.get(i)));
+					mColumnAnimationArray.put(i, new ColumnAnimation(
+							startRectF, time, COLUMN_RECTS.get(i)));
 				} else {
-					mColumnAnimationArray.put(i, new ColumnAnimation(COLUMN_RECTS.get(i + 1), time,
-					        COLUMN_RECTS.get(i)));
+					mColumnAnimationArray
+							.put(i,
+									new ColumnAnimation(
+											COLUMN_RECTS.get(i + 1), time,
+											COLUMN_RECTS.get(i)));
 				}
 			}
 		}
@@ -376,8 +428,10 @@ public final class ColumnPage {
 	/**
 	 * Invoked when the position has been taken by a {@link Column}.
 	 * 
-	 * @param position The position taken.
-	 * @param width The {@link ColumnPageView}'s width.
+	 * @param position
+	 *            The position taken.
+	 * @param width
+	 *            The {@link ColumnPageView}'s width.
 	 * @author Luo Yinzhuo
 	 */
 	public void onTakePosition(int position, int width) {
@@ -396,11 +450,12 @@ public final class ColumnPage {
 				if (i == MAX_COLUMN_SIZE - 1) {
 					RectF targetRectF = new RectF(COLUMN_RECTS.get(0));
 					targetRectF.offset(width, 0);
-					mColumnAnimationArray.put(i, new ColumnAnimation(COLUMN_RECTS.get(i), time,
-					        targetRectF));
+					mColumnAnimationArray.put(i, new ColumnAnimation(
+							COLUMN_RECTS.get(i), time, targetRectF));
 				} else {
-					mColumnAnimationArray.put(i, new ColumnAnimation(COLUMN_RECTS.get(i), time,
-					        COLUMN_RECTS.get(i + 1)));
+					mColumnAnimationArray
+							.put(i, new ColumnAnimation(COLUMN_RECTS.get(i),
+									time, COLUMN_RECTS.get(i + 1)));
 				}
 			}
 		}

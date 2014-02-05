@@ -26,13 +26,6 @@ public class StartDialog extends Dialog {
 	 */
 	public interface OnStartDialogListener {
 		/**
-		 * Called when the back key is pressed.
-		 * 
-		 * @author Luo Yinzhuo
-		 */
-		public void onStartDialogBack();
-
-		/**
 		 * Called when the dialog is timed out.
 		 * 
 		 * @author Luo Yinzhuo
@@ -123,6 +116,5 @@ public class StartDialog extends Dialog {
 
 	@Override
 	public void onBackPressed() {
-		mListener.onStartDialogBack();
 	}
 }
