@@ -3,15 +3,17 @@ package com.panguso.android.shijingshan.subscribe;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
+
 /**
  * Specific for store a subscribe column's information.
  * 
  * @author Luo Yinzhuo
  */
-public final class SubscribeColumnInfo {
+public final class SubscribeInfo {
 
 	/** The column ID. */
-	private final String mID;
+	private final int mId;
 	/** The column name. */
 	private final String mName;
 	/** The subscribe flag. */
@@ -27,10 +29,23 @@ public final class SubscribeColumnInfo {
 	 * @param subscribe
 	 *            The column is subscribed or not.
 	 */
-	private SubscribeColumnInfo(String id, String name, boolean subscribe) {
-		mID = id;
+	private SubscribeInfo(int id, String name, boolean subscribe) {
+		mId = id;
 		mName = name;
 		mSubscribe = subscribe;
+	}
+	
+	/**
+	 * Get the {@link SubscribeButton} based on the {@link SubscribeInfo}.
+	 * 
+	 * @param context
+	 *            The context.
+	 * @return The {@link SubscribeButton}.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public SubscribeButton getSubscribeButton(Context context) {
+		return new SubscribeButton(context, mId, mName, mSubscribe);
 	}
 
 	/** The key to get column ID. */
@@ -66,16 +81,16 @@ public final class SubscribeColumnInfo {
 	 *             If the column info has error.
 	 * @author Luo Yinzhuo
 	 */
-	public static SubscribeColumnInfo parse(JSONObject json)
+	public static SubscribeInfo parse(JSONObject json)
 			throws JSONException {
-		return new SubscribeColumnInfo(json.getString(KEY_COLUMN_ID),
+		return new SubscribeInfo(json.getInt(KEY_COLUMN_ID),
 				json.getString(KEY_COLUMN_NAME), json.getString(
 						KEY_COLUMN_DINGYUE).equals(VALUE_DINGYUE_YES));
 	}
 
 	@Override
 	public String toString() {
-		return "SubscribeColumnInfo [mID=" + mID + ", mName=" + mName
+		return "SubscribeColumnInfo [mID=" + mId + ", mName=" + mName
 				+ ", mSubscribe=" + mSubscribe + "]";
 	}
 }

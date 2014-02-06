@@ -16,7 +16,6 @@ import android.widget.RelativeLayout;
  * Represent a business button.
  * 
  * @author Luo Yinzhuo
- * 
  */
 public final class BusinessButton extends RelativeLayout implements
 		OnClickListener, OnTouchListener {
@@ -25,7 +24,7 @@ public final class BusinessButton extends RelativeLayout implements
 	 * Interface definition for a callback when the {@link BusinessButton} is
 	 * clicked.
 	 * 
-	 * @author luoyinzhuo
+	 * @author Luo Yinzhuo
 	 */
 	public interface OnBusinessButtonListener {
 
@@ -52,7 +51,10 @@ public final class BusinessButton extends RelativeLayout implements
 	private OnBusinessButtonListener mListener;
 
 	/**
+	 * Construct a new instance.
+	 * 
 	 * @param context
+	 *            The context.
 	 */
 	BusinessButton(Context context, int id, String name) {
 		super(context);

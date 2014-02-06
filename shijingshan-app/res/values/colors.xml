@@ -55,6 +55,10 @@
 
     <!-- user type dialog -->
     <color name="user_type_button_background_pressed">#83B8F0</color>
+    
+    <!-- subscribe activity -->
+    <color name="subscribe_button_background_pressed">#83B8F0</color>
+    <color name="subscribe_background">#FFFFFF</color>
 
     <!-- setting activity -->
     <color name="setting_background">#FFFFFF</color>

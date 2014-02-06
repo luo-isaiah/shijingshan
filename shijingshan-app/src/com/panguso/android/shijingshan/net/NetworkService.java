@@ -50,7 +50,7 @@ import com.panguso.android.shijingshan.news.NewsInfo;
 import com.panguso.android.shijingshan.register.business.BusinessInfo;
 import com.panguso.android.shijingshan.register.enterprise.EnterpriseInfo;
 import com.panguso.android.shijingshan.register.usertype.UserTypeInfo;
-import com.panguso.android.shijingshan.subscribe.SubscribeColumnInfo;
+import com.panguso.android.shijingshan.subscribe.SubscribeInfo;
 
 /**
  * Provide network service.
@@ -167,6 +167,8 @@ public final class NetworkService {
 	private static final int XCODE_ACCOUNT_NOT_ACTIVATED = 207;
 	/** The xCode to identify the request's account and password not match. */
 	private static final int XCODE_ACCOUNT_PASSWORD_NOT_MATCH = 208;
+	/** The xCode to identify the request execution encounters no data error. */
+	private static final int XCODE_NO_DATA = 997;
 	/** The xCode to identify the request execution encounters database error. */
 	private static final int XCODE_DATABASE_ERROR = 998;
 
@@ -716,6 +718,16 @@ public final class NetworkService {
 		public void onLoginResponseAccountPasswordNotMatch(String errorMessage);
 
 		/**
+		 * Called when the login request execution encounters no data error.
+		 * 
+		 * @param errorMessage
+		 *            The error message.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onLoginResponseNoDataError(String errorMessage);
+
+		/**
 		 * Called when the login request execution encounters database error.
 		 * 
 		 * @param errorMessage
@@ -825,6 +837,10 @@ public final class NetworkService {
 					mListener
 							.onLoginResponseAccountPasswordNotMatch(jsonResponse
 									.getString(KEY_XMSG));
+					return;
+				case XCODE_NO_DATA:
+					mListener.onLoginResponseNoDataError(jsonResponse
+							.getString(KEY_XMSG));
 					return;
 				case XCODE_DATABASE_ERROR:
 					mListener.onLoginResponseDatabaseError(jsonResponse
@@ -1262,30 +1278,30 @@ public final class NetworkService {
 
 	/**
 	 * Interface definition for a callback to be invoked when a search subscribe
-	 * column info list request is executed.
+	 * info list request is executed.
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	public interface SearchSubscribeColumnInfoListRequestListener {
+	public interface SearchSubscribeInfoListRequestListener {
 
 		/**
-		 * Called when the search subscribe column info list request creation is
+		 * Called when the search subscribe info list request creation is
 		 * failed.
 		 * 
 		 * @author Luo Yinzhuo
 		 */
-		public void onSearchSubscribeColumnInfoListRequestFailed();
+		public void onSearchSubscribeInfoListRequestFailed();
 
 		/**
-		 * Called when the search subscribe column info list request execution
+		 * Called when the search subscribe info list request execution
 		 * is successful.
 		 * 
-		 * @param subscribeColumnInfos
-		 *            The list of {@link SubscribeColumnInfo} from server.
+		 * @param subscribeInfos
+		 *            The list of {@link SubscribeInfo} from server.
 		 * @author Luo Yinzhuo
 		 */
-		public void onSearchSubscribeColumnInfoListResponseSuccess(
-				List<SubscribeColumnInfo> subscribeColumnInfos);
+		public void onSearchSubscribeInfoListResponseSuccess(
+				List<SubscribeInfo> subscribeInfos);
 
 		/**
 		 * Called when the search subscribe column info list request execution
@@ -1293,22 +1309,22 @@ public final class NetworkService {
 		 * 
 		 * @author Luo Yinzhuo
 		 */
-		public void onSearchSubscribeColumnInfoListResponseFailed();
+		public void onSearchSubscribeInfoListResponseFailed();
 	}
 
 	/**
-	 * Specified for execute search subscribe column list request.
+	 * Specified for execute search subscribe list request.
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	private static class SearchSubscribeColumnInfoListCommand implements
+	private static class SearchSubscribeInfoListCommand implements
 			Runnable {
 		/** The server URL. */
 		private final String mServerURL;
 		/** The account. */
 		private final String mAccount;
 		/** The request listener. */
-		private final SearchSubscribeColumnInfoListRequestListener mListener;
+		private final SearchSubscribeInfoListRequestListener mListener;
 
 		/**
 		 * Construct a new instance.
@@ -1320,9 +1336,9 @@ public final class NetworkService {
 		 * @param listener
 		 *            The request listener.
 		 */
-		private SearchSubscribeColumnInfoListCommand(String serverURL,
+		private SearchSubscribeInfoListCommand(String serverURL,
 				String account,
-				SearchSubscribeColumnInfoListRequestListener listener) {
+				SearchSubscribeInfoListRequestListener listener) {
 			mServerURL = serverURL;
 			mAccount = account;
 			mListener = listener;
@@ -1342,7 +1358,7 @@ public final class NetworkService {
 								mAccount);
 			} catch (Exception e) {
 				e.printStackTrace();
-				mListener.onSearchSubscribeColumnInfoListRequestFailed();
+				mListener.onSearchSubscribeInfoListRequestFailed();
 				return;
 			}
 
@@ -1352,7 +1368,7 @@ public final class NetworkService {
 				content = NetworkService.getContent(response);
 			} catch (IOException e) {
 				e.printStackTrace();
-				mListener.onSearchSubscribeColumnInfoListResponseFailed();
+				mListener.onSearchSubscribeInfoListResponseFailed();
 				return;
 			}
 
@@ -1363,30 +1379,30 @@ public final class NetworkService {
 				case XCODE_SUCCESS:
 					JSONArray jsonSubscribeColumnInfo = jsonResponse
 							.getJSONArray(KEY_XDATA);
-					List<SubscribeColumnInfo> subscribeColumnInfos = new ArrayList<SubscribeColumnInfo>();
+					List<SubscribeInfo> subscribeColumnInfos = new ArrayList<SubscribeInfo>();
 					for (int i = 0; i < jsonSubscribeColumnInfo.length(); i++) {
 						JSONObject subscribeColumnInfo = jsonSubscribeColumnInfo
 								.getJSONObject(i);
-						if (SubscribeColumnInfo
+						if (SubscribeInfo
 								.isSubscribeColumnInfo(subscribeColumnInfo)) {
-							subscribeColumnInfos.add(SubscribeColumnInfo
+							subscribeColumnInfos.add(SubscribeInfo
 									.parse(subscribeColumnInfo));
 						}
 					}
 					mListener
-							.onSearchSubscribeColumnInfoListResponseSuccess(subscribeColumnInfos);
+							.onSearchSubscribeInfoListResponseSuccess(subscribeColumnInfos);
 					return;
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 			Log.e("SearchSubscribeColumnInfoListCommand", content);
-			mListener.onSearchSubscribeColumnInfoListResponseFailed();
+			mListener.onSearchSubscribeInfoListResponseFailed();
 		}
 	}
 
 	/**
-	 * Get the account's subscribe column info list.
+	 * Search the account's subscribe info list.
 	 * 
 	 * @param serverURL
 	 *            The server URL.
@@ -1396,10 +1412,10 @@ public final class NetworkService {
 	 *            The request listener.
 	 * @author Luo Yinzhuo
 	 */
-	public static void getSearchSubscribeColumnInfoList(String serverURL,
+	public static void searchSubscribeInfoList(String serverURL,
 			String account,
-			SearchSubscribeColumnInfoListRequestListener listener) {
-		EXECUTOR.execute(new SearchSubscribeColumnInfoListCommand(serverURL,
+			SearchSubscribeInfoListRequestListener listener) {
+		EXECUTOR.execute(new SearchSubscribeInfoListCommand(serverURL,
 				account, listener));
 	}
 

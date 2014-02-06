@@ -54,6 +54,13 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 		public void onBusinessDialogInitialized();
 
 		/**
+		 * Called when the dialog failed initialization.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onBusinessDialogInitializeFailed();
+
+		/**
 		 * Called when the back button is clicked or the back key pressed.
 		 * 
 		 * @author Luo Yinzhuo
@@ -96,6 +103,8 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 	 * 
 	 * @param context
 	 *            The context.
+	 * @param listener
+	 *            The listener.
 	 */
 	@SuppressWarnings("deprecation")
 	public BusinessDialog(Context context, OnBusinessDialogListener listener) {
@@ -104,8 +113,7 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 		setContentView(R.layout.business_dialog);
 
 		mTitleBar = (BlueTitleBar) findViewById(R.id.title_bar);
-		mTitleBar.setTitle(context.getResources().getString(
-				R.string.business_title));
+		mTitleBar.setTitle(context.getString(R.string.business_title));
 		mTitleBar.setOnBackListener(this);
 
 		mBusiness = (LinearLayout) findViewById(R.id.business_layout);
@@ -119,7 +127,7 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 
 		mListener = listener;
 		NetworkService.getBusinessInfoList(
-				context.getResources().getString(R.string.server_url), this);
+				context.getString(R.string.server_url), this);
 	}
 
 	@Override
@@ -144,8 +152,6 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 
 	@Override
 	public void onBusinessInfoListRequestFailed() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -170,10 +176,26 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 		});
 	}
 
+	/**
+	 * Retry initialization.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void retry() {
+		NetworkService.getBusinessInfoList(
+				getContext().getString(R.string.server_url), this);
+	}
+
 	@Override
 	public void onBusinessInfoListResponseFailed() {
-		// TODO Auto-generated method stub
-
+		getOwnerActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (mListener != null) {
+					mListener.onBusinessDialogInitializeFailed();
+				}
+			}
+		});
 	}
 
 	@Override
@@ -189,5 +211,4 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 			mListener.onNewEnterpriseClicked();
 		}
 	}
-
 }

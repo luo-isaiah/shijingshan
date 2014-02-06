@@ -150,6 +150,10 @@ public class ColumnPageView extends View {
 		 * @author Luo Yinzhuo
 		 */
 		public void filter(List<Column> columns) {
+			for (ColumnPage columnPage : mColumnPages) {
+				columnPage.filter(columns);
+			}
+			
 			List<Column> remainColumns = new ArrayList<Column>(columns);
 			if (!mColumnPages.isEmpty()) {
 				for (ColumnPage columnPage : mColumnPages) {

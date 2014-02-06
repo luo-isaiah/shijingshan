@@ -12,6 +12,46 @@
     <string name="unsupported_title">设备故障</string>
     <string name="unsupported_text">您的设备不支持UTF-8编码</string>
     <string name="unsupported_button">退出</string>
+    
+    <!-- account exist dialog -->
+    <string name="account_exist_title">注册错误</string>
+    <string name="account_exist_text">该用户名已存在</string>
+    <string name="account_exist_button">确定</string>
+    
+    <!-- account not exist dialog -->
+    <string name="account_not_exist_title">登录错误</string>
+    <string name="account_not_exist_text">用户不存在</string>
+    <string name="account_not_exit_button">确定</string>
+    
+    <!-- account canceled dialog-->
+    <string name="account_canceled_title">登录错误</string>
+    <string name="account_canceled_text">用户已注销</string>
+    <string name="account_canceled_button">确定</string>
+    
+    <!-- account frozen dialog -->
+    <string name="account_frozen_title">登录错误</string>
+    <string name="account_frozen_text">用户已冻结</string>
+    <string name="account_frozen_button">确定</string>
+    
+    <!-- account not activated dialog -->
+    <string name="account_not_activated_title">登录错误</string>
+    <string name="account_not_activated_text">用户尚未激活</string>
+    <string name="account_not_activated_button">确定</string>
+    
+    <!-- account password not match dialog -->
+    <string name="account_password_not_match_title">登录错误</string>
+    <string name="account_password_not_match_text">用户名或密码错误</string>
+    <string name="account_password_not_match_button">确定</string>
+    
+    <!-- server no data error dialog -->
+    <string name="no_data_error_title">服务器错误</string>
+    <string name="no_data_error_text">没有数据</string>
+    <string name="no_data_error_button">确定</string>
+    
+    <!-- server database error dialog -->
+    <string name="database_error_title">服务器错误</string>
+    <string name="database_error_text">数据库操作出错</string>
+    <string name="database_error_button">确定</string>
 
     <!-- log activity -->
     <string name="log_title">登录</string>
@@ -67,6 +107,9 @@
 
     <!-- user type dialog -->
     <string name="user_type_title">选择用户类型</string>
+    
+    <!-- subscribe activity -->
+    <string name="subscribe_title">订阅</string>
 
     <!-- setting activity -->
     <string name="setting_title">设置</string>

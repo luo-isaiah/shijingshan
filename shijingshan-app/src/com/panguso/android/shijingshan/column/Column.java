@@ -14,7 +14,9 @@ import org.json.JSONObject;
 
 import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.news.NewsPageActivity;
+import com.panguso.android.shijingshan.subscribe.SubscribeActivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -54,6 +56,9 @@ public class Column {
 		COLUMN_ICON_ARRAY.put(107, R.drawable.column_ldxx);
 		// ban shi zhi nan
 		COLUMN_ICON_ARRAY.put(108, R.drawable.column_bszn);
+
+		// Add column
+		COLUMN_ICON_ARRAY.put(AddColumn.ID, R.drawable.column_add);
 	}
 
 	/** The paint shared by all the columns. */
@@ -172,9 +177,13 @@ public class Column {
 
 		if (mSubscribe) {
 			mBackgroundColor = resources.getColor(R.color.column_subscribe);
-			mDelete = resources.getDrawable(R.drawable.delete_mark);
-			mDelete.setBounds(0, 0, mDelete.getIntrinsicWidth(),
-					mDelete.getIntrinsicHeight());
+			if (mId != AddColumn.ID) {
+				mDelete = resources.getDrawable(R.drawable.delete_mark);
+				mDelete.setBounds(0, 0, mDelete.getIntrinsicWidth(),
+						mDelete.getIntrinsicHeight());
+			} else {
+				mDelete = null;
+			}
 		} else {
 			mBackgroundColor = resources.getColor(R.color.column_public);
 			mDelete = null;
@@ -241,13 +250,12 @@ public class Column {
 		}
 
 		// Draw the delete mark.
-		// if (editing && !mId.equals(AddColumn.ID)) {
-		// canvas.save();
-		// canvas.translate(rect.right - DELETE_MARK.getIntrinsicWidth(),
-		// rect.top);
-		// DELETE_MARK.draw(canvas);
-		// canvas.restore();
-		// }
+		if (rotation != 0 && mDelete != null) {
+			canvas.save();
+			canvas.translate(rect.right - mDelete.getIntrinsicWidth(), rect.top);
+			mDelete.draw(canvas);
+			canvas.restore();
+		}
 
 		canvas.restore();
 	}
@@ -296,8 +304,14 @@ final class AddColumn extends Column {
 	/** The single instance. */
 	private static AddColumn SINGLE_INSTANCE;
 
+	/**
+	 * Construct a new instance.
+	 * 
+	 * @param context
+	 *            The context.
+	 */
 	private AddColumn(Context context) {
-		super(context, -1, "add", true);
+		super(context, ID, "", true);
 	}
 
 	/**
@@ -317,5 +331,11 @@ final class AddColumn extends Column {
 
 	@Override
 	public void onSingleTapUp(Context context) {
+		if (context instanceof ColumnPageActivity) {
+			ColumnPageActivity columnPageActivity = (ColumnPageActivity) context;
+			columnPageActivity.startActivityForResult(new Intent(context,
+					SubscribeActivity.class),
+					ColumnPageActivity.REQUEST_CODE_SUBSCRIBE);
+		}
 	}
 }

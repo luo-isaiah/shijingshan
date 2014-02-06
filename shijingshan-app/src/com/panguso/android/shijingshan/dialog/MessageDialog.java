@@ -96,7 +96,7 @@ public class MessageDialog extends Dialog implements
 		
 		mListener = listener;
 	}
-
+	
 	@Override
 	public void onBackPressed() {
 		if (mListener != null) {

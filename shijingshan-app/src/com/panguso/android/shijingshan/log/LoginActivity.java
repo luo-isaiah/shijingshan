@@ -46,9 +46,22 @@ public class LoginActivity extends Activity implements OnBackListener,
 	private static final int DIALOG_WAITING = 0;
 	/** The unsupported dialog ID. */
 	private static final int DIALOG_UNSUPPORTED = 1;
-
-	/** The unsupported dialog. */
-	private MessageDialog mUnsupportedDialog;
+	/** The retry dialog ID. */
+	private static final int DIALOG_RETRY = 2;
+	/** The account not exist dialog ID. */
+	private static final int DIALOG_ACCOUNT_NOT_EXIST = 3;
+	/** The account canceled dialog ID. */
+	private static final int DIALOG_ACCOUNT_CANCELED = 4;
+	/** The account frozen dialog ID. */
+	private static final int DIALOG_ACCOUNT_FROZEN = 5;
+	/** The account not activated dialog ID. */
+	private static final int DIALOG_ACCOUNT_NOT_ACTIVATED = 6;
+	/** The account password not match dialog ID. */
+	private static final int DIALOG_ACCOUNT_PASSWORD_NOT_MATCH = 7;
+	/** The server no data error dialog ID. */
+	private static final int DIALOG_NO_DATA_ERROR = 8;
+	/** The server database error dialog ID. */
+	private static final int DIALOG_DATABASE_ERROR = 9;
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -57,11 +70,57 @@ public class LoginActivity extends Activity implements OnBackListener,
 		case DIALOG_WAITING:
 			return new WaitingDialog(this);
 		case DIALOG_UNSUPPORTED:
-			mUnsupportedDialog = new MessageDialog(this, DIALOG_UNSUPPORTED,
+			return new MessageDialog(this, DIALOG_UNSUPPORTED,
 					resources.getString(R.string.unsupported_title),
 					resources.getString(R.string.unsupported_text),
 					resources.getString(R.string.unsupported_button), this);
-			return mUnsupportedDialog;
+		case DIALOG_RETRY:
+			return new MessageDialog(this, DIALOG_RETRY,
+					resources.getString(R.string.retry_title),
+					resources.getString(R.string.retry_text),
+					resources.getString(R.string.retry_button), this);
+		case DIALOG_ACCOUNT_NOT_EXIST:
+			return new MessageDialog(this, DIALOG_ACCOUNT_NOT_EXIST,
+					resources.getString(R.string.account_not_exist_title),
+					resources.getString(R.string.account_not_exist_text),
+					resources.getString(R.string.account_not_exit_button), this);
+		case DIALOG_ACCOUNT_CANCELED:
+			return new MessageDialog(this, DIALOG_ACCOUNT_CANCELED,
+					resources.getString(R.string.account_canceled_title),
+					resources.getString(R.string.account_canceled_text),
+					resources.getString(R.string.account_canceled_button), this);
+		case DIALOG_ACCOUNT_FROZEN:
+			return new MessageDialog(this, DIALOG_ACCOUNT_FROZEN,
+					resources.getString(R.string.account_frozen_title),
+					resources.getString(R.string.account_frozen_text),
+					resources.getString(R.string.account_frozen_button), this);
+		case DIALOG_ACCOUNT_NOT_ACTIVATED:
+			return new MessageDialog(this, DIALOG_ACCOUNT_NOT_ACTIVATED,
+					resources.getString(R.string.account_not_activated_title),
+					resources.getString(R.string.account_not_activated_text),
+					resources.getString(R.string.account_not_activated_button),
+					this);
+		case DIALOG_ACCOUNT_PASSWORD_NOT_MATCH:
+			return new MessageDialog(
+					this,
+					DIALOG_ACCOUNT_PASSWORD_NOT_MATCH,
+					resources
+							.getString(R.string.account_password_not_match_title),
+					resources
+							.getString(R.string.account_password_not_match_text),
+					resources
+							.getString(R.string.account_password_not_match_button),
+					this);
+		case DIALOG_NO_DATA_ERROR:
+			return new MessageDialog(this, DIALOG_NO_DATA_ERROR,
+					resources.getString(R.string.no_data_error_title),
+					resources.getString(R.string.no_data_error_text),
+					resources.getString(R.string.no_data_error_button), this);
+		case DIALOG_DATABASE_ERROR:
+			return new MessageDialog(this, DIALOG_DATABASE_ERROR,
+					resources.getString(R.string.database_error_title),
+					resources.getString(R.string.database_error_text),
+					resources.getString(R.string.database_error_button), this);
 		default:
 			return null;
 		}
@@ -69,7 +128,7 @@ public class LoginActivity extends Activity implements OnBackListener,
 
 	/** The key to get last login account data. */
 	private static final String KEY_LAST_LOGIN_ACCOUNT = "last_login_account";
-	
+
 	/** The title bar. */
 	private BlueTitleBar mTitleBar;
 	/** The account name. */
@@ -110,9 +169,10 @@ public class LoginActivity extends Activity implements OnBackListener,
 
 		mRegister = (UnderlineButton) findViewById(R.id.register);
 		mRegister.setOnClickListener(this);
-		
+
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-		String lastLoginAccount = sharedPreferences.getString(KEY_LAST_LOGIN_ACCOUNT, "");
+		String lastLoginAccount = sharedPreferences.getString(
+				KEY_LAST_LOGIN_ACCOUNT, "");
 		if (lastLoginAccount.length() > 0) {
 			try {
 				Account account = Account.parse(lastLoginAccount);
@@ -130,16 +190,19 @@ public class LoginActivity extends Activity implements OnBackListener,
 		finish();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onMessageDialogBack(int id) {
-		finish();
+		dismissDialog(id);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onMessageDialogConfirmed(int id) {
 		switch (id) {
-		
+		case DIALOG_RETRY:
+			login();
+			break;
 		default:
 			dismissDialog(id);
 			break;
@@ -178,6 +241,9 @@ public class LoginActivity extends Activity implements OnBackListener,
 				((Application) getApplication()).getUUID(), Build.MODEL, this);
 	}
 
+	/** Register activity request code. */
+	private static final int REQUEST_CODE_REGISTER = 1;
+	
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -186,10 +252,25 @@ public class LoginActivity extends Activity implements OnBackListener,
 			break;
 		case R.id.register:
 			Intent intent = new Intent(this, RegisterActivity.class);
-			startActivity(intent);
+			startActivityForResult(intent, REQUEST_CODE_REGISTER);
 			break;
 
 		default:
+			break;
+		}
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch(requestCode) {
+		case REQUEST_CODE_REGISTER:
+			if (resultCode == RESULT_OK) {
+				String account = data.getStringExtra(RegisterActivity.KEY_ACCOUNT);
+				String password = data.getStringExtra(RegisterActivity.KEY_PASSWORD);
+				mAccount.setText(account);
+				mPassword.setText(password);
+				mLogin.setEnabled(true);
+			}
 			break;
 		}
 	}
@@ -221,12 +302,14 @@ public class LoginActivity extends Activity implements OnBackListener,
 	public static final String KEY_PASSWORD = "password";
 
 	@Override
-	public void onLoginResponseSuccess(final String account, final String password) {
+	public void onLoginResponseSuccess(final String account,
+			final String password) {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					String jsonAccount = AccountManager.login(account, password);
+					String jsonAccount = AccountManager
+							.login(account, password);
 					SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 					Editor editor = sharedPreferences.edit();
 					editor.putString(KEY_LAST_LOGIN_ACCOUNT, jsonAccount);
@@ -234,7 +317,7 @@ public class LoginActivity extends Activity implements OnBackListener,
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-				
+
 				Intent intent = new Intent();
 				intent.putExtra(KEY_ACCOUNT, account);
 				setResult(RESULT_OK, intent);
@@ -243,94 +326,99 @@ public class LoginActivity extends Activity implements OnBackListener,
 		});
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.panguso.android.shijingshan.net.NetworkService.LoginRequestListener
-	 * #onLoginResponseFailed()
-	 */
 	@Override
 	public void onLoginResponseFailed() {
-		// TODO Auto-generated method stub
-
+		runOnUiThread(new Runnable() {
+			@SuppressWarnings("deprecation")
+			@Override
+			public void run() {
+				showDialog(DIALOG_RETRY);
+				dismissDialog(DIALOG_WAITING);
+			}
+		});
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.panguso.android.shijingshan.net.NetworkService.LoginRequestListener
-	 * #onLoginResponseAccountNotExist(java.lang.String)
-	 */
 	@Override
 	public void onLoginResponseAccountNotExist(String errorMessage) {
-		// TODO Auto-generated method stub
-
+		runOnUiThread(new Runnable() {
+			@SuppressWarnings("deprecation")
+			@Override
+			public void run() {
+				showDialog(DIALOG_ACCOUNT_NOT_EXIST);
+				dismissDialog(DIALOG_WAITING);
+			}
+		});
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.panguso.android.shijingshan.net.NetworkService.LoginRequestListener
-	 * #onLoginResponseAccountCanceled(java.lang.String)
-	 */
 	@Override
 	public void onLoginResponseAccountCanceled(String errorMessage) {
-		// TODO Auto-generated method stub
-
+		runOnUiThread(new Runnable() {
+			@SuppressWarnings("deprecation")
+			@Override
+			public void run() {
+				showDialog(DIALOG_ACCOUNT_CANCELED);
+				dismissDialog(DIALOG_WAITING);
+			}
+		});
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.panguso.android.shijingshan.net.NetworkService.LoginRequestListener
-	 * #onLoginResponseAccountFrozen(java.lang.String)
-	 */
 	@Override
 	public void onLoginResponseAccountFrozen(String errorMessage) {
-		// TODO Auto-generated method stub
-
+		runOnUiThread(new Runnable() {
+			@SuppressWarnings("deprecation")
+			@Override
+			public void run() {
+				showDialog(DIALOG_ACCOUNT_FROZEN);
+				dismissDialog(DIALOG_WAITING);
+			}
+		});
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.panguso.android.shijingshan.net.NetworkService.LoginRequestListener
-	 * #onLoginResponseAccountNotActivated(java.lang.String)
-	 */
 	@Override
 	public void onLoginResponseAccountNotActivated(String errorMessage) {
-		// TODO Auto-generated method stub
-
+		runOnUiThread(new Runnable() {
+			@SuppressWarnings("deprecation")
+			@Override
+			public void run() {
+				showDialog(DIALOG_ACCOUNT_NOT_ACTIVATED);
+				dismissDialog(DIALOG_WAITING);
+			}
+		});
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.panguso.android.shijingshan.net.NetworkService.LoginRequestListener
-	 * #onLoginResponseAccountPasswordNotMatch(java.lang.String)
-	 */
 	@Override
 	public void onLoginResponseAccountPasswordNotMatch(String errorMessage) {
-		// TODO Auto-generated method stub
-
+		runOnUiThread(new Runnable() {
+			@SuppressWarnings("deprecation")
+			@Override
+			public void run() {
+				showDialog(DIALOG_ACCOUNT_PASSWORD_NOT_MATCH);
+				dismissDialog(DIALOG_WAITING);
+			}
+		});
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.panguso.android.shijingshan.net.NetworkService.LoginRequestListener
-	 * #onLoginResponseDatabaseError(java.lang.String)
-	 */
+	@Override
+	public void onLoginResponseNoDataError(String errorMessage) {
+		runOnUiThread(new Runnable() {
+			@SuppressWarnings("deprecation")
+			@Override
+			public void run() {
+				showDialog(DIALOG_NO_DATA_ERROR);
+				dismissDialog(DIALOG_WAITING);
+			}
+		});
+	}
+
 	@Override
 	public void onLoginResponseDatabaseError(String errorMessage) {
-		// TODO Auto-generated method stub
-
+		runOnUiThread(new Runnable() {
+			@SuppressWarnings("deprecation")
+			@Override
+			public void run() {
+				showDialog(DIALOG_DATABASE_ERROR);
+				dismissDialog(DIALOG_WAITING);
+			}
+		});
 	}
 }

@@ -50,6 +50,13 @@ public final class UserTypeDialog extends Dialog implements OnBackListener,
 		public void onUserTypeDialogInitialized();
 
 		/**
+		 * Called when the dialog failed initialization.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onUserTypeDialogInitializeFailed();
+
+		/**
 		 * Called when the back button is clicked or the back key pressed.
 		 * 
 		 * @author Luo Yinzhuo
@@ -102,7 +109,7 @@ public final class UserTypeDialog extends Dialog implements OnBackListener,
 
 		mListener = listener;
 		NetworkService.getUserTypeInfoList(
-				context.getResources().getString(R.string.server_url), this);
+				context.getString(R.string.server_url), this);
 	}
 
 	@Override
@@ -116,7 +123,7 @@ public final class UserTypeDialog extends Dialog implements OnBackListener,
 	public void onBackPressed() {
 		onBack();
 	}
-	
+
 	@Override
 	public void show() {
 		super.show();
@@ -127,8 +134,6 @@ public final class UserTypeDialog extends Dialog implements OnBackListener,
 
 	@Override
 	public void onUserTypeInfoListRequestFailed() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -147,16 +152,32 @@ public final class UserTypeDialog extends Dialog implements OnBackListener,
 				if (mListener != null) {
 					mListener.onUserTypeDialogInitialized();
 				}
-				
+
 				mInitialized = true;
 			}
 		});
 	}
 
+	/**
+	 * Retry initialization.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void retry() {
+		NetworkService.getUserTypeInfoList(
+				getContext().getString(R.string.server_url), this);
+	}
+
 	@Override
 	public void onUserTypeInfoListResponseFailed() {
-		// TODO Auto-generated method stub
-
+		getOwnerActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (mListener != null) {
+					mListener.onUserTypeDialogInitializeFailed();
+				}
+			}
+		});
 	}
 
 	@Override

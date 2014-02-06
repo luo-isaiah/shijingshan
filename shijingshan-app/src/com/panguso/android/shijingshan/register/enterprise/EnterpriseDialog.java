@@ -55,6 +55,13 @@ public class EnterpriseDialog extends Dialog implements OnBackListener,
 		public void onEnterpriseDialogInitialized();
 
 		/**
+		 * Called when the dialog failed initialization.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onEnterpriseDialogInitializeFailed();
+
+		/**
 		 * Called when the back button is clicked or the back key pressed.
 		 * 
 		 * @author Luo Yinzhuo
@@ -93,6 +100,10 @@ public class EnterpriseDialog extends Dialog implements OnBackListener,
 	 * 
 	 * @param context
 	 *            The context.
+	 * @param businessId
+	 *            The business id.
+	 * @param listener
+	 *            The listener.
 	 */
 	@SuppressWarnings("deprecation")
 	public EnterpriseDialog(Context context, int businessId,
@@ -114,8 +125,7 @@ public class EnterpriseDialog extends Dialog implements OnBackListener,
 		mListener = listener;
 		mBusinessId = businessId;
 		NetworkService.getEnterpriseInfoList(
-				context.getResources().getString(R.string.server_url),
-				businessId, this);
+				context.getString(R.string.server_url), businessId, this);
 	}
 
 	/**
@@ -130,8 +140,9 @@ public class EnterpriseDialog extends Dialog implements OnBackListener,
 		List<EnterpriseInfo> enterpriseInfos = mBusinessEnterpriseArray
 				.get(mBusinessId);
 		if (enterpriseInfos == null) {
-			NetworkService.getEnterpriseInfoList(getContext().getResources()
-					.getString(R.string.server_url), businessId, this);
+			NetworkService.getEnterpriseInfoList(
+					getContext().getString(R.string.server_url), businessId,
+					this);
 		} else {
 			mEnterprise.removeAllViews();
 
@@ -175,16 +186,8 @@ public class EnterpriseDialog extends Dialog implements OnBackListener,
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.panguso.android.shijingshan.net.NetworkService.
-	 * EnterpriseInfoListRequestListener#onEnterpriseInfoListRequestFailed()
-	 */
 	@Override
 	public void onEnterpriseInfoListRequestFailed() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -195,45 +198,53 @@ public class EnterpriseDialog extends Dialog implements OnBackListener,
 		getOwnerActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				if (mBusinessId == businessId) {
-					mEnterprise.removeAllViews();
+				mEnterprise.removeAllViews();
 
-					int buttonSize = mEnterpriseButtonCache.size();
+				int buttonSize = mEnterpriseButtonCache.size();
 
-					for (int i = 0; i < enterpriseInfos.size(); i++) {
-						EnterpriseInfo enterpriseInfo = enterpriseInfos.get(i);
+				for (int i = 0; i < enterpriseInfos.size(); i++) {
+					EnterpriseInfo enterpriseInfo = enterpriseInfos.get(i);
 
-						EnterpriseButton button;
-						if (i < buttonSize) {
-							button = mEnterpriseButtonCache.get(i);
-							button = enterpriseInfo.getEnterpriseButton(button);
-						} else {
-							button = enterpriseInfo
-									.getEnterpriseButton(getContext());
-							button.setOnEnterpriseButtonListener(EnterpriseDialog.this);
-							mEnterpriseButtonCache.add(button);
-						}
-						mEnterprise.addView(button);
+					EnterpriseButton button;
+					if (i < buttonSize) {
+						button = mEnterpriseButtonCache.get(i);
+						button = enterpriseInfo.getEnterpriseButton(button);
+					} else {
+						button = enterpriseInfo
+								.getEnterpriseButton(getContext());
+						button.setOnEnterpriseButtonListener(EnterpriseDialog.this);
+						mEnterpriseButtonCache.add(button);
 					}
+					mEnterprise.addView(button);
+				}
 
-					if (mListener != null) {
-						mListener.onEnterpriseDialogInitialized();
-					}
+				if (mListener != null) {
+					mListener.onEnterpriseDialogInitialized();
 				}
 			}
 		});
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Retry initialization.
 	 * 
-	 * @see com.panguso.android.shijingshan.net.NetworkService.
-	 * EnterpriseInfoListRequestListener#onEnterpriseInfoListResponseFailed()
+	 * @author Luo Yinzhuo
 	 */
+	public void retry() {
+		NetworkService.getEnterpriseInfoList(
+				getContext().getString(R.string.server_url), mBusinessId, this);
+	}
+
 	@Override
 	public void onEnterpriseInfoListResponseFailed() {
-		// TODO Auto-generated method stub
-
+		getOwnerActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (mListener != null) {
+					mListener.onEnterpriseDialogInitializeFailed();
+				}
+			}
+		});
 	}
 
 	@Override

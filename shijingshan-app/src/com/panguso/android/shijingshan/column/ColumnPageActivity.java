@@ -15,15 +15,14 @@ import com.panguso.android.shijingshan.log.LoginActivity;
 import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.ColumnInfoListRequestListener;
 import com.panguso.android.shijingshan.setting.SettingActivity;
+import com.panguso.android.shijingshan.subscribe.SubscribeActivity;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -57,7 +56,6 @@ public class ColumnPageActivity extends Activity implements
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
-		Resources resources = getResources();
 		switch (id) {
 		case DIALOG_START:
 			return new StartDialog(this, this);
@@ -66,16 +64,15 @@ public class ColumnPageActivity extends Activity implements
 			return mWaitingDialog;
 		case DIALOG_RETRY:
 			mRetryDialog = new MessageDialog(this, DIALOG_RETRY,
-					resources.getString(R.string.retry_title),
-					resources.getString(R.string.retry_text),
-					resources.getString(R.string.retry_button), this);
+					getString(R.string.retry_title),
+					getString(R.string.retry_text),
+					getString(R.string.retry_button), this);
 			return mRetryDialog;
 		case DIALOG_UNSUPPORTED:
-			resources = getResources();
 			mUnsupportedDialog = new MessageDialog(this, DIALOG_UNSUPPORTED,
-					resources.getString(R.string.unsupported_title),
-					resources.getString(R.string.unsupported_text),
-					resources.getString(R.string.unsupported_button), this);
+					getString(R.string.unsupported_title),
+					getString(R.string.unsupported_text),
+					getString(R.string.unsupported_button), this);
 			return mUnsupportedDialog;
 		default:
 			return null;
@@ -229,6 +226,8 @@ public class ColumnPageActivity extends Activity implements
 
 	/** Login activity request code. */
 	private static final int REQUEST_CODE_LOGIN = 1;
+	/** Subscribe activity request code. */
+	static final int REQUEST_CODE_SUBSCRIBE = 2;
 
 	@Override
 	public void onClick(View v) {
@@ -237,15 +236,18 @@ public class ColumnPageActivity extends Activity implements
 		switch (v.getId()) {
 		case R.id.log:
 			if (AccountManager.isLogin()) {
-				
+
 			} else {
-				Intent intent = new Intent(this, LoginActivity.class);
-				startActivityForResult(intent, REQUEST_CODE_LOGIN);
+				startActivityForResult(new Intent(this, LoginActivity.class),
+						REQUEST_CODE_LOGIN);
 			}
 			break;
+		case R.id.subscribe:
+			startActivityForResult(new Intent(this, SubscribeActivity.class),
+					REQUEST_CODE_SUBSCRIBE);
+			break;
 		case R.id.setting:
-			Intent intent = new Intent(this, SettingActivity.class);
-			startActivity(intent);
+			startActivity(new Intent(this, SettingActivity.class));
 		default:
 			break;
 		}

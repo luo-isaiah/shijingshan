@@ -136,10 +136,28 @@ public final class ColumnPage {
 	}
 
 	/**
+	 * Filter the {@link Column}s which this {@link ColumnPage} contains to
+	 * remove the {@link Column}s which not exist in the specified
+	 * {@link Column} list.
+	 * 
+	 * @param columns The columns.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void filter(List<Column> columns) {
+		for (Column column : mColumns) {
+			if (!columns.contains(column)) {
+				mColumns.remove(column);
+			}
+		}
+	}
+
+	/**
 	 * Exclude the {@link Column}s which this {@link ColumnPage} contains from
 	 * the specified {@link Column} list.
 	 * 
-	 * @param columns The columns.
+	 * @param columns
+	 *            The columns.
 	 * 
 	 * @author Luo Yinzhuo
 	 */
