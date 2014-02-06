@@ -10,13 +10,13 @@ import com.panguso.android.shijingshan.net.NetworkService.ImageRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.LoginRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.NewsListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.RegisterRequestListener;
-import com.panguso.android.shijingshan.net.NetworkService.SearchSubscribeColumnInfoListRequestListener;
+import com.panguso.android.shijingshan.net.NetworkService.SearchSubscribeInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.UserTypeInfoListRequestListener;
 import com.panguso.android.shijingshan.news.NewsInfo;
 import com.panguso.android.shijingshan.register.business.BusinessInfo;
 import com.panguso.android.shijingshan.register.enterprise.EnterpriseInfo;
 import com.panguso.android.shijingshan.register.usertype.UserTypeInfo;
-import com.panguso.android.shijingshan.subscribe.SubscribeColumnInfo;
+import com.panguso.android.shijingshan.subscribe.SubscribeInfo;
 
 import android.graphics.Bitmap;
 import android.test.AndroidTestCase;
@@ -331,6 +331,142 @@ public class NetworkServiceTest extends AndroidTestCase {
 					}
 
 					@Override
+					public void onLoginResponseNoDataError(String errorMessage) {
+						assertTrue("Login Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseDatabaseError(String errorMessage) {
+						assertTrue("Register Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+				});
+
+		// Wait for the executor thread finish job.
+		synchronized (LOCK) {
+			try {
+				LOCK.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/** The account name not exist. */
+	private static final String ACCOUNT_NOT_EXIST = "test123456";
+
+	/**
+	 * Test
+	 * {@link NetworkService#login(String, String, String, String, String, LoginRequestListener)}
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testLoginAccountNotExist() {
+		/** The lock to synchronize. */
+		final Object LOCK = new Object();
+		NetworkService.login(SERVER_URL, ACCOUNT_NOT_EXIST, PASSWORD, UUID,
+				TERMINAL_TYPE, new LoginRequestListener() {
+
+					@Override
+					public void onLoginRequestFailed() {
+						assertTrue("Create Login Request Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseSuccess(String account,
+							String password) {
+						assertTrue("Login Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseFailed() {
+						assertTrue("Login Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseAccountNotExist(
+							String errorMessage) {
+						assertEquals("Error message doesn't match!", "该用户名已存在",
+								errorMessage);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseAccountCanceled(
+							String errorMessage) {
+						assertEquals("Error message doesn't match!", "该用户名已存在",
+								errorMessage);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseAccountFrozen(String errorMessage) {
+						assertEquals("Error message doesn't match!", "该用户名已存在",
+								errorMessage);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseAccountNotActivated(
+							String errorMessage) {
+						assertEquals("Error message doesn't match!", "该用户名已存在",
+								errorMessage);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseAccountPasswordNotMatch(
+							String errorMessage) {
+						assertEquals("Error message doesn't match!", "该用户名已存在",
+								errorMessage);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onLoginResponseNoDataError(String errorMessage) {
+						assertEquals("Error message doesn't match!", "没有数据",
+								errorMessage);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
 					public void onLoginResponseDatabaseError(String errorMessage) {
 						assertTrue("Register Failed!", false);
 						// Let main thread finish.
@@ -463,18 +599,18 @@ public class NetworkServiceTest extends AndroidTestCase {
 
 	/**
 	 * Test
-	 * {@link NetworkService#getSearchSubscribeColumnInfoList(String, String, com.panguso.android.shijingshan.net.NetworkService.SearchSubscribeColumnInfoListRequestListener)}
+	 * {@link NetworkService#searchSubscribeInfoList(String, String, com.panguso.android.shijingshan.net.NetworkService.SearchSubscribeInfoListRequestListener)}
 	 * 
 	 * @author Luo Yinzhuo
 	 */
 	public void testGetSearchSubscribeColumnInfoList() {
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
-		NetworkService.getSearchSubscribeColumnInfoList(SERVER_URL, ACCOUNT,
-				new SearchSubscribeColumnInfoListRequestListener() {
+		NetworkService.searchSubscribeInfoList(SERVER_URL, ACCOUNT,
+				new SearchSubscribeInfoListRequestListener() {
 
 					@Override
-					public void onSearchSubscribeColumnInfoListRequestFailed() {
+					public void onSearchSubscribeInfoListRequestFailed() {
 						assertTrue(
 								"Create Search Subscribe Column Info List Request Failed!",
 								false);
@@ -485,8 +621,8 @@ public class NetworkServiceTest extends AndroidTestCase {
 					}
 
 					@Override
-					public void onSearchSubscribeColumnInfoListResponseSuccess(
-							List<SubscribeColumnInfo> subscribeColumnInfos) {
+					public void onSearchSubscribeInfoListResponseSuccess(
+							List<SubscribeInfo> subscribeColumnInfos) {
 						assertNotNull("Subscribe column info is empty!",
 								subscribeColumnInfos);
 						assertTrue("Subscribe column info is empty!",
@@ -498,7 +634,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 					}
 
 					@Override
-					public void onSearchSubscribeColumnInfoListResponseFailed() {
+					public void onSearchSubscribeInfoListResponseFailed() {
 						assertTrue(
 								"Get Search Subscribe Column Info List Failed!",
 								false);
