@@ -3,6 +3,7 @@ package com.panguso.android.shijingshan.net;
 import java.util.List;
 
 import com.panguso.android.shijingshan.column.ColumnInfo;
+import com.panguso.android.shijingshan.net.NetworkService.AddSubscribeInfoRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.BusinessInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.ColumnInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.EnterpriseInfoListRequestListener;
@@ -597,13 +598,69 @@ public class NetworkServiceTest extends AndroidTestCase {
 		}
 	}
 
+	/** The subscribe id. */
+	private static final int SUBSCRIBE_ID = 103;
+
+	/**
+	 * Test
+	 * {@link NetworkService#addSubscribeInfo(String, String, int, AddSubscribeInfoRequestListener)}
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testAddSearchInfo() {
+		/** The lock to synchronize. */
+		final Object LOCK = new Object();
+		NetworkService.addSubscribeInfo(SERVER_URL, ACCOUNT, SUBSCRIBE_ID,
+				new AddSubscribeInfoRequestListener() {
+
+					@Override
+					public void onAddSubscribeInfoRequestFailed() {
+						assertTrue("Create Add Subscribe Info Request Failed!",
+								false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onAddSubscribeInfoResponseSuccess(
+							int subscribeId) {
+						assertEquals("Subscribe info doesn't match!",
+								SUBSCRIBE_ID, subscribeId);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onAddSubscribeInfoResponseFailed(int subscribeId) {
+						assertTrue("Add Subscribe Column Info Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+				});
+
+		// Wait for the executor thread finish job.
+		synchronized (LOCK) {
+			try {
+				LOCK.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	/**
 	 * Test
 	 * {@link NetworkService#searchSubscribeInfoList(String, String, com.panguso.android.shijingshan.net.NetworkService.SearchSubscribeInfoListRequestListener)}
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	public void testGetSearchSubscribeColumnInfoList() {
+	public void testSearchSubscribeInfoList() {
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
 		NetworkService.searchSubscribeInfoList(SERVER_URL, ACCOUNT,

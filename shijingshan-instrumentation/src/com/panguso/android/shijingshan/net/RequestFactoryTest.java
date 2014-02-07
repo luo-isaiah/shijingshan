@@ -201,18 +201,20 @@ public class RequestFactoryTest extends AndroidTestCase {
 		assertTrue("Create column list Request with no user failed!", false);
 	}
 
+	/** The subscribe id. */
+	private static final int SUBSCRIBE_ID = 103;
+
 	/**
 	 * Test
-	 * {@link RequestFactory#createSearchSubscribeColumnInfoListRequest(String, String)}
+	 * {@link RequestFactory#createAddSubscribeInfoRequest(String, String, int)}
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	public void testSearchSubscribeColumnInfoListRequest() {
-		final String EXPECT_CONTENT = "transCode=205&param={\"account\":\"panguso\"}";
+	public void testAddSubscribeInfoRequest() {
+		final String EXPECT_CONTENT = "transCode=204&param={\"account\":\"panguso\",\"columnIds\":103}";
 		try {
-			HttpPost request = RequestFactory
-					.createSearchSubscribeColumnInfoListRequest(SERVER_URL,
-							ACCOUNT);
+			HttpPost request = RequestFactory.createAddSubscribeInfoRequest(
+					SERVER_URL, ACCOUNT, SUBSCRIBE_ID);
 			assertNotNull(request);
 			String content = readContent(request.getEntity().getContent());
 			assertNotNull(content);
@@ -223,8 +225,30 @@ public class RequestFactoryTest extends AndroidTestCase {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		assertTrue(
-				"Create search subscribe column list Request with no user failed!",
-				false);
+		assertTrue("Create add subscribe info Request failed!", false);
+	}
+
+	/**
+	 * Test
+	 * {@link RequestFactory#createSearchSubscribeInfoListRequest(String, String)}
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testSearchSubscribeInfoListRequest() {
+		final String EXPECT_CONTENT = "transCode=205&param={\"account\":\"panguso\"}";
+		try {
+			HttpPost request = RequestFactory
+					.createSearchSubscribeInfoListRequest(SERVER_URL, ACCOUNT);
+			assertNotNull(request);
+			String content = readContent(request.getEntity().getContent());
+			assertNotNull(content);
+			assertEquals(EXPECT_CONTENT, content);
+			return;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		assertTrue("Create search subscribe column list Request failed!", false);
 	}
 }
