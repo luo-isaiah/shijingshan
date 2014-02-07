@@ -248,9 +248,41 @@ public final class RequestFactory {
 		return post;
 	}
 
+	/** The column IDs. */
+	private static final String COLUMN_IDS = "columnIds";
+	
 	/**
-	 * Create a search subscribe column info list request based on specified
-	 * account.
+	 * Create a add subscribe info to specified account.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param account
+	 *            The account name.
+	 * @param subscribeId
+	 *            The subscribe info id.
+	 * @return The search subscribe column info list request.
+	 * @throws JSONException
+	 *             If an error occurs when create JSON parameters.
+	 * @throws UnsupportedEncodingException
+	 *             If device doesn't support UTF-8 encode.
+	 * @author Luo Yinzhuo
+	 */
+	static HttpPost createAddSubscribeInfoRequest(String serverURL,
+			String account, int subscribeId) throws JSONException,
+			UnsupportedEncodingException {
+		HttpPost post = new HttpPost(serverURL);
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair(TRANS_CODE, "204"));
+		JSONObject param = new JSONObject();
+		param.put(ACCOUNT, account);
+		param.put(COLUMN_IDS, subscribeId);
+		params.add(new BasicNameValuePair(PARAM, param.toString()));
+		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+		return post;
+	}
+
+	/**
+	 * Create a search subscribe info list request based on specified account.
 	 * 
 	 * @param serverURL
 	 *            The server URL.
@@ -263,9 +295,8 @@ public final class RequestFactory {
 	 *             If device doesn't support UTF-8 encode.
 	 * @author Luo Yinzhuo
 	 */
-	static HttpPost createSearchSubscribeColumnInfoListRequest(
-			String serverURL, String account) throws JSONException,
-			UnsupportedEncodingException {
+	static HttpPost createSearchSubscribeInfoListRequest(String serverURL,
+			String account) throws JSONException, UnsupportedEncodingException {
 		HttpPost post = new HttpPost(serverURL);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair(TRANS_CODE, "205"));

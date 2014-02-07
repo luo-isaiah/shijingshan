@@ -44,24 +44,22 @@ public class LoginActivity extends Activity implements OnBackListener,
 		OnEditorActionListener, OnMessageDialogListener {
 	/** The waiting dialog ID. */
 	private static final int DIALOG_WAITING = 0;
-	/** The unsupported dialog ID. */
-	private static final int DIALOG_UNSUPPORTED = 1;
 	/** The retry dialog ID. */
-	private static final int DIALOG_RETRY = 2;
+	private static final int DIALOG_RETRY = 1;
 	/** The account not exist dialog ID. */
-	private static final int DIALOG_ACCOUNT_NOT_EXIST = 3;
+	private static final int DIALOG_ACCOUNT_NOT_EXIST = 2;
 	/** The account canceled dialog ID. */
-	private static final int DIALOG_ACCOUNT_CANCELED = 4;
+	private static final int DIALOG_ACCOUNT_CANCELED = 3;
 	/** The account frozen dialog ID. */
-	private static final int DIALOG_ACCOUNT_FROZEN = 5;
+	private static final int DIALOG_ACCOUNT_FROZEN = 4;
 	/** The account not activated dialog ID. */
-	private static final int DIALOG_ACCOUNT_NOT_ACTIVATED = 6;
+	private static final int DIALOG_ACCOUNT_NOT_ACTIVATED = 5;
 	/** The account password not match dialog ID. */
-	private static final int DIALOG_ACCOUNT_PASSWORD_NOT_MATCH = 7;
+	private static final int DIALOG_ACCOUNT_PASSWORD_NOT_MATCH = 6;
 	/** The server no data error dialog ID. */
-	private static final int DIALOG_NO_DATA_ERROR = 8;
+	private static final int DIALOG_NO_DATA_ERROR = 7;
 	/** The server database error dialog ID. */
-	private static final int DIALOG_DATABASE_ERROR = 9;
+	private static final int DIALOG_DATABASE_ERROR = 8;
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -69,11 +67,6 @@ public class LoginActivity extends Activity implements OnBackListener,
 		switch (id) {
 		case DIALOG_WAITING:
 			return new WaitingDialog(this);
-		case DIALOG_UNSUPPORTED:
-			return new MessageDialog(this, DIALOG_UNSUPPORTED,
-					resources.getString(R.string.unsupported_title),
-					resources.getString(R.string.unsupported_text),
-					resources.getString(R.string.unsupported_button), this);
 		case DIALOG_RETRY:
 			return new MessageDialog(this, DIALOG_RETRY,
 					resources.getString(R.string.retry_title),
@@ -286,14 +279,6 @@ public class LoginActivity extends Activity implements OnBackListener,
 
 	@Override
 	public void onLoginRequestFailed() {
-		runOnUiThread(new Runnable() {
-			@SuppressWarnings("deprecation")
-			@Override
-			public void run() {
-				showDialog(DIALOG_UNSUPPORTED);
-				dismissDialog(DIALOG_WAITING);
-			}
-		});
 	}
 
 	/** The key to store account. */

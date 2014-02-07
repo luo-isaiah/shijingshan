@@ -82,6 +82,7 @@ public class NewEnterpriseDialog extends Dialog implements
 		mConfirm.setOnClickListener(this);
 
 		getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+		setCanceledOnTouchOutside(false);
 
 		mListener = listener;
 	}

@@ -137,6 +137,8 @@ public class EnterpriseDialog extends Dialog implements OnBackListener,
 	 */
 	public void setBusinessId(int businessId) {
 		mBusinessId = businessId;
+		mEnterprise.removeAllViews();
+
 		List<EnterpriseInfo> enterpriseInfos = mBusinessEnterpriseArray
 				.get(mBusinessId);
 		if (enterpriseInfos == null) {
@@ -144,8 +146,6 @@ public class EnterpriseDialog extends Dialog implements OnBackListener,
 					getContext().getString(R.string.server_url), businessId,
 					this);
 		} else {
-			mEnterprise.removeAllViews();
-
 			int buttonSize = mEnterpriseButtonCache.size();
 
 			for (int i = 0; i < enterpriseInfos.size(); i++) {

@@ -25,6 +25,7 @@ public class WaitingDialog extends Dialog {
 		setContentView(R.layout.waiting_dialog);
 
 		getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+		setCanceledOnTouchOutside(false);
 	}
 
 	@Override

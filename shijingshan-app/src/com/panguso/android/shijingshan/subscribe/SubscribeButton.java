@@ -51,7 +51,7 @@ public class SubscribeButton extends RelativeLayout implements OnTouchListener,
 	private boolean mCheck;
 	/** The listener. */
 	private OnSubscribeButtonListener mListener;
-	
+
 	/**
 	 * Construct a new instance.
 	 * 
@@ -92,9 +92,9 @@ public class SubscribeButton extends RelativeLayout implements OnTouchListener,
 	public void setCheckBox(boolean check) {
 		mCheck = check;
 		if (check) {
-			mCheckBox.setBackgroundResource(R.drawable.check_box_check);
+			mCheckBox.setImageResource(R.drawable.check_box_check);
 		} else {
-			mCheckBox.setBackgroundResource(R.drawable.check_box_uncheck);
+			mCheckBox.setImageResource(R.drawable.check_box_uncheck);
 		}
 	}
 
@@ -102,7 +102,7 @@ public class SubscribeButton extends RelativeLayout implements OnTouchListener,
 	public boolean onTouch(View v, MotionEvent event) {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
-			mCheckBox.setBackgroundResource(R.drawable.check_box_press);
+			mCheckBox.setImageResource(R.drawable.check_box_press);
 			break;
 		}
 		return false;

@@ -25,6 +25,7 @@ public class StartDialog extends Dialog {
 	 * @author Luo Yinzhuo
 	 */
 	public interface OnStartDialogListener {
+		
 		/**
 		 * Called when the dialog is timed out.
 		 * 
@@ -90,6 +91,7 @@ public class StartDialog extends Dialog {
 		Window window = getWindow();
 		window.setLayout(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
 		window.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+
 		mListener = listener;
 	}
 
@@ -111,7 +113,9 @@ public class StartDialog extends Dialog {
 	 * @author Luo Yinzhuo
 	 */
 	private void onTimeout() {
-		mListener.onTimeout();
+		if (mListener != null) {
+			mListener.onTimeout();
+		}
 	}
 
 	@Override

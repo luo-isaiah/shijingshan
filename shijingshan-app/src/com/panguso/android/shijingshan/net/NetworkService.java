@@ -1277,6 +1277,135 @@ public final class NetworkService {
 	}
 
 	/**
+	 * Interface definition for a callback to be invoked when a add subscribe
+	 * info request is executed.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public interface AddSubscribeInfoRequestListener {
+
+		/**
+		 * Called when the add subscribe info request creation is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onAddSubscribeInfoRequestFailed();
+
+		/**
+		 * Called when the add subscribe info request execution is successful.
+		 * 
+		 * @param subscribeId
+		 *            The subscribe info id.
+		 * @author Luo Yinzhuo
+		 */
+		public void onAddSubscribeInfoResponseSuccess(int subscribeId);
+
+		/**
+		 * Called when the add subscribe info request execution is failed.
+		 * 
+		 * @param subscribeId
+		 *            The subscribe info id.
+		 * @author Luo Yinzhuo
+		 */
+		public void onAddSubscribeInfoResponseFailed(int subscribeId);
+	}
+
+	/**
+	 * Specified for execute add subscribe request.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private static class AddSubscribeInfoCommand implements Runnable {
+		/** The server URL. */
+		private final String mServerURL;
+		/** The account. */
+		private final String mAccount;
+		/** The subscribe id. */
+		private final int mSubscribeId;
+		/** The request listener. */
+		private final AddSubscribeInfoRequestListener mListener;
+
+		/**
+		 * Construct a new instance.
+		 * 
+		 * @param serverURL
+		 *            The server URL.
+		 * @param account
+		 *            The account.
+		 * @param subscribeId
+		 *            The subscribe id.
+		 * @param listener
+		 *            The request listener.
+		 */
+		private AddSubscribeInfoCommand(String serverURL, String account,
+				int subscribeId, AddSubscribeInfoRequestListener listener) {
+			mServerURL = serverURL;
+			mAccount = account;
+			mSubscribeId = subscribeId;
+			mListener = listener;
+		}
+
+		/** The key to get xCode. */
+		private static final String KEY_XCODE = "xCode";
+
+		@Override
+		public void run() {
+			HttpPost request;
+			try {
+				request = RequestFactory.createAddSubscribeInfoRequest(
+						mServerURL, mAccount, mSubscribeId);
+			} catch (Exception e) {
+				e.printStackTrace();
+				mListener.onAddSubscribeInfoRequestFailed();
+				return;
+			}
+
+			String content;
+			try {
+				HttpResponse response = HTTP_CLIENT.execute(request);
+				content = NetworkService.getContent(response);
+			} catch (IOException e) {
+				e.printStackTrace();
+				mListener.onAddSubscribeInfoResponseFailed(mSubscribeId);
+				return;
+			}
+
+			try {
+				JSONObject jsonResponse = new JSONObject(content);
+				int xCode = jsonResponse.getInt(KEY_XCODE);
+				switch (xCode) {
+				case XCODE_SUCCESS:
+					mListener.onAddSubscribeInfoResponseSuccess(mSubscribeId);
+					return;
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			Log.e("SearchSubscribeColumnInfoListCommand", content);
+			mListener.onAddSubscribeInfoResponseFailed(mSubscribeId);
+		}
+	}
+
+	/**
+	 * Add the subscribe info to the account.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param account
+	 *            The account name.
+	 * @param subscribeId
+	 *            The subscribe id.
+	 * @param listener
+	 *            The request listener.
+	 * @author Luo Yinzhuo
+	 */
+	public static void addSubscribeInfo(String serverURL, String account,
+			int subscribeId, AddSubscribeInfoRequestListener listener) {
+		EXECUTOR.execute(new AddSubscribeInfoCommand(serverURL, account,
+				subscribeId, listener));
+	}
+
+	/**
 	 * Interface definition for a callback to be invoked when a search subscribe
 	 * info list request is executed.
 	 * 
@@ -1293,8 +1422,8 @@ public final class NetworkService {
 		public void onSearchSubscribeInfoListRequestFailed();
 
 		/**
-		 * Called when the search subscribe info list request execution
-		 * is successful.
+		 * Called when the search subscribe info list request execution is
+		 * successful.
 		 * 
 		 * @param subscribeInfos
 		 *            The list of {@link SubscribeInfo} from server.
@@ -1317,8 +1446,7 @@ public final class NetworkService {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	private static class SearchSubscribeInfoListCommand implements
-			Runnable {
+	private static class SearchSubscribeInfoListCommand implements Runnable {
 		/** The server URL. */
 		private final String mServerURL;
 		/** The account. */
@@ -1337,8 +1465,7 @@ public final class NetworkService {
 		 *            The request listener.
 		 */
 		private SearchSubscribeInfoListCommand(String serverURL,
-				String account,
-				SearchSubscribeInfoListRequestListener listener) {
+				String account, SearchSubscribeInfoListRequestListener listener) {
 			mServerURL = serverURL;
 			mAccount = account;
 			mListener = listener;
@@ -1353,9 +1480,8 @@ public final class NetworkService {
 		public void run() {
 			HttpPost request;
 			try {
-				request = RequestFactory
-						.createSearchSubscribeColumnInfoListRequest(mServerURL,
-								mAccount);
+				request = RequestFactory.createSearchSubscribeInfoListRequest(
+						mServerURL, mAccount);
 			} catch (Exception e) {
 				e.printStackTrace();
 				mListener.onSearchSubscribeInfoListRequestFailed();
@@ -1413,10 +1539,9 @@ public final class NetworkService {
 	 * @author Luo Yinzhuo
 	 */
 	public static void searchSubscribeInfoList(String serverURL,
-			String account,
-			SearchSubscribeInfoListRequestListener listener) {
-		EXECUTOR.execute(new SearchSubscribeInfoListCommand(serverURL,
-				account, listener));
+			String account, SearchSubscribeInfoListRequestListener listener) {
+		EXECUTOR.execute(new SearchSubscribeInfoListCommand(serverURL, account,
+				listener));
 	}
 
 	/** The image LRU cache. */

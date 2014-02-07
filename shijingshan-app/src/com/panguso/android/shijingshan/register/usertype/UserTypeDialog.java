@@ -82,6 +82,8 @@ public final class UserTypeDialog extends Dialog implements OnBackListener,
 	private LinearLayout mUserType;
 	/** The initialize flag. */
 	private boolean mInitialized = false;
+	/** The retry flag. */
+	private boolean mRetry = false;
 	/** The listener. */
 	private final OnUserTypeDialogListener mListener;
 
@@ -127,6 +129,9 @@ public final class UserTypeDialog extends Dialog implements OnBackListener,
 	@Override
 	public void show() {
 		super.show();
+		if (mRetry) {
+			retry();
+		}
 		if (!mInitialized && mListener != null) {
 			mListener.onUserTypeDialogInitializing();
 		}
@@ -166,6 +171,7 @@ public final class UserTypeDialog extends Dialog implements OnBackListener,
 	public void retry() {
 		NetworkService.getUserTypeInfoList(
 				getContext().getString(R.string.server_url), this);
+		mRetry = false;
 	}
 
 	@Override
@@ -173,6 +179,7 @@ public final class UserTypeDialog extends Dialog implements OnBackListener,
 		getOwnerActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
+				mRetry = true;
 				if (mListener != null) {
 					mListener.onUserTypeDialogInitializeFailed();
 				}

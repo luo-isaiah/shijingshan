@@ -95,6 +95,8 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 	private final UnderlineButton mNewEnterprise;
 	/** The initialize flag. */
 	private boolean mInitialized = false;
+	/** The retry flag. */
+	private boolean mRetry = false;
 	/** The listener. */
 	private final OnBusinessDialogListener mListener;
 
@@ -145,6 +147,10 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 	@Override
 	public void show() {
 		super.show();
+		if (mRetry) {
+			retry();
+		}
+
 		if (!mInitialized && mListener != null) {
 			mListener.onBusinessDialogInitializing();
 		}
@@ -184,6 +190,7 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 	public void retry() {
 		NetworkService.getBusinessInfoList(
 				getContext().getString(R.string.server_url), this);
+		mRetry = false;
 	}
 
 	@Override
@@ -191,6 +198,8 @@ public class BusinessDialog extends Dialog implements OnBackListener,
 		getOwnerActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
+				mRetry = true;
+				
 				if (mListener != null) {
 					mListener.onBusinessDialogInitializeFailed();
 				}

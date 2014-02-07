@@ -34,7 +34,16 @@ public final class SubscribeInfo {
 		mName = name;
 		mSubscribe = subscribe;
 	}
-	
+
+	/**
+	 * Get the subscribe id.
+	 * 
+	 * @return The subscribe id.
+	 */
+	public int getId() {
+		return mId;
+	}
+
 	/**
 	 * Get the {@link SubscribeButton} based on the {@link SubscribeInfo}.
 	 * 
@@ -81,8 +90,7 @@ public final class SubscribeInfo {
 	 *             If the column info has error.
 	 * @author Luo Yinzhuo
 	 */
-	public static SubscribeInfo parse(JSONObject json)
-			throws JSONException {
+	public static SubscribeInfo parse(JSONObject json) throws JSONException {
 		return new SubscribeInfo(json.getInt(KEY_COLUMN_ID),
 				json.getString(KEY_COLUMN_NAME), json.getString(
 						KEY_COLUMN_DINGYUE).equals(VALUE_DINGYUE_YES));

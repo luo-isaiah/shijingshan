@@ -71,6 +71,19 @@ public class RegisterActivity extends Activity implements OnBackListener,
 	/** The user type dialog ID. */
 	private static final int DIALOG_USER_TYPE = 4;
 
+	/** The retry data. */
+	private final Bundle mRetryData = new Bundle();
+	/** The retry type key. */
+	private static final String KEY_RETRY_TYPE = "retry_type";
+	/** The retry type register. */
+	private static final int RETRY_TYPE_REGISTER = 0;
+	/** The retry type business. */
+	private static final int RETRY_TYPE_BUSINESS = 1;
+	/** The retry type enterprise. */
+	private static final int RETRY_TYPE_ENTERPRISE = 2;
+	/** The retry type user type. */
+	private static final int RETRY_TYPE_USER_TYPE = 3;
+
 	/** The business dialog. */
 	private BusinessDialog mBusinessDialog;
 	/** The enterprise dialog. */
@@ -235,12 +248,17 @@ public class RegisterActivity extends Activity implements OnBackListener,
 		switch (id) {
 		case DIALOG_RETRY:
 			dismissDialog(DIALOG_RETRY);
-			if (mEnterpriseDialog.isShowing()) {
-				dismissDialog(DIALOG_ENTERPRISE);
-			} else if (mBusinessDialog.isShowing()) {
+			int retryType = mRetryData.getInt(KEY_RETRY_TYPE);
+			switch (retryType) {
+			case RETRY_TYPE_BUSINESS:
 				dismissDialog(DIALOG_BUSINESS);
-			} else if (mUserTypeDialog.isShowing()) {
+				break;
+			case RETRY_TYPE_ENTERPRISE:
+				dismissDialog(DIALOG_ENTERPRISE);
+				break;
+			case RETRY_TYPE_USER_TYPE:
 				dismissDialog(DIALOG_USER_TYPE);
+				break;
 			}
 			break;
 		default:
@@ -256,13 +274,9 @@ public class RegisterActivity extends Activity implements OnBackListener,
 		case DIALOG_RETRY:
 			dismissDialog(DIALOG_RETRY);
 			showDialog(DIALOG_WAITING);
-			if (mEnterpriseDialog.isShowing()) {
-				mEnterpriseDialog.retry();
-			} else if (mBusinessDialog.isShowing()) {
-				mBusinessDialog.retry();
-			} else if (mUserTypeDialog.isShowing()) {
-				mUserTypeDialog.retry();
-			} else {
+			int retryType = mRetryData.getInt(KEY_RETRY_TYPE);
+			switch (retryType) {
+			case RETRY_TYPE_REGISTER:
 				NetworkService.register(
 						getResources().getString(R.string.server_url),
 						mUsername.getText(), mPassword.getText(),
@@ -270,6 +284,16 @@ public class RegisterActivity extends Activity implements OnBackListener,
 						mEnterpriseName,
 						((Application) getApplication()).getUUID(),
 						Build.MODEL, mUserTypeId, this);
+				break;
+			case RETRY_TYPE_BUSINESS:
+				mBusinessDialog.retry();
+				break;
+			case RETRY_TYPE_ENTERPRISE:
+				mEnterpriseDialog.retry();
+				break;
+			case RETRY_TYPE_USER_TYPE:
+				mUserTypeDialog.retry();
+				break;
 			}
 			break;
 		default:
@@ -357,6 +381,7 @@ public class RegisterActivity extends Activity implements OnBackListener,
 	@Override
 	public void onBusinessDialogInitializeFailed() {
 		showDialog(DIALOG_RETRY);
+		mRetryData.putInt(KEY_RETRY_TYPE, RETRY_TYPE_BUSINESS);
 		dismissDialog(DIALOG_WAITING);
 	}
 
@@ -413,6 +438,7 @@ public class RegisterActivity extends Activity implements OnBackListener,
 	@Override
 	public void onEnterpriseDialogInitializeFailed() {
 		showDialog(DIALOG_RETRY);
+		mRetryData.putInt(KEY_RETRY_TYPE, RETRY_TYPE_ENTERPRISE);
 		dismissDialog(DIALOG_WAITING);
 	}
 
@@ -421,6 +447,9 @@ public class RegisterActivity extends Activity implements OnBackListener,
 	public void onEnterpriseDialogBack() {
 		dismissDialog(DIALOG_WAITING);
 		dismissDialog(DIALOG_ENTERPRISE);
+		if (!mBusinessDialog.isShowing()) {
+			showDialog(DIALOG_BUSINESS);
+		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -454,6 +483,7 @@ public class RegisterActivity extends Activity implements OnBackListener,
 	@Override
 	public void onUserTypeDialogInitializeFailed() {
 		dismissDialog(DIALOG_WAITING);
+		mRetryData.putInt(KEY_RETRY_TYPE, RETRY_TYPE_USER_TYPE);
 		showDialog(DIALOG_RETRY);
 	}
 
@@ -526,6 +556,7 @@ public class RegisterActivity extends Activity implements OnBackListener,
 			@Override
 			public void run() {
 				showDialog(DIALOG_RETRY);
+				mRetryData.putInt(KEY_RETRY_TYPE, RETRY_TYPE_REGISTER);
 				dismissDialog(DIALOG_WAITING);
 			}
 		});

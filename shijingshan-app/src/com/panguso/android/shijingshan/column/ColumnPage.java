@@ -145,9 +145,11 @@ public final class ColumnPage {
 	 * @author Luo Yinzhuo
 	 */
 	public void filter(List<Column> columns) {
-		for (Column column : mColumns) {
+		for (int i = 0; i < mColumns.size(); i++) {
+			Column column = mColumns.get(i);
 			if (!columns.contains(column)) {
 				mColumns.remove(column);
+				i--;
 			}
 		}
 	}
