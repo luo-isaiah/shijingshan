@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -206,15 +208,18 @@ public class RequestFactoryTest extends AndroidTestCase {
 
 	/**
 	 * Test
-	 * {@link RequestFactory#createAddSubscribeInfoRequest(String, String, int)}
+	 * {@link RequestFactory#createSaveSubscribeInfoListRequest(String, String, int)}
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	public void testAddSubscribeInfoRequest() {
+	public void testSaveSubscribeInfoListRequest() {
 		final String EXPECT_CONTENT = "transCode=204&param={\"account\":\"panguso\",\"columnIds\":103}";
+		final List<Integer> subscribeIds = new ArrayList<Integer>();
+		subscribeIds.add(SUBSCRIBE_ID);
 		try {
-			HttpPost request = RequestFactory.createAddSubscribeInfoRequest(
-					SERVER_URL, ACCOUNT, SUBSCRIBE_ID);
+			HttpPost request = RequestFactory
+					.createSaveSubscribeInfoListRequest(SERVER_URL, ACCOUNT,
+							subscribeIds);
 			assertNotNull(request);
 			String content = readContent(request.getEntity().getContent());
 			assertNotNull(content);

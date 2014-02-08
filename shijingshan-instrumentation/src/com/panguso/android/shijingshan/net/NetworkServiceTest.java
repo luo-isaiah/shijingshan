@@ -1,9 +1,10 @@
 package com.panguso.android.shijingshan.net;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.panguso.android.shijingshan.column.ColumnInfo;
-import com.panguso.android.shijingshan.net.NetworkService.AddSubscribeInfoRequestListener;
+import com.panguso.android.shijingshan.net.NetworkService.SaveSubscribeInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.BusinessInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.ColumnInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.EnterpriseInfoListRequestListener;
@@ -603,19 +604,23 @@ public class NetworkServiceTest extends AndroidTestCase {
 
 	/**
 	 * Test
-	 * {@link NetworkService#addSubscribeInfo(String, String, int, AddSubscribeInfoRequestListener)}
+	 * {@link NetworkService#saveSubscribeInfoList(String, String, int, SaveSubscribeInfoListRequestListener)}
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	public void testAddSearchInfo() {
+	public void testSaveSearchInfoList() {
+		final List<Integer> SUBSCRIBE_IDS = new ArrayList<Integer>();
+		SUBSCRIBE_IDS.add(SUBSCRIBE_ID);
+
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
-		NetworkService.addSubscribeInfo(SERVER_URL, ACCOUNT, SUBSCRIBE_ID,
-				new AddSubscribeInfoRequestListener() {
+		NetworkService.saveSubscribeInfoList(SERVER_URL, ACCOUNT,
+				SUBSCRIBE_IDS, new SaveSubscribeInfoListRequestListener() {
 
 					@Override
-					public void onAddSubscribeInfoRequestFailed() {
-						assertTrue("Create Add Subscribe Info Request Failed!",
+					public void onSaveSubscribeInfoListRequestFailed() {
+						assertTrue(
+								"Create Save Subscribe Info List Request Failed!",
 								false);
 						// Let main thread finish.
 						synchronized (LOCK) {
@@ -624,10 +629,12 @@ public class NetworkServiceTest extends AndroidTestCase {
 					}
 
 					@Override
-					public void onAddSubscribeInfoResponseSuccess(
-							int subscribeId) {
-						assertEquals("Subscribe info doesn't match!",
-								SUBSCRIBE_ID, subscribeId);
+					public void onSaveSubscribeInfoListResponseSuccess(
+							List<Integer> subscribeIds) {
+						for (int i = 0; i < SUBSCRIBE_IDS.size(); i++) {
+							assertEquals("Subscribe info doesn't match!",
+									SUBSCRIBE_IDS.get(i), subscribeIds.get(i));
+						}
 						// Let main thread finish.
 						synchronized (LOCK) {
 							LOCK.notify();
@@ -635,8 +642,10 @@ public class NetworkServiceTest extends AndroidTestCase {
 					}
 
 					@Override
-					public void onAddSubscribeInfoResponseFailed(int subscribeId) {
-						assertTrue("Add Subscribe Column Info Failed!", false);
+					public void onSaveSubscribeInfoListResponseFailed(
+							List<Integer> subscribeIds) {
+						assertTrue("Save Subscribe Column Info List Failed!",
+								false);
 						// Let main thread finish.
 						synchronized (LOCK) {
 							LOCK.notify();
