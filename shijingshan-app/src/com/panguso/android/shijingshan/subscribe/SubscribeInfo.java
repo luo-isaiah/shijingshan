@@ -56,6 +56,21 @@ public final class SubscribeInfo {
 	public SubscribeButton getSubscribeButton(Context context) {
 		return new SubscribeButton(context, mId, mName, mSubscribe);
 	}
+	
+	/**
+	 * Get the {@link SubscribeButton} based on the {@link SubscribeInfo}.
+	 * 
+	 * @param button
+	 *            The {@link SubscribeButton}.
+	 * @return The {@link SubscribeButton} based on this {@link SubscribeInfo}
+	 *         .
+	 * @author Luo Yinzhuo
+	 */
+	public SubscribeButton getSubscribeButton(SubscribeButton button) {
+		button.setSubscribeName(mName);
+		button.setSubscribeId(mId);
+		return button;
+	}
 
 	/** The key to get column ID. */
 	private static final String KEY_COLUMN_ID = "columnId";

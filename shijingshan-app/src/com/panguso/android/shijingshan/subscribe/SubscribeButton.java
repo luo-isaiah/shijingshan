@@ -42,7 +42,7 @@ public class SubscribeButton extends RelativeLayout implements OnTouchListener,
 	}
 
 	/** The subscribe id. */
-	private final int mId;
+	private int mId;
 	/** The button. */
 	private final Button mButton;
 	/** The check box. */
@@ -98,6 +98,15 @@ public class SubscribeButton extends RelativeLayout implements OnTouchListener,
 		}
 	}
 
+	/**
+	 * Get the check flag.
+	 * 
+	 * @return True if checked, otherwise false.
+	 */
+	public boolean isChecked() {
+		return mCheck;
+	}
+
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		switch (event.getAction()) {
@@ -118,6 +127,38 @@ public class SubscribeButton extends RelativeLayout implements OnTouchListener,
 	 */
 	public void setOnSubscribeButtonListener(OnSubscribeButtonListener listener) {
 		mListener = listener;
+	}
+
+	/**
+	 * Set the subscribe's name.
+	 * 
+	 * @param name
+	 *            The subscribe's name.
+	 * @author Luo Yinzhuo
+	 */
+	public void setSubscribeName(String name) {
+		mButton.setText(name);
+	}
+
+	/**
+	 * Get the subscribe's id.
+	 * 
+	 * @return The subscribe's id.
+	 * @author Luo Yinzhuo
+	 */
+	public int getSubscribeId() {
+		return mId;
+	}
+
+	/**
+	 * Set the subscribe's id.
+	 * 
+	 * @param id
+	 *            The subscribe's id.
+	 * @author Luo Yinzhuo
+	 */
+	public void setSubscribeId(int id) {
+		mId = id;
 	}
 
 	@Override

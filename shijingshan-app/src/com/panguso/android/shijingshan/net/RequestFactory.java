@@ -250,7 +250,9 @@ public final class RequestFactory {
 
 	/** The column IDs. */
 	private static final String COLUMN_IDS = "columnIds";
-	
+	/** The column delimiter. */
+	private static final String COLUMN_DELIMETER = "#";
+
 	/**
 	 * Create a add subscribe info to specified account.
 	 * 
@@ -258,8 +260,8 @@ public final class RequestFactory {
 	 *            The server URL.
 	 * @param account
 	 *            The account name.
-	 * @param subscribeId
-	 *            The subscribe info id.
+	 * @param subscribeIds
+	 *            The subscribe info id list.
 	 * @return The search subscribe column info list request.
 	 * @throws JSONException
 	 *             If an error occurs when create JSON parameters.
@@ -267,15 +269,24 @@ public final class RequestFactory {
 	 *             If device doesn't support UTF-8 encode.
 	 * @author Luo Yinzhuo
 	 */
-	static HttpPost createAddSubscribeInfoRequest(String serverURL,
-			String account, int subscribeId) throws JSONException,
+	static HttpPost createSaveSubscribeInfoListRequest(String serverURL,
+			String account, List<Integer> subscribeIds) throws JSONException,
 			UnsupportedEncodingException {
 		HttpPost post = new HttpPost(serverURL);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair(TRANS_CODE, "204"));
 		JSONObject param = new JSONObject();
 		param.put(ACCOUNT, account);
-		param.put(COLUMN_IDS, subscribeId);
+
+		StringBuilder columnIds = new StringBuilder();
+		for (Integer subscribeId : subscribeIds) {
+			if (columnIds.length() > 0) {
+				columnIds.append(COLUMN_DELIMETER);
+			}
+			columnIds.append(subscribeId);
+		}
+		param.put(COLUMN_IDS, columnIds.toString());
+		
 		params.add(new BasicNameValuePair(PARAM, param.toString()));
 		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
 		return post;

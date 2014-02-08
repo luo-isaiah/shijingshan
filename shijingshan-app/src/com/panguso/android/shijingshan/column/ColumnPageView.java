@@ -153,7 +153,7 @@ public class ColumnPageView extends View {
 			for (ColumnPage columnPage : mColumnPages) {
 				columnPage.filter(columns);
 			}
-			
+
 			List<Column> remainColumns = new ArrayList<Column>(columns);
 			if (!mColumnPages.isEmpty()) {
 				for (ColumnPage columnPage : mColumnPages) {
@@ -182,6 +182,15 @@ public class ColumnPageView extends View {
 						}
 						i--;
 					}
+				}
+			}
+
+			for (int i = 0; i < mColumnPages.size(); i++) {
+				ColumnPage columnPage = mColumnPages.get(i);
+				if (columnPage.isEmpty()) {
+					mColumnPages.remove(columnPage);
+					mColumnPagePositionManager.onRemovePage(i);
+					i--;
 				}
 			}
 
@@ -250,8 +259,9 @@ public class ColumnPageView extends View {
 						.floor(mColumnPagePositionManager
 								.getColumnPagePosition() + 0.5f);
 			}
-			mColumnPagePositionManager.setColumnPagePosition(columnPagePosition);
-			
+			mColumnPagePositionManager
+					.setColumnPagePosition(columnPagePosition);
+
 			mMode = MODE_EXPLORE;
 		}
 
@@ -265,9 +275,10 @@ public class ColumnPageView extends View {
 		 */
 		public String getJson() throws JSONException {
 			explore();
-			
+
 			JSONObject root = new JSONObject();
-			root.put(KEY_COLUMN_PAGE_POSITION, mColumnPagePositionManager.getColumnPagePosition());
+			root.put(KEY_COLUMN_PAGE_POSITION,
+					mColumnPagePositionManager.getColumnPagePosition());
 
 			JSONArray columnPages = new JSONArray();
 			for (ColumnPage page : mColumnPages) {
@@ -285,6 +296,9 @@ public class ColumnPageView extends View {
 		/** The mode. */
 		private int mMode = MODE_EXPLORE;
 
+		/** The draw interval. */
+		private final static int DRAW_INTERVAL = 100;
+		
 		/** The rotation range. */
 		private final float ROTATION = 1.5f;
 		/** The rotation. */
@@ -336,7 +350,7 @@ public class ColumnPageView extends View {
 			}
 
 			if (mMode == MODE_EDIT || mColumnPagePositionManager.hasAnimation()) {
-				invalidate();
+				postInvalidateDelayed(DRAW_INTERVAL);
 			}
 		}
 
@@ -1051,8 +1065,11 @@ public class ColumnPageView extends View {
 				if (mMode == MODE_EXPLORE) {
 					mPressDownColumn.onSingleTapUp();
 				}
-				mPressDownColumn.release();
-				redraw = true;
+
+				if (!mPressDownColumn.isEmpty()) {
+					mPressDownColumn.release();
+					redraw = true;
+				}
 			}
 
 			if (mMode == MODE_EDIT && !mDeleteColumn) {

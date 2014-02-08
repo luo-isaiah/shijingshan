@@ -104,9 +104,14 @@ public class ColumnPageActivity extends Activity implements
 		setContentView(R.layout.column_page_activity);
 		mLog = (ImageButton) findViewById(R.id.log);
 		mLog.setOnClickListener(this);
+
 		mSetting = (ImageButton) findViewById(R.id.setting);
 		mSetting.setOnClickListener(this);
+
 		mSubscribe = (ImageButton) findViewById(R.id.subscribe);
+		mSubscribe.setOnClickListener(this);
+		mSubscribe.setVisibility(View.INVISIBLE);
+
 		mNotice = (ImageButton) findViewById(R.id.notice);
 		mColumnPageView = (ColumnPageView) findViewById(R.id.column_page);
 
@@ -175,6 +180,26 @@ public class ColumnPageActivity extends Activity implements
 	}
 
 	/**
+	 * Save column pages.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private void saveColumnPages() {
+		if (mInitialized) {
+			try {
+				String columnPage = mColumnPageView.getJson();
+				Editor editor = getPreferences(MODE_PRIVATE).edit();
+				editor.putString(
+						AccountManager.getAccount() + KEY_COLUMN_PAGES,
+						columnPage);
+				editor.commit();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
 	 * Called when the {@link ColumnPageView} complete the initialization.
 	 * 
 	 * @author Luo Yinzhuo
@@ -229,6 +254,15 @@ public class ColumnPageActivity extends Activity implements
 	/** Subscribe activity request code. */
 	static final int REQUEST_CODE_SUBSCRIBE = 2;
 
+	/**
+	 * Subscribe.
+	 */
+	void subscribe() {
+		saveColumnPages();
+		startActivityForResult(new Intent(this, SubscribeActivity.class),
+				REQUEST_CODE_SUBSCRIBE);
+	}
+
 	@Override
 	public void onClick(View v) {
 		mColumnPageView.explore();
@@ -243,8 +277,7 @@ public class ColumnPageActivity extends Activity implements
 			}
 			break;
 		case R.id.subscribe:
-			startActivityForResult(new Intent(this, SubscribeActivity.class),
-					REQUEST_CODE_SUBSCRIBE);
+			subscribe();
 			break;
 		case R.id.setting:
 			startActivity(new Intent(this, SettingActivity.class));
@@ -259,23 +292,21 @@ public class ColumnPageActivity extends Activity implements
 		switch (requestCode) {
 		case REQUEST_CODE_LOGIN:
 			if (resultCode == RESULT_OK) {
-				if (mInitialized) {
-					try {
-						String columnPage = mColumnPageView.getJson();
-						Editor editor = getPreferences(MODE_PRIVATE).edit();
-						editor.putString(KEY_COLUMN_PAGES, columnPage);
-						editor.commit();
-					} catch (JSONException e) {
-						e.printStackTrace();
-					}
-				}
-
+				saveColumnPages();
+				mSubscribe.setVisibility(View.VISIBLE);
 				showDialog(DIALOG_WAITING);
 				mInitialized = false;
 				NetworkService.getColumnInfoList(
 						getResources().getString(R.string.server_url),
 						AccountManager.getAccount(), this);
 			}
+			break;
+		case REQUEST_CODE_SUBSCRIBE:
+			showDialog(DIALOG_WAITING);
+			mInitialized = false;
+			NetworkService.getColumnInfoList(
+					getResources().getString(R.string.server_url),
+					AccountManager.getAccount(), this);
 			break;
 		}
 	}

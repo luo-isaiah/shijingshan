@@ -332,10 +332,7 @@ final class AddColumn extends Column {
 	@Override
 	public void onSingleTapUp(Context context) {
 		if (context instanceof ColumnPageActivity) {
-			ColumnPageActivity columnPageActivity = (ColumnPageActivity) context;
-			columnPageActivity.startActivityForResult(new Intent(context,
-					SubscribeActivity.class),
-					ColumnPageActivity.REQUEST_CODE_SUBSCRIBE);
+			((ColumnPageActivity) context).subscribe();
 		}
 	}
 }

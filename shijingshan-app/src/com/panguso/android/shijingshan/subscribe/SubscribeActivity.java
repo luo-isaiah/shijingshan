@@ -1,5 +1,6 @@
 package com.panguso.android.shijingshan.subscribe;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.panguso.android.shijingshan.R;
@@ -8,7 +9,7 @@ import com.panguso.android.shijingshan.dialog.MessageDialog;
 import com.panguso.android.shijingshan.dialog.MessageDialog.OnMessageDialogListener;
 import com.panguso.android.shijingshan.dialog.WaitingDialog;
 import com.panguso.android.shijingshan.net.NetworkService;
-import com.panguso.android.shijingshan.net.NetworkService.AddSubscribeInfoRequestListener;
+import com.panguso.android.shijingshan.net.NetworkService.SaveSubscribeInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.SearchSubscribeInfoListRequestListener;
 import com.panguso.android.shijingshan.subscribe.SubscribeButton.OnSubscribeButtonListener;
 import com.panguso.android.shijingshan.widget.BlueTitleBar;
@@ -17,7 +18,6 @@ import com.panguso.android.shijingshan.widget.BlueTitleBar.OnBackListener;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.util.SparseArray;
 import android.widget.LinearLayout;
 
 /**
@@ -27,7 +27,7 @@ import android.widget.LinearLayout;
  */
 public class SubscribeActivity extends Activity implements OnBackListener,
 		SearchSubscribeInfoListRequestListener, OnSubscribeButtonListener,
-		OnMessageDialogListener, AddSubscribeInfoRequestListener {
+		OnMessageDialogListener, SaveSubscribeInfoListRequestListener {
 
 	/** The waiting dialog ID. */
 	private static final int DIALOG_WAITING = 0;
@@ -41,11 +41,9 @@ public class SubscribeActivity extends Activity implements OnBackListener,
 	/** The retry type search. */
 	private static final int RETRY_TYPE_SEARCH = 0;
 	/** The retry type add. */
-	private static final int RETRY_TYPE_ADD = 1;
-	/** The retry type delete. */
-	private static final int RETRY_TYPE_DELETE = 2;
+	private static final int RETRY_TYPE_SAVE = 1;
 	/** The retry subscribe id key. */
-	private static final String KEY_SUBSCRIBE_ID = "subscribe_id";
+	private static final String KEY_SUBSCRIBE_IDS = "subscribe_ids";
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -67,7 +65,7 @@ public class SubscribeActivity extends Activity implements OnBackListener,
 	/** The subscribe layout. */
 	private LinearLayout mSubscribe;
 	/** The subscribe button cache. */
-	private final SparseArray<SubscribeButton> mButtonCache = new SparseArray<SubscribeButton>();
+	private final List<SubscribeButton> mSubscribeButtonCache = new ArrayList<SubscribeButton>();
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -104,12 +102,21 @@ public class SubscribeActivity extends Activity implements OnBackListener,
 			@Override
 			public void run() {
 				mSubscribe.removeAllViews();
+				int buttonSize = mSubscribeButtonCache.size();
 
-				for (SubscribeInfo subscribeInfo : subscribeInfos) {
-					SubscribeButton button = subscribeInfo
-							.getSubscribeButton(SubscribeActivity.this);
-					button.setOnSubscribeButtonListener(SubscribeActivity.this);
-					mButtonCache.put(subscribeInfo.getId(), button);
+				for (int i = 0; i < subscribeInfos.size(); i++) {
+					SubscribeInfo subscribeInfo = subscribeInfos.get(i);
+
+					SubscribeButton button;
+					if (i < buttonSize) {
+						button = mSubscribeButtonCache.get(i);
+						button = subscribeInfo.getSubscribeButton(button);
+					} else {
+						button = subscribeInfo
+								.getSubscribeButton(SubscribeActivity.this);
+						button.setOnSubscribeButtonListener(SubscribeActivity.this);
+						mSubscribeButtonCache.add(button);
+					}
 					mSubscribe.addView(button);
 				}
 				dismissDialog(DIALOG_WAITING);
@@ -133,12 +140,21 @@ public class SubscribeActivity extends Activity implements OnBackListener,
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onClicked(int id, boolean check) {
-		if (check) {
-
-		} else {
-			NetworkService.addSubscribeInfo(getString(R.string.server_url),
-					AccountManager.getAccount(), id, this);
+		List<Integer> subscribeIds = new ArrayList<Integer>();
+		for (SubscribeButton button : mSubscribeButtonCache) {
+			if (button.isChecked()) {
+				subscribeIds.add(button.getSubscribeId());
+			}
 		}
+
+		if (check) {
+			subscribeIds.remove(Integer.valueOf(id));
+		} else {
+			subscribeIds.add(id);
+		}
+
+		NetworkService.saveSubscribeInfoList(getString(R.string.server_url),
+				AccountManager.getAccount(), subscribeIds, this);
 		showDialog(DIALOG_WAITING);
 	}
 
@@ -170,23 +186,33 @@ public class SubscribeActivity extends Activity implements OnBackListener,
 						getString(R.string.server_url),
 						AccountManager.getAccount(), this);
 				break;
+			case RETRY_TYPE_SAVE:
+				NetworkService
+						.saveSubscribeInfoList(
+								getString(R.string.server_url),
+								AccountManager.getAccount(),
+								mRetryData
+										.getIntegerArrayList(KEY_SUBSCRIBE_IDS),
+								this);
+				break;
 			}
 		}
 	}
 
 	@Override
-	public void onAddSubscribeInfoRequestFailed() {
+	public void onSaveSubscribeInfoListRequestFailed() {
 	}
 
 	@Override
-	public void onAddSubscribeInfoResponseSuccess(final int subscribeId) {
+	public void onSaveSubscribeInfoListResponseSuccess(
+			final List<Integer> subscribeIds) {
 		runOnUiThread(new Runnable() {
 			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
-				SubscribeButton button = mButtonCache.get(subscribeId);
-				if (button != null) {
-					button.setCheckBox(true);
+				for (SubscribeButton button : mSubscribeButtonCache) {
+					button.setCheckBox(subscribeIds.contains(button
+							.getSubscribeId()));
 				}
 				dismissDialog(DIALOG_WAITING);
 			}
@@ -194,14 +220,16 @@ public class SubscribeActivity extends Activity implements OnBackListener,
 	}
 
 	@Override
-	public void onAddSubscribeInfoResponseFailed(final int subscribeId) {
+	public void onSaveSubscribeInfoListResponseFailed(
+			final List<Integer> subscribeIds) {
 		runOnUiThread(new Runnable() {
 			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
 				showDialog(DIALOG_RETRY);
-				mRetryData.putInt(KEY_RETRY_TYPE, RETRY_TYPE_ADD);
-				mRetryData.putInt(KEY_SUBSCRIBE_ID, subscribeId);
+				mRetryData.putInt(KEY_RETRY_TYPE, RETRY_TYPE_SAVE);
+				mRetryData.putIntegerArrayList(KEY_SUBSCRIBE_IDS,
+						(ArrayList<Integer>) subscribeIds);
 				dismissDialog(DIALOG_WAITING);
 			}
 		});

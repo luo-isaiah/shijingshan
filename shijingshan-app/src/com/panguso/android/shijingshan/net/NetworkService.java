@@ -1277,53 +1277,56 @@ public final class NetworkService {
 	}
 
 	/**
-	 * Interface definition for a callback to be invoked when a add subscribe
-	 * info request is executed.
+	 * Interface definition for a callback to be invoked when a save subscribe
+	 * info list request is executed.
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	public interface AddSubscribeInfoRequestListener {
+	public interface SaveSubscribeInfoListRequestListener {
 
 		/**
-		 * Called when the add subscribe info request creation is failed.
+		 * Called when the save subscribe info list request creation is failed.
 		 * 
 		 * @author Luo Yinzhuo
 		 */
-		public void onAddSubscribeInfoRequestFailed();
+		public void onSaveSubscribeInfoListRequestFailed();
 
 		/**
-		 * Called when the add subscribe info request execution is successful.
+		 * Called when the save subscribe info list request execution is
+		 * successful.
 		 * 
-		 * @param subscribeId
-		 *            The subscribe info id.
+		 * @param subscribeIds
+		 *            The subscribe info id list.
 		 * @author Luo Yinzhuo
 		 */
-		public void onAddSubscribeInfoResponseSuccess(int subscribeId);
+		public void onSaveSubscribeInfoListResponseSuccess(
+				List<Integer> subscribeIds);
 
 		/**
-		 * Called when the add subscribe info request execution is failed.
+		 * Called when the save subscribe info list request execution is failed.
 		 * 
-		 * @param subscribeId
-		 *            The subscribe info id.
+		 * @param subscribeIds
+		 *            The subscribe info id list.
 		 * @author Luo Yinzhuo
 		 */
-		public void onAddSubscribeInfoResponseFailed(int subscribeId);
+		public void onSaveSubscribeInfoListResponseFailed(
+				List<Integer> subscribeIds);
 	}
 
 	/**
-	 * Specified for execute add subscribe request.
+	 * Specified for execute save subscribe info list request.
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	private static class AddSubscribeInfoCommand implements Runnable {
+	private static class SaveSubscribeInfoListCommand implements Runnable {
 		/** The server URL. */
 		private final String mServerURL;
 		/** The account. */
 		private final String mAccount;
-		/** The subscribe id. */
-		private final int mSubscribeId;
+		/** The subscribe info id list. */
+		private final List<Integer> mSubscribeIds = new ArrayList<Integer>();
 		/** The request listener. */
-		private final AddSubscribeInfoRequestListener mListener;
+		private final SaveSubscribeInfoListRequestListener mListener;
 
 		/**
 		 * Construct a new instance.
@@ -1332,16 +1335,17 @@ public final class NetworkService {
 		 *            The server URL.
 		 * @param account
 		 *            The account.
-		 * @param subscribeId
-		 *            The subscribe id.
+		 * @param subscribeIds
+		 *            The subscribe info id list.
 		 * @param listener
 		 *            The request listener.
 		 */
-		private AddSubscribeInfoCommand(String serverURL, String account,
-				int subscribeId, AddSubscribeInfoRequestListener listener) {
+		private SaveSubscribeInfoListCommand(String serverURL, String account,
+				List<Integer> subscribeIds,
+				SaveSubscribeInfoListRequestListener listener) {
 			mServerURL = serverURL;
 			mAccount = account;
-			mSubscribeId = subscribeId;
+			mSubscribeIds.addAll(subscribeIds);
 			mListener = listener;
 		}
 
@@ -1352,11 +1356,11 @@ public final class NetworkService {
 		public void run() {
 			HttpPost request;
 			try {
-				request = RequestFactory.createAddSubscribeInfoRequest(
-						mServerURL, mAccount, mSubscribeId);
+				request = RequestFactory.createSaveSubscribeInfoListRequest(
+						mServerURL, mAccount, mSubscribeIds);
 			} catch (Exception e) {
 				e.printStackTrace();
-				mListener.onAddSubscribeInfoRequestFailed();
+				mListener.onSaveSubscribeInfoListRequestFailed();
 				return;
 			}
 
@@ -1366,7 +1370,7 @@ public final class NetworkService {
 				content = NetworkService.getContent(response);
 			} catch (IOException e) {
 				e.printStackTrace();
-				mListener.onAddSubscribeInfoResponseFailed(mSubscribeId);
+				mListener.onSaveSubscribeInfoListResponseFailed(mSubscribeIds);
 				return;
 			}
 
@@ -1375,34 +1379,36 @@ public final class NetworkService {
 				int xCode = jsonResponse.getInt(KEY_XCODE);
 				switch (xCode) {
 				case XCODE_SUCCESS:
-					mListener.onAddSubscribeInfoResponseSuccess(mSubscribeId);
+					mListener
+							.onSaveSubscribeInfoListResponseSuccess(mSubscribeIds);
 					return;
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 			Log.e("SearchSubscribeColumnInfoListCommand", content);
-			mListener.onAddSubscribeInfoResponseFailed(mSubscribeId);
+			mListener.onSaveSubscribeInfoListResponseFailed(mSubscribeIds);
 		}
 	}
 
 	/**
-	 * Add the subscribe info to the account.
+	 * Save the account's subscribe info list.
 	 * 
 	 * @param serverURL
 	 *            The server URL.
 	 * @param account
 	 *            The account name.
-	 * @param subscribeId
-	 *            The subscribe id.
+	 * @param subscribeIds
+	 *            The subscribe info id list.
 	 * @param listener
 	 *            The request listener.
 	 * @author Luo Yinzhuo
 	 */
-	public static void addSubscribeInfo(String serverURL, String account,
-			int subscribeId, AddSubscribeInfoRequestListener listener) {
-		EXECUTOR.execute(new AddSubscribeInfoCommand(serverURL, account,
-				subscribeId, listener));
+	public static void saveSubscribeInfoList(String serverURL, String account,
+			List<Integer> subscribeIds,
+			SaveSubscribeInfoListRequestListener listener) {
+		EXECUTOR.execute(new SaveSubscribeInfoListCommand(serverURL, account,
+				subscribeIds, listener));
 	}
 
 	/**
