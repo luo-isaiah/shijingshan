@@ -14,9 +14,7 @@ import org.json.JSONObject;
 
 import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.news.NewsPageActivity;
-import com.panguso.android.shijingshan.subscribe.SubscribeActivity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;

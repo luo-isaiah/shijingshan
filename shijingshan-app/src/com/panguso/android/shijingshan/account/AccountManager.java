@@ -34,7 +34,7 @@ public final class AccountManager {
 		LOGIN_TIME = System.currentTimeMillis();
 		return ACCOUNT.getJson();
 	}
-
+	
 	/**
 	 * Check if the user has logged in.
 	 * 
