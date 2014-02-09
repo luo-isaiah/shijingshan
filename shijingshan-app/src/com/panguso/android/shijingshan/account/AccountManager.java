@@ -13,11 +13,9 @@ public final class AccountManager {
 	private static Account ACCOUNT = NoAccount.getInstance();
 	/** The login time. */
 	private static long LOGIN_TIME = 0;
-	/** The login state. */
-	private static boolean LOGIN = false;
 
 	/**
-	 * The account has logged in.
+	 * A new account login.
 	 * 
 	 * @param account
 	 *            The account name.
@@ -26,6 +24,7 @@ public final class AccountManager {
 	 * @return The account data in JSON format.
 	 * @throws JSONException
 	 *             If there's error in JSON data.
+	 * 
 	 * @author Luo Yinzhuo
 	 */
 	public static String login(String account, String password)
@@ -34,7 +33,16 @@ public final class AccountManager {
 		LOGIN_TIME = System.currentTimeMillis();
 		return ACCOUNT.getJson();
 	}
-	
+
+	/**
+	 * The account logout.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public static void logout() {
+		ACCOUNT = NoAccount.getInstance();
+	}
+
 	/**
 	 * Check if the user has logged in.
 	 * 
@@ -42,7 +50,7 @@ public final class AccountManager {
 	 * @author Luo Yinzhuo
 	 */
 	public static boolean isLogin() {
-		return LOGIN;
+		return ACCOUNT != NoAccount.getInstance();
 	}
 
 	/**
@@ -55,30 +63,59 @@ public final class AccountManager {
 		return ACCOUNT.getAccount();
 	}
 
+	/**
+	 * Get the current account's password.
+	 * 
+	 * @return The current account's password.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public static String getPassword() {
+		return ACCOUNT.getPassword();
+	}
+
 	/** The key to store last login user's name. */
-	private static final String KEY_NAME = "name";
+	private static final String KEY_ACCOUNT = "name";
 	/** The key to store last login user's password. */
 	private static final String KEY_PASSWORD = "password";
 	/** The key to store last login user's time. */
-	private static final String KEY_TIME = "time";
+	private static final String KEY_LOGIN_TIME = "time";
 
 	/**
-	 * Parse the last login user data to update the manager.
+	 * Update manager from JSON format data.
 	 * 
 	 * @param json
-	 *            The last login user data in JSON format.
+	 *            The manager data in JSON format.
 	 * @throws JSONException
-	 *             If there are JSON format error in the last login user data.
+	 *             If there are JSON format error in the manager data.
+	 * 
 	 * @author Luo Yinzhuo
 	 */
 	public static void parse(String json) throws JSONException {
-		JSONObject login = new JSONObject(json);
-		final String name = login.getString(KEY_NAME);
-		if (name.length() != 0) {
-			ACCOUNT = new Account(name, login.getString(KEY_PASSWORD));
-			LOGIN_TIME = login.getLong(KEY_TIME);
-			LOGIN = !needReLogin();
+		JSONObject accountManager = new JSONObject(json);
+		final String account = accountManager.getString(KEY_ACCOUNT);
+		if (account.length() > 0) {
+			ACCOUNT = new Account(account,
+					accountManager.getString(KEY_PASSWORD));
+			LOGIN_TIME = accountManager.getLong(KEY_LOGIN_TIME);
 		}
+	}
+
+	/**
+	 * Get current manager data in JSON format.
+	 * 
+	 * @return The Current manager data in JSON format.
+	 * @throws JSONException
+	 *             If there are JSON format error occurs.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public static String getJson() throws JSONException {
+		JSONObject accountManager = new JSONObject();
+		accountManager.put(KEY_ACCOUNT, ACCOUNT.getAccount());
+		accountManager.put(KEY_PASSWORD, ACCOUNT.getPassword());
+		accountManager.put(KEY_LOGIN_TIME, LOGIN_TIME);
+		return accountManager.toString();
 	}
 
 	/** The login time out. */
@@ -88,6 +125,7 @@ public final class AccountManager {
 	 * Check if it needs to re-login.
 	 * 
 	 * @return True if it needs, otherwise false.
+	 * 
 	 * @author Luo Yinzhuo
 	 */
 	public static boolean needReLogin() {

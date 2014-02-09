@@ -117,11 +117,20 @@ public class ColumnPageActivity extends Activity implements
 
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 		String lastAccount = sharedPreferences.getString(KEY_LAST_ACCOUNT, "");
+		
 		if (lastAccount.length() > 0) {
 			try {
 				AccountManager.parse(lastAccount);
-				// TODO: Re-login check.
-				return;
+				if (AccountManager.needReLogin()) {
+					Intent intent = new Intent(this, LoginActivity.class);
+					intent.putExtra(LoginActivity.KEY_ACCOUNT, AccountManager.getAccount());
+					intent.putExtra(LoginActivity.KEY_PASSWORD, AccountManager.getPassword());
+					AccountManager.logout();
+					startActivityForResult(intent, REQUEST_CODE_LOGIN);
+					return;
+				} else {
+					mSubscribe.setVisibility(View.VISIBLE);
+				}
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -293,6 +302,15 @@ public class ColumnPageActivity extends Activity implements
 		case REQUEST_CODE_LOGIN:
 			if (resultCode == RESULT_OK) {
 				saveColumnPages();
+				
+				Editor editor = getPreferences(MODE_PRIVATE).edit();
+				try {
+					editor.putString(KEY_LAST_ACCOUNT, AccountManager.getJson());
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				editor.commit();
+				
 				mSubscribe.setVisibility(View.VISIBLE);
 				showDialog(DIALOG_WAITING);
 				mInitialized = false;

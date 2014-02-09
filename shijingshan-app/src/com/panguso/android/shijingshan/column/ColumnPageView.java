@@ -688,7 +688,7 @@ public class ColumnPageView extends View {
 				 * @author Luo Yinzhuo
 				 */
 				public void onRemovePage(int i) {
-					if (mTargetPagePosition >= i) {
+					if (mTargetPagePosition > i) {
 						mTargetPagePosition -= 1;
 					}
 				}
@@ -733,7 +733,7 @@ public class ColumnPageView extends View {
 			 * @author Luo Yinzhuo
 			 */
 			public void onRemovePage(int i) {
-				if (mColumnPagePosition >= i) {
+				if (mColumnPagePosition > i) {
 					mColumnPagePosition -= 1;
 				}
 

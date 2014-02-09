@@ -163,17 +163,25 @@ public class LoginActivity extends Activity implements OnBackListener,
 		mRegister = (UnderlineButton) findViewById(R.id.register);
 		mRegister.setOnClickListener(this);
 
-		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-		String lastLoginAccount = sharedPreferences.getString(
-				KEY_LAST_LOGIN_ACCOUNT, "");
-		if (lastLoginAccount.length() > 0) {
-			try {
-				Account account = Account.parse(lastLoginAccount);
-				mAccount.setText(account.getAccount());
-				mPassword.setText(account.getPassword());
-				mLogin.setEnabled(true);
-			} catch (JSONException e) {
-				e.printStackTrace();
+		Intent intent = getIntent();
+		if (intent.hasExtra(KEY_ACCOUNT) && intent.hasExtra(KEY_PASSWORD)) {
+			mAccount.setText(intent.getStringExtra(KEY_ACCOUNT));
+			mPassword.setText(intent.getStringExtra(KEY_PASSWORD));
+			mLogin.setEnabled(true);
+			login();
+		} else {
+			SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+			String lastLoginAccount = sharedPreferences.getString(
+					KEY_LAST_LOGIN_ACCOUNT, "");
+			if (lastLoginAccount.length() > 0) {
+				try {
+					Account account = Account.parse(lastLoginAccount);
+					mAccount.setText(account.getAccount());
+					mPassword.setText(account.getPassword());
+					mLogin.setEnabled(true);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -236,7 +244,7 @@ public class LoginActivity extends Activity implements OnBackListener,
 
 	/** Register activity request code. */
 	private static final int REQUEST_CODE_REGISTER = 1;
-	
+
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -252,14 +260,16 @@ public class LoginActivity extends Activity implements OnBackListener,
 			break;
 		}
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch(requestCode) {
+		switch (requestCode) {
 		case REQUEST_CODE_REGISTER:
 			if (resultCode == RESULT_OK) {
-				String account = data.getStringExtra(RegisterActivity.KEY_ACCOUNT);
-				String password = data.getStringExtra(RegisterActivity.KEY_PASSWORD);
+				String account = data
+						.getStringExtra(RegisterActivity.KEY_ACCOUNT);
+				String password = data
+						.getStringExtra(RegisterActivity.KEY_PASSWORD);
 				mAccount.setText(account);
 				mPassword.setText(password);
 				mLogin.setEnabled(true);

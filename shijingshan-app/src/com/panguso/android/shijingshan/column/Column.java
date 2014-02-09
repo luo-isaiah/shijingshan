@@ -53,7 +53,7 @@ public class Column {
 		// ling dao xin xiang
 		COLUMN_ICON_ARRAY.put(107, R.drawable.column_ldxx);
 		// ban shi zhi nan
-		COLUMN_ICON_ARRAY.put(108, R.drawable.column_bszn);
+		COLUMN_ICON_ARRAY.put(113, R.drawable.column_bszn);
 
 		// Add column
 		COLUMN_ICON_ARRAY.put(AddColumn.ID, R.drawable.column_add);
