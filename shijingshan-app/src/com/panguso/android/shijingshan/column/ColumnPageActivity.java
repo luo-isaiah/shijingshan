@@ -53,6 +53,8 @@ public class ColumnPageActivity extends Activity implements
 	private static final int DIALOG_RETRY = 2;
 	/** The unsupported dialog ID. */
 	private static final int DIALOG_UNSUPPORTED = 3;
+	/** The logout dialog ID. */
+	private static final int DIALOG_LOGOUT = 4;
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -74,6 +76,11 @@ public class ColumnPageActivity extends Activity implements
 					getString(R.string.unsupported_text),
 					getString(R.string.unsupported_button), this);
 			return mUnsupportedDialog;
+		case DIALOG_LOGOUT:
+			return new MessageDialog(this, DIALOG_LOGOUT,
+					getString(R.string.logout_title),
+					getString(R.string.logout_text),
+					getString(R.string.logout_button), this);
 		default:
 			return null;
 		}
@@ -117,14 +124,16 @@ public class ColumnPageActivity extends Activity implements
 
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 		String lastAccount = sharedPreferences.getString(KEY_LAST_ACCOUNT, "");
-		
+
 		if (lastAccount.length() > 0) {
 			try {
 				AccountManager.parse(lastAccount);
 				if (AccountManager.needReLogin()) {
 					Intent intent = new Intent(this, LoginActivity.class);
-					intent.putExtra(LoginActivity.KEY_ACCOUNT, AccountManager.getAccount());
-					intent.putExtra(LoginActivity.KEY_PASSWORD, AccountManager.getPassword());
+					intent.putExtra(LoginActivity.KEY_ACCOUNT,
+							AccountManager.getAccount());
+					intent.putExtra(LoginActivity.KEY_PASSWORD,
+							AccountManager.getPassword());
 					AccountManager.logout();
 					startActivityForResult(intent, REQUEST_CODE_LOGIN);
 					return;
@@ -136,8 +145,7 @@ public class ColumnPageActivity extends Activity implements
 			}
 		}
 
-		NetworkService.getColumnInfoList(
-				getResources().getString(R.string.server_url),
+		NetworkService.getColumnInfoList(getString(R.string.server_url),
 				AccountManager.getAccount(), this);
 	}
 
@@ -272,6 +280,7 @@ public class ColumnPageActivity extends Activity implements
 				REQUEST_CODE_SUBSCRIBE);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onClick(View v) {
 		mColumnPageView.explore();
@@ -279,7 +288,7 @@ public class ColumnPageActivity extends Activity implements
 		switch (v.getId()) {
 		case R.id.log:
 			if (AccountManager.isLogin()) {
-
+				showDialog(DIALOG_LOGOUT);
 			} else {
 				startActivityForResult(new Intent(this, LoginActivity.class),
 						REQUEST_CODE_LOGIN);
@@ -302,7 +311,7 @@ public class ColumnPageActivity extends Activity implements
 		case REQUEST_CODE_LOGIN:
 			if (resultCode == RESULT_OK) {
 				saveColumnPages();
-				
+
 				Editor editor = getPreferences(MODE_PRIVATE).edit();
 				try {
 					editor.putString(KEY_LAST_ACCOUNT, AccountManager.getJson());
@@ -310,12 +319,12 @@ public class ColumnPageActivity extends Activity implements
 					e.printStackTrace();
 				}
 				editor.commit();
-				
+
 				mSubscribe.setVisibility(View.VISIBLE);
 				showDialog(DIALOG_WAITING);
 				mInitialized = false;
 				NetworkService.getColumnInfoList(
-						getResources().getString(R.string.server_url),
+						getString(R.string.server_url),
 						AccountManager.getAccount(), this);
 			}
 			break;
@@ -343,9 +352,17 @@ public class ColumnPageActivity extends Activity implements
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onMessageDialogBack(int id) {
-		finish();
+		switch (id) {
+		case DIALOG_LOGOUT:
+			dismissDialog(DIALOG_LOGOUT);
+			break;
+		default:
+			finish();
+			break;
+		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -358,6 +375,15 @@ public class ColumnPageActivity extends Activity implements
 					AccountManager.getAccount(), this);
 			showDialog(DIALOG_WAITING);
 			dismissDialog(DIALOG_RETRY);
+			break;
+		case DIALOG_LOGOUT:
+			AccountManager.logout();
+			mSubscribe.setVisibility(View.INVISIBLE);
+			NetworkService.getColumnInfoList(
+					getResources().getString(R.string.server_url),
+					AccountManager.getAccount(), this);
+			showDialog(DIALOG_WAITING);
+			dismissDialog(DIALOG_LOGOUT);
 			break;
 		case DIALOG_UNSUPPORTED:
 			finish();

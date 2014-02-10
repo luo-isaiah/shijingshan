@@ -167,6 +167,10 @@ public final class NetworkService {
 	private static final int XCODE_ACCOUNT_NOT_ACTIVATED = 207;
 	/** The xCode to identify the request's account and password not match. */
 	private static final int XCODE_ACCOUNT_PASSWORD_NOT_MATCH = 208;
+	/** The xCode to identify the request's old password incorrect. */
+	private static final int XCODE_OLD_PASSWORD_INCORRECT = 209;
+	/** The xCode to identify the request's old password and new password same. */
+	private static final int XCODE_OLD_PASSWORD_NEW_PASSWORD_SAME = 210;
 	/** The xCode to identify the request execution encounters no data error. */
 	private static final int XCODE_NO_DATA = 997;
 	/** The xCode to identify the request execution encounters database error. */
@@ -880,6 +884,203 @@ public final class NetworkService {
 	}
 
 	/**
+	 * Interface definition for a callback to be invoked when a change password
+	 * request is executed.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public interface ChangePasswordRequestListener {
+		/**
+		 * Called when the change password request creation is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onChangePasswordRequestFailed();
+
+		/**
+		 * Called when the change password request execution is successful.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onChangePasswordResponseSuccess();
+
+		/**
+		 * Called when the change password request execution is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onChangePasswordResponseFailed();
+
+		/**
+		 * Called when the change password request's old password incorrect.
+		 * 
+		 * @param errorMessage
+		 *            The error message.
+		 * @author Luo Yinzhuo
+		 */
+		public void onChangePasswordResponseOldPasswordIncorrect(
+				String errorMessage);
+
+		/**
+		 * Called when the change password request's old password and new
+		 * password same.
+		 * 
+		 * @param errorMessage
+		 *            The error message.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onChangePasswordResponseOldPasswordNewPasswordSame(
+				String errorMessage);
+
+		/**
+		 * Called when the change password request execution encounters no data
+		 * error.
+		 * 
+		 * @param errorMessage
+		 *            The error message.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onChangePasswordResponseNoDataError(String errorMessage);
+
+		/**
+		 * Called when the change password request execution encounters database
+		 * error.
+		 * 
+		 * @param errorMessage
+		 *            The error message.
+		 * @author Luo Yinzhuo
+		 */
+		public void onChangePasswordResponseDatabaseError(String errorMessage);
+	}
+
+	/**
+	 * Specified for execute change password request.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private static class ChangePasswordCommand implements Runnable {
+		/** The server URL. */
+		private final String mServerURL;
+		/** The account name. */
+		private final String mAccount;
+		/** The old password. */
+		private final String mOldPassword;
+		/** The new password. */
+		private final String mNewPassword;
+		/** The request listener. */
+		private final ChangePasswordRequestListener mListener;
+
+		/**
+		 * Construct a new instance.
+		 * 
+		 * @param serverURL
+		 *            The server URL.
+		 * @param account
+		 *            The account name.
+		 * @param oldPassword
+		 *            The old password.
+		 * @param newPassword
+		 *            The new password.
+		 * @param listener
+		 *            The request listener.
+		 */
+		private ChangePasswordCommand(String serverURL, String account,
+				String oldPassword, String newPassword,
+				ChangePasswordRequestListener listener) {
+			mServerURL = serverURL;
+			mAccount = account;
+			mOldPassword = oldPassword;
+			mNewPassword = newPassword;
+			mListener = listener;
+		}
+
+		/** The key to get xCode. */
+		private static final String KEY_XCODE = "xCode";
+		/** The key to get error message. */
+		private static final String KEY_XMSG = "xMsg";
+
+		@Override
+		public void run() {
+			HttpPost request;
+			try {
+				request = RequestFactory.createChangePasswordRequest(
+						mServerURL, mAccount, mOldPassword, mNewPassword);
+			} catch (Exception e) {
+				e.printStackTrace();
+				mListener.onChangePasswordRequestFailed();
+				return;
+			}
+
+			String content;
+			try {
+				HttpResponse response = HTTP_CLIENT.execute(request);
+				content = NetworkService.getContent(response);
+			} catch (IOException e) {
+				e.printStackTrace();
+				mListener.onChangePasswordResponseFailed();
+				return;
+			}
+
+			try {
+				JSONObject jsonResponse = new JSONObject(content);
+				int xCode = jsonResponse.getInt(KEY_XCODE);
+				switch (xCode) {
+				case XCODE_SUCCESS:
+					mListener.onChangePasswordResponseSuccess();
+					return;
+				case XCODE_OLD_PASSWORD_INCORRECT:
+					mListener
+							.onChangePasswordResponseOldPasswordIncorrect(jsonResponse
+									.getString(KEY_XMSG));
+					return;
+				case XCODE_OLD_PASSWORD_NEW_PASSWORD_SAME:
+					mListener
+							.onChangePasswordResponseOldPasswordNewPasswordSame(jsonResponse
+									.getString(KEY_XMSG));
+					return;
+				case XCODE_NO_DATA:
+					mListener.onChangePasswordResponseNoDataError(jsonResponse
+							.getString(KEY_XMSG));
+					return;
+				case XCODE_DATABASE_ERROR:
+					mListener
+							.onChangePasswordResponseDatabaseError(jsonResponse
+									.getString(KEY_XMSG));
+					return;
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			Log.e("ChangePasswordCommand", content);
+			mListener.onChangePasswordResponseFailed();
+		}
+	}
+
+	/**
+	 * Change password.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param account
+	 *            The account name.
+	 * @param oldPassword
+	 *            The old password.
+	 * @param newPassword
+	 *            The new password.
+	 * @param listener
+	 *            The request listener.
+	 * @author Luo Yinzhuo
+	 */
+	public static void changePassword(String serverURL, String account,
+			String oldPassword, String newPassword,
+			ChangePasswordRequestListener listener) {
+		EXECUTOR.execute(new ChangePasswordCommand(serverURL, account,
+				oldPassword, newPassword, listener));
+	}
+
+	/**
 	 * Interface definition for a callback to be invoked when a user type info
 	 * list request is executed.
 	 * 
@@ -1084,6 +1285,9 @@ public final class NetworkService {
 			try {
 				HttpResponse response = HTTP_CLIENT.execute(request);
 				content = NetworkService.getContent(response);
+
+				Log.d("ColumnInfoListCommand", "Account:" + mAccount
+						+ " Content:" + content);
 			} catch (IOException e) {
 				e.printStackTrace();
 				mListener.onColumnInfoListResponseFailed();

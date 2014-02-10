@@ -13,6 +13,11 @@
     <string name="unsupported_text">您的设备不支持UTF-8编码</string>
     <string name="unsupported_button">退出</string>
     
+    <!-- logout dialog -->
+    <string name="logout_title">注销操作</string>
+    <string name="logout_text">确定要注销吗？</string>
+    <string name="logout_button">注销</string>
+    
     <!-- account exist dialog -->
     <string name="account_exist_title">注册错误</string>
     <string name="account_exist_text">该用户名已存在</string>

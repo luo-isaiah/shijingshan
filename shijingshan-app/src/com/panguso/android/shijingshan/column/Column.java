@@ -288,6 +288,12 @@ public class Column {
 		intent.putExtra(KEY_NAME, mName);
 		context.startActivity(intent);
 	}
+
+	@Override
+	public String toString() {
+		return "Column [mId=" + mId + ", mName=" + mName + ", mSubscribe="
+				+ mSubscribe + "]";
+	}
 }
 
 /**

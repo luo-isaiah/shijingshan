@@ -237,7 +237,7 @@ public class LoginActivity extends Activity implements OnBackListener,
 	@SuppressWarnings("deprecation")
 	private void login() {
 		showDialog(DIALOG_WAITING);
-		NetworkService.login(getResources().getString(R.string.server_url),
+		NetworkService.login(getString(R.string.server_url),
 				mAccount.getText().toString(), mPassword.getText().toString(),
 				((Application) getApplication()).getUUID(), Build.MODEL, this);
 	}

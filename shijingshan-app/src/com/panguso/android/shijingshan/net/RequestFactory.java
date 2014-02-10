@@ -150,7 +150,7 @@ public final class RequestFactory {
 	 *            The device UUID.
 	 * @param terminalType
 	 *            The device terminal type.
-	 * @return The log in request.
+	 * @return The login request.
 	 * @throws UnsupportedEncodingException
 	 *             If device doesn't support UTF-8 encode.
 	 * @throws JSONException
@@ -169,6 +169,45 @@ public final class RequestFactory {
 		param.put(PASSWORD, password);
 		param.put(DEVICE_TOKEN, deviceToken);
 		param.put(TERMINAL_TYPE, terminalType);
+		params.add(new BasicNameValuePair(PARAM, param.toString()));
+		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+		return post;
+	}
+
+	/** The old password. */
+	private static final String OLD_PASSWORD = "oldpwd";
+	/** The new password. */
+	private static final String NEW_PASSWORD = "newpwd";
+
+	/**
+	 * Create change password request.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param account
+	 *            The account name.
+	 * @param oldPassword
+	 *            The old password.
+	 * @param newPassword
+	 *            The new password.
+	 * @return The change password request.
+	 * @throws UnsupportedEncodingException
+	 *             If device doesn't support UTF-8 encode.
+	 * @throws JSONException
+	 *             If an error occurs when create JSON parameters.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	static HttpPost createChangePasswordRequest(String serverURL,
+			String account, String oldPassword, String newPassword)
+			throws JSONException, UnsupportedEncodingException {
+		HttpPost post = new HttpPost(serverURL);
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair(TRANS_CODE, "106"));
+		JSONObject param = new JSONObject();
+		param.put(ACCOUNT, account);
+		param.put(OLD_PASSWORD, oldPassword);
+		param.put(NEW_PASSWORD, newPassword);
 		params.add(new BasicNameValuePair(PARAM, param.toString()));
 		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
 		return post;
@@ -286,7 +325,7 @@ public final class RequestFactory {
 			columnIds.append(subscribeId);
 		}
 		param.put(COLUMN_IDS, columnIds.toString());
-		
+
 		params.add(new BasicNameValuePair(PARAM, param.toString()));
 		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
 		return post;
