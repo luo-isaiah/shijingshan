@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.panguso.android.shijingshan.column.ColumnInfo;
+import com.panguso.android.shijingshan.net.NetworkService.ChangePasswordRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.SaveSubscribeInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.BusinessInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.ColumnInfoListRequestListener;
@@ -471,6 +472,96 @@ public class NetworkServiceTest extends AndroidTestCase {
 					@Override
 					public void onLoginResponseDatabaseError(String errorMessage) {
 						assertTrue("Register Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+				});
+
+		// Wait for the executor thread finish job.
+		synchronized (LOCK) {
+			try {
+				LOCK.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Test
+	 * {@link NetworkService#changePassword(String, String, String, String, ChangePasswordRequestListener)}
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testChangePassword() {
+		/** The lock to synchronize. */
+		final Object LOCK = new Object();
+		NetworkService.changePassword(SERVER_URL, ACCOUNT, PASSWORD, "12345678",
+				new ChangePasswordRequestListener() {
+
+					@Override
+					public void onChangePasswordRequestFailed() {
+						assertTrue("Create Change Password Request Failed!",
+								false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onChangePasswordResponseSuccess() {
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onChangePasswordResponseFailed() {
+						assertTrue("Change Password Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onChangePasswordResponseOldPasswordIncorrect(
+							String errorMessage) {
+						assertTrue("Change Password Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onChangePasswordResponseOldPasswordNewPasswordSame(
+							String errorMessage) {
+						assertTrue("Change Password Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onChangePasswordResponseNoDataError(
+							String errorMessage) {
+						assertTrue("Change Password Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+
+					@Override
+					public void onChangePasswordResponseDatabaseError(
+							String errorMessage) {
+						assertTrue("Change Password Failed!", false);
 						// Let main thread finish.
 						synchronized (LOCK) {
 							LOCK.notify();

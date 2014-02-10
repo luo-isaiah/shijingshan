@@ -160,6 +160,30 @@ public class RequestFactoryTest extends AndroidTestCase {
 	}
 
 	/**
+	 * Test
+	 * {@link RequestFactory#createChangePasswordRequest(String, String, String, String)}
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testChangePasswordRequest() {
+		final String EXPECT_CONTENT = "transCode=106&param={\"newpwd\":\"123456\",\"oldpwd\":\"123456\",\"account\":\"panguso\"}";
+		try {
+			HttpPost request = RequestFactory.createChangePasswordRequest(
+					SERVER_URL, ACCOUNT, PASSWORD, PASSWORD);
+			assertNotNull(request);
+			String content = readContent(request.getEntity().getContent());
+			assertNotNull(content);
+			assertEquals(EXPECT_CONTENT, content);
+			return;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		assertTrue("Create change password request failed!", false);
+	}
+
+	/**
 	 * Test {@link RequestFactory#createUserTypeInfoListRequest(String)}.
 	 * 
 	 * @author Luo Yinzhuo
@@ -213,7 +237,7 @@ public class RequestFactoryTest extends AndroidTestCase {
 	 * @author Luo Yinzhuo
 	 */
 	public void testSaveSubscribeInfoListRequest() {
-		final String EXPECT_CONTENT = "transCode=204&param={\"account\":\"panguso\",\"columnIds\":103}";
+		final String EXPECT_CONTENT = "transCode=204&param={\"account\":\"panguso\",\"columnIds\":\"103\"}";
 		final List<Integer> subscribeIds = new ArrayList<Integer>();
 		subscribeIds.add(SUBSCRIBE_ID);
 		try {
