@@ -175,11 +175,13 @@ public class ColumnPageActivity extends Activity implements
 	 */
 	private void displayColumnPages(List<Column> columns) {
 		String account = AccountManager.getAccount();
-		if (account.length() > 0) {
+		if (AccountManager.isLogin()) {
 			columns.add(AddColumn.getInstance(this));
 			mLog.setImageResource(R.drawable.login);
+			mSubscribe.setVisibility(View.VISIBLE);
 		} else {
 			mLog.setImageResource(R.drawable.logout);
+			mSubscribe.setVisibility(View.INVISIBLE);
 		}
 
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
@@ -320,7 +322,6 @@ public class ColumnPageActivity extends Activity implements
 				}
 				editor.commit();
 
-				mSubscribe.setVisibility(View.VISIBLE);
 				showDialog(DIALOG_WAITING);
 				mInitialized = false;
 				NetworkService.getColumnInfoList(
@@ -377,8 +378,17 @@ public class ColumnPageActivity extends Activity implements
 			dismissDialog(DIALOG_RETRY);
 			break;
 		case DIALOG_LOGOUT:
+			saveColumnPages();
 			AccountManager.logout();
-			mSubscribe.setVisibility(View.INVISIBLE);
+
+			Editor editor = getPreferences(MODE_PRIVATE).edit();
+			try {
+				editor.putString(KEY_LAST_ACCOUNT, AccountManager.getJson());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			editor.commit();
+
 			NetworkService.getColumnInfoList(
 					getResources().getString(R.string.server_url),
 					AccountManager.getAccount(), this);
