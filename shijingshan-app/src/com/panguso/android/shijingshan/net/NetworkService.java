@@ -139,7 +139,7 @@ public final class NetworkService {
 	 *             If the device doesn't support UTF-8 encode.
 	 * @author Luo Yinzhuo
 	 */
-	private static String getContent(HttpResponse response)
+	public static String getContent(HttpResponse response)
 			throws UnsupportedEncodingException, IllegalStateException,
 			IOException {
 		StringBuffer sb = new StringBuffer();
@@ -1285,9 +1285,6 @@ public final class NetworkService {
 			try {
 				HttpResponse response = HTTP_CLIENT.execute(request);
 				content = NetworkService.getContent(response);
-
-				Log.d("ColumnInfoListCommand", "Account:" + mAccount
-						+ " Content:" + content);
 			} catch (IOException e) {
 				e.printStackTrace();
 				mListener.onColumnInfoListResponseFailed();
@@ -1752,6 +1749,141 @@ public final class NetworkService {
 			String account, SearchSubscribeInfoListRequestListener listener) {
 		EXECUTOR.execute(new SearchSubscribeInfoListCommand(serverURL, account,
 				listener));
+	}
+
+	/**
+	 * Interface definition for a callback to be invoked when a suggestion
+	 * request is executed.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public interface SuggestionRequestListener {
+
+		/**
+		 * Called when the suggestion request creation is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onSuggestionRequestFailed();
+
+		/**
+		 * Called when the suggestion request execution is successful.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onSuggestionResponseSuccess();
+
+		/**
+		 * Called when the suggestion request execution is failed.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		public void onSuggestionResponseFailed();
+	}
+
+	/**
+	 * Specified for execute suggestion request.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private static class SuggestionCommand implements Runnable {
+		/** The server URL. */
+		private final String mServerURL;
+		/** The account. */
+		private final String mAccount;
+		/** The contact. */
+		private final String mContact;
+		/** The content. */
+		private final String mContent;
+		/** The request listener. */
+		private final SuggestionRequestListener mListener;
+
+		/**
+		 * Construct a new instance.
+		 * 
+		 * @param serverURL
+		 *            The server URL.
+		 * @param account
+		 *            The account.
+		 * @param contact
+		 *            The contact information.
+		 * @param content
+		 *            The suggestion content.
+		 * @param listener
+		 *            The request listener.
+		 */
+		private SuggestionCommand(String serverURL, String account,
+				String contact, String content,
+				SuggestionRequestListener listener) {
+			mServerURL = serverURL;
+			mAccount = account;
+			mContact = contact;
+			mContent = content;
+			mListener = listener;
+		}
+
+		/** The key to get xCode. */
+		private static final String KEY_XCODE = "xCode";
+		/** The key to get xData. */
+		private static final String KEY_XDATA = "xData";
+
+		@Override
+		public void run() {
+			HttpPost request;
+			try {
+				request = RequestFactory.createSuggestionRequest(mServerURL,
+						mAccount, mContact, mContent);
+			} catch (Exception e) {
+				e.printStackTrace();
+				mListener.onSuggestionRequestFailed();
+				return;
+			}
+
+			String content;
+			try {
+				HttpResponse response = HTTP_CLIENT.execute(request);
+				content = NetworkService.getContent(response);
+			} catch (IOException e) {
+				e.printStackTrace();
+				mListener.onSuggestionRequestFailed();
+				return;
+			}
+
+			try {
+				JSONObject jsonResponse = new JSONObject(content);
+				int xCode = jsonResponse.getInt(KEY_XCODE);
+				switch (xCode) {
+				case XCODE_SUCCESS:
+					mListener.onSuggestionResponseSuccess();
+					return;
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			Log.e("SuggestionCommand", content);
+			mListener.onSuggestionResponseFailed();
+		}
+	}
+
+	/**
+	 * Suggestion.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param account
+	 *            The account name.
+	 * @param contact
+	 *            The contact information.
+	 * @param content
+	 *            The suggestion content.
+	 * @param listener
+	 *            The request listener.
+	 * @author Luo Yinzhuo
+	 */
+	public static void suggestion(String serverURL, String account,
+			String contact, String content, SuggestionRequestListener listener) {
+		EXECUTOR.execute(new SuggestionCommand(serverURL, account, contact,
+				content, listener));
 	}
 
 	/** The image LRU cache. */

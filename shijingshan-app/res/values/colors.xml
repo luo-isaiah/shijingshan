@@ -62,5 +62,9 @@
 
     <!-- setting activity -->
     <color name="setting_background">#FFFFFF</color>
+    
+    <!-- about activity -->
+    <color name="about_background">#FFFFFF</color>
+    <color name="about_text">#000000</color>
 
 </resources>

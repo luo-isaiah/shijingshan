@@ -357,4 +357,67 @@ public final class RequestFactory {
 		return post;
 	}
 
+	/** The contact. */
+	private static final String CONTACT = "contact";
+	/** The content. */
+	private static final String CONTENT = "content";
+
+	/**
+	 * Create a suggestion request.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param account
+	 *            The account name.
+	 * @param contact
+	 *            The contact information.
+	 * @param content
+	 *            The suggestion content.
+	 * @return The suggestion request.
+	 * @throws JSONException
+	 *             If an error occurs when create JSON parameters.
+	 * @throws UnsupportedEncodingException
+	 *             If device doesn't support UTF-8 encode.
+	 * @author Luo Yinzhuo
+	 */
+	static HttpPost createSuggestionRequest(String serverURL, String account,
+			String contact, String content) throws JSONException,
+			UnsupportedEncodingException {
+		HttpPost post = new HttpPost(serverURL);
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair(TRANS_CODE, "301"));
+		JSONObject param = new JSONObject();
+		param.put(ACCOUNT, account);
+		param.put(CONTACT, contact);
+		param.put(CONTENT, content);
+		params.add(new BasicNameValuePair(PARAM, param.toString()));
+		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+		return post;
+	}
+
+	/**
+	 * Create a notification request.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param account
+	 *            The account name.
+	 * @return The notification request.
+	 * @throws JSONException
+	 *             If an error occurs when create JSON parameters.
+	 * @throws UnsupportedEncodingException
+	 *             If device doesn't support UTF-8 encode.
+	 * @author Luo Yinzhuo
+	 */
+	public static HttpPost createNotificationRequest(String serverURL, String account)
+			throws JSONException, UnsupportedEncodingException {
+		HttpPost post = new HttpPost(serverURL);
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair(TRANS_CODE, "501"));
+		JSONObject param = new JSONObject();
+		param.put(ACCOUNT, account);
+		params.add(new BasicNameValuePair(PARAM, param.toString()));
+		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+		return post;
+	}
 }

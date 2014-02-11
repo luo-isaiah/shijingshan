@@ -119,6 +119,13 @@
     <!-- setting activity -->
     <string name="setting_title">设置</string>
     <string name="change_password">修改密码</string>
+    <string name="clear_cache">清空缓存</string>
+    <string name="suggestion">意见反馈</string>
+    <string name="about">关于</string>
+    
+    <!-- about activity -->
+    <string name="about_title">关于</string>
+    <string name="about_text">石景山区企业服务平台1.0......</string>
 
     <!-- server request url -->
     <string name="server_url">http://s-94379.gotocdn.com/sjs/JsonAction</string>

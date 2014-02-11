@@ -15,18 +15,25 @@
         android:background="@color/setting_background"
         android:orientation="vertical" >
 
-        <com.panguso.android.shijingshan.widget.ListButton
+        <com.panguso.android.shijingshan.setting.SettingButton
             android:id="@+id/change_password"
             android:layout_width="fill_parent"
-            android:layout_height="56dp" />
+            android:layout_height="wrap_content" />
 
-        <ImageView
-            android:id="@+id/change_password_delimiter"
+        <com.panguso.android.shijingshan.setting.SettingButton
+            android:id="@+id/clear_cache"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:src="@color/delimiter" />
-        
-        
+            android:layout_height="wrap_content" />
+
+        <com.panguso.android.shijingshan.setting.SettingButton
+            android:id="@+id/suggestion"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
+        <com.panguso.android.shijingshan.setting.SettingButton
+            android:id="@+id/about"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 </LinearLayout>

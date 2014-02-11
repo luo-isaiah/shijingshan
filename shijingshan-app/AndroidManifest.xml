@@ -49,15 +49,23 @@
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
+            android:name=".subscribe.SubscribeActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
             android:name=".setting.SettingActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
-            android:name=".subscribe.SubscribeActivity"
+            android:name=".setting.about.AboutActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
+
+        <receiver android:name=".notification.NotificationBroadcastReceiver" >
+        </receiver>
     </application>
 
 </manifest>
