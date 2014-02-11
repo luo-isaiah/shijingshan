@@ -280,4 +280,56 @@ public class RequestFactoryTest extends AndroidTestCase {
 		}
 		assertTrue("Create search subscribe column list Request failed!", false);
 	}
+
+	/** The contact. */
+	private static final String CONTACT = "";
+	/** The content. */
+	private static final String CONTENT = "≤‚ ‘";
+
+	/**
+	 * Test
+	 * {@link RequestFactory#createSuggestionRequest(String, String, String, String)}
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testSuggestionRequest() {
+		final String EXPECT_CONTENT = "transCode=301&param={\"content\":\"≤‚ ‘\",\"contact\":\"\",\"account\":\"panguso\"}";
+		try {
+			HttpPost request = RequestFactory.createSuggestionRequest(
+					SERVER_URL, ACCOUNT, CONTACT, CONTENT);
+			assertNotNull(request);
+			String content = readContent(request.getEntity().getContent());
+			assertNotNull(content);
+			assertEquals(EXPECT_CONTENT, content);
+			return;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		assertTrue("Create suggestion Request failed!", false);
+	}
+
+	/**
+	 * Test {@link RequestFactory#createNotificationRequest(String, String)}
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testNotificationRequest() {
+		final String EXPECT_CONTENT = "transCode=501&param={\"account\":\"panguso\"}";
+		try {
+			HttpPost request = RequestFactory.createNotificationRequest(
+					SERVER_URL, ACCOUNT);
+			assertNotNull(request);
+			String content = readContent(request.getEntity().getContent());
+			assertNotNull(content);
+			assertEquals(EXPECT_CONTENT, content);
+			return;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		assertTrue("Create notification Request failed!", false);
+	}
 }

@@ -23,6 +23,8 @@ import com.panguso.android.shijingshan.subscribe.SubscribeInfo;
 
 import android.graphics.Bitmap;
 import android.test.AndroidTestCase;
+import android.test.suitebuilder.annotation.LargeTest;
+import android.test.suitebuilder.annotation.SmallTest;
 
 public class NetworkServiceTest extends AndroidTestCase {
 	/** The server url. */
@@ -34,6 +36,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
+	@SmallTest
 	public void testGetBusinessInfoList() {
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
@@ -92,6 +95,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
+	@SmallTest
 	public void testGetEnterpriseInfoList() {
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
@@ -167,6 +171,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
+	@LargeTest
 	public void testRegister() {
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
@@ -243,6 +248,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
+	@SmallTest
 	public void testLogin() {
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
@@ -371,6 +377,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
+	@SmallTest
 	public void testLoginAccountNotExist() {
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
@@ -495,10 +502,11 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
+	@LargeTest
 	public void testChangePassword() {
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
-		NetworkService.changePassword(SERVER_URL, ACCOUNT, PASSWORD, "12345678",
+		NetworkService.changePassword(SERVER_URL, ACCOUNT, PASSWORD, PASSWORD,
 				new ChangePasswordRequestListener() {
 
 					@Override
@@ -585,6 +593,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
+	@SmallTest
 	public void testGetUserTypeInfoList() {
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
@@ -640,6 +649,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
+	@SmallTest
 	public void testGetColumnInfoListWithNoAccount() {
 		/** The account */
 		final String account = "";
@@ -699,6 +709,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
+	@SmallTest
 	public void testSaveSearchInfoList() {
 		final List<Integer> SUBSCRIBE_IDS = new ArrayList<Integer>();
 		SUBSCRIBE_IDS.add(SUBSCRIBE_ID);
@@ -760,6 +771,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
+	@SmallTest
 	public void testSearchSubscribeInfoList() {
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
@@ -817,6 +829,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
+	@SmallTest
 	public void testGetNewsInfoList() {
 		/** The column ID. */
 		final int COLUMN_ID = 100;
@@ -872,6 +885,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
+	@SmallTest
 	public void testGetImage() {
 		/** The image URL. */
 		final String IMAGE_URL = "http://s-94379.gotocdn.com/sjs//html/100/2013/11/2013_11_9228.jpg";
