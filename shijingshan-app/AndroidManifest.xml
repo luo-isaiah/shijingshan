@@ -39,7 +39,7 @@
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
-            android:name=".log.LoginActivity"
+            android:name="com.panguso.android.shijingshan.login.LoginActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
@@ -55,6 +55,16 @@
         </activity>
         <activity
             android:name=".setting.SettingActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".setting.changepassword.ChangePasswordActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".setting.suggestion.SuggestionActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>

@@ -934,17 +934,6 @@ public final class NetworkService {
 				String errorMessage);
 
 		/**
-		 * Called when the change password request execution encounters no data
-		 * error.
-		 * 
-		 * @param errorMessage
-		 *            The error message.
-		 * 
-		 * @author Luo Yinzhuo
-		 */
-		public void onChangePasswordResponseNoDataError(String errorMessage);
-
-		/**
 		 * Called when the change password request execution encounters database
 		 * error.
 		 * 
@@ -1039,10 +1028,6 @@ public final class NetworkService {
 					mListener
 							.onChangePasswordResponseOldPasswordNewPasswordSame(jsonResponse
 									.getString(KEY_XMSG));
-					return;
-				case XCODE_NO_DATA:
-					mListener.onChangePasswordResponseNoDataError(jsonResponse
-							.getString(KEY_XMSG));
 					return;
 				case XCODE_DATABASE_ERROR:
 					mListener

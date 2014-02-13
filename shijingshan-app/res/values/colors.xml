@@ -62,6 +62,16 @@
 
     <!-- setting activity -->
     <color name="setting_background">#FFFFFF</color>
+
+    <!-- change password activity -->
+    <color name="change_password_background">#FFFFFF</color>
+    <color name="change_password_table_text">#545454</color>
+    <color name="change_password_table_edit_hint">#BBBBBB</color>
+    
+    <!-- suggestion activity -->
+    <color name="suggestion_background">#FFFFFF</color>
+    <color name="suggestion_text">#545454</color>
+    <color name="suggestion_edit_hint">#BBBBBB</color>
     
     <!-- about activity -->
     <color name="about_background">#FFFFFF</color>

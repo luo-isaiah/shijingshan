@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Window;
 import android.view.ViewGroup.LayoutParams;
 
@@ -68,6 +69,7 @@ public class StartDialog extends Dialog {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MESSAGE_TIMEOUT:
+				Log.d("StartDialog", "Handle time out message!");
 				mDialog.onTimeout();
 				break;
 			}
@@ -99,10 +101,12 @@ public class StartDialog extends Dialog {
 	public void show() {
 		super.show();
 		mHandler.sendEmptyMessageDelayed(MESSAGE_TIMEOUT, TIMEOUT);
+		Log.d("StartDialog", "Send time out message!");
 	}
 
 	@Override
 	public void dismiss() {
+		Log.d("StartDialog", "Dismiss");
 		mHandler.removeMessages(MESSAGE_TIMEOUT);
 		super.dismiss();
 	}

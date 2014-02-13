@@ -93,25 +93,24 @@ public class RegisterActivity extends Activity implements OnBackListener,
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
-		Resources resources = getResources();
 		switch (id) {
 		case DIALOG_WAITING:
 			return new WaitingDialog(this);
 		case DIALOG_RETRY:
 			return new MessageDialog(this, DIALOG_RETRY,
-					resources.getString(R.string.retry_title),
-					resources.getString(R.string.retry_text),
-					resources.getString(R.string.retry_button), this);
+					getString(R.string.retry_title),
+					getString(R.string.retry_text),
+					getString(R.string.retry_button), this);
 		case DIALOG_ACCOUNT_EXIST:
 			return new MessageDialog(this, DIALOG_ACCOUNT_EXIST,
-					resources.getString(R.string.account_exist_title),
-					resources.getString(R.string.account_exist_text),
-					resources.getString(R.string.account_exist_button), this);
+					getString(R.string.account_exist_title),
+					getString(R.string.account_exist_text),
+					getString(R.string.account_exist_button), this);
 		case DIALOG_DATABASE_ERROR:
 			return new MessageDialog(this, DIALOG_DATABASE_ERROR,
-					resources.getString(R.string.database_error_title),
-					resources.getString(R.string.database_error_text),
-					resources.getString(R.string.database_error_button), this);
+					getString(R.string.database_error_title),
+					getString(R.string.database_error_text),
+					getString(R.string.database_error_button), this);
 		case DIALOG_BUSINESS:
 			mBusinessDialog = new BusinessDialog(this, this);
 			return mBusinessDialog;
@@ -185,7 +184,7 @@ public class RegisterActivity extends Activity implements OnBackListener,
 		setContentView(R.layout.register_activity);
 
 		mTitleBar = (BlueTitleBar) findViewById(R.id.title_bar);
-		mTitleBar.setTitle(getResources().getString(R.string.register_title));
+		mTitleBar.setTitle(getString(R.string.register_title));
 		mTitleBar.setOnBackListener(this);
 
 		Resources resources = getResources();

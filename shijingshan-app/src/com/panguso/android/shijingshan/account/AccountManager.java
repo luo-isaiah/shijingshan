@@ -74,6 +74,17 @@ public final class AccountManager {
 		return ACCOUNT.getPassword();
 	}
 
+	/**
+	 * Change the current account's password.
+	 * 
+	 * @param password
+	 *            The current account's password.
+	 * @author Luo Yinzhuo
+	 */
+	public static void changePassword(String password) {
+		ACCOUNT = new Account(ACCOUNT.getAccount(), password);
+	}
+
 	/** The key to store last login user's name. */
 	private static final String KEY_ACCOUNT = "name";
 	/** The key to store last login user's password. */

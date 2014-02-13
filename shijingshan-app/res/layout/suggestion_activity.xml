@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/suggestion_background"
+    android:orientation="vertical" >
+
+    <com.panguso.android.shijingshan.widget.BlueTitleBar
+        android:id="@+id/title_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="48dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <TextView
+            android:id="@+id/content_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="14dp"
+            android:text="@string/suggestion_content"
+            android:textColor="@color/suggestion_text"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/suggestion"
+            android:layout_width="fill_parent"
+            android:layout_height="56dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="12dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/blue_button_background"
+            android:enabled="false"
+            android:text="@string/suggestion_submit"
+            android:textColor="@color/blue_button_text"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/contact"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_above="@id/suggestion"
+            android:layout_marginLeft="14dp"
+            android:layout_marginRight="14dp"
+            android:background="@drawable/round_border"
+            android:hint="@string/suggestion_contact_hint"
+            android:inputType="text"
+            android:maxLength="30"
+            android:padding="5dp"
+            android:singleLine="true"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/contact_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/contact"
+            android:layout_margin="14dp"
+            android:text="@string/suggestion_contact"
+            android:textColor="@color/suggestion_text"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/contact_text"
+            android:layout_below="@id/content_text"
+            android:layout_marginLeft="14dp"
+            android:layout_marginRight="14dp"
+            android:background="@drawable/round_border"
+            android:gravity="top"
+            android:hint="@string/suggestion_content_hint"
+            android:inputType="text"
+            android:maxLength="500"
+            android:padding="5dp"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+</LinearLayout>

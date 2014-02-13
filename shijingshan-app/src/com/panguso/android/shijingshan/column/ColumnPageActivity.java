@@ -11,7 +11,7 @@ import com.panguso.android.shijingshan.column.StartDialog.OnStartDialogListener;
 import com.panguso.android.shijingshan.dialog.MessageDialog;
 import com.panguso.android.shijingshan.dialog.MessageDialog.OnMessageDialogListener;
 import com.panguso.android.shijingshan.dialog.WaitingDialog;
-import com.panguso.android.shijingshan.log.LoginActivity;
+import com.panguso.android.shijingshan.login.LoginActivity;
 import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.ColumnInfoListRequestListener;
 import com.panguso.android.shijingshan.setting.SettingActivity;
@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -87,7 +88,7 @@ public class ColumnPageActivity extends Activity implements
 	}
 
 	/** The key to get last account data. */
-	private static final String KEY_LAST_ACCOUNT = "last_account";
+	public static final String KEY_LAST_ACCOUNT = "last_account";
 	/** The key to get the last displayed {@link ColumnPage}'s data. */
 	private static final String KEY_COLUMN_PAGES = "_column_page";
 
@@ -322,8 +323,11 @@ public class ColumnPageActivity extends Activity implements
 				}
 				editor.commit();
 
-				showDialog(DIALOG_WAITING);
 				mInitialized = false;
+			}
+
+			if (!mInitialized) {
+				showDialog(DIALOG_WAITING);
 				NetworkService.getColumnInfoList(
 						getString(R.string.server_url),
 						AccountManager.getAccount(), this);
@@ -345,6 +349,7 @@ public class ColumnPageActivity extends Activity implements
 		if (mUnsupportedDialog != null) {
 			return;
 		} else {
+			Log.d("StartDialog", "Activity dismiss dialog!");
 			dismissDialog(DIALOG_START);
 			if ((mRetryDialog == null || !mRetryDialog.isShowing())
 					&& !mInitialized) {

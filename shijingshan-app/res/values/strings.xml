@@ -48,6 +48,11 @@
     <string name="account_password_not_match_text">用户名或密码错误</string>
     <string name="account_password_not_match_button">确定</string>
     
+    <!-- old password and new password same dialog -->
+    <string name="old_password_new_password_same_title">修改错误</string>
+    <string name="old_password_new_password_same_text">新密码与旧密码相同</string>
+    <string name="old_password_new_password_same_button">确定</string>
+    
     <!-- server no data error dialog -->
     <string name="no_data_error_title">服务器错误</string>
     <string name="no_data_error_text">没有数据</string>
@@ -122,6 +127,23 @@
     <string name="clear_cache">清空缓存</string>
     <string name="suggestion">意见反馈</string>
     <string name="about">关于</string>
+    
+    <!-- change password activity -->
+    <string name="change_password_title">修改密码</string>
+    <string name="old_password">旧密码</string>
+    <string name="old_password_hint">6&#8211;20位字母或数字</string>
+    <string name="new_password">新密码</string>
+    <string name="new_password_hint">6&#8211;20位字母或数字</string>
+    <string name="confirm_new_password">确认新密码</string>
+    <string name="confirm_new_password_hint">6&#8211;20位字母或数字</string>
+    
+    <!-- suggestion activity -->
+    <string name="suggestion_title">意见反馈</string>
+    <string name="suggestion_content">反馈内容</string>
+    <string name="suggestion_content_hint">请输入您的意见或建议</string>
+    <string name="suggestion_contact">联系方式</string>
+    <string name="suggestion_contact_hint">Email或QQ号</string>
+    <string name="suggestion_submit">提交</string>
     
     <!-- about activity -->
     <string name="about_title">关于</string>

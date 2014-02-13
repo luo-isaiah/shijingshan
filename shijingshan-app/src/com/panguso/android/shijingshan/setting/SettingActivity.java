@@ -4,6 +4,8 @@ import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.account.AccountManager;
 import com.panguso.android.shijingshan.setting.SettingButton.OnSettingButtonListener;
 import com.panguso.android.shijingshan.setting.about.AboutActivity;
+import com.panguso.android.shijingshan.setting.changepassword.ChangePasswordActivity;
+import com.panguso.android.shijingshan.setting.suggestion.SuggestionActivity;
 import com.panguso.android.shijingshan.widget.BlueTitleBar;
 import com.panguso.android.shijingshan.widget.BlueTitleBar.OnBackListener;
 
@@ -70,6 +72,10 @@ public class SettingActivity extends Activity implements OnBackListener,
 	public void onClicked(int id) {
 		switch (id) {
 		case R.id.change_password:
+			startActivity(new Intent(this, ChangePasswordActivity.class));
+			break;
+		case R.id.suggestion:
+			startActivity(new Intent(this, SuggestionActivity.class));
 			break;
 		case R.id.about:
 			startActivity(new Intent(this, AboutActivity.class));
