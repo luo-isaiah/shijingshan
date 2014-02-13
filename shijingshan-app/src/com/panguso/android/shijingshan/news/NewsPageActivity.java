@@ -78,6 +78,7 @@ public class NewsPageActivity extends Activity implements OnBackListener,
 	@Override
 	public void onNewsListResponseSuccess(final List<NewsInfo> newsInfos, List<ColumnInfo> childColumnInfos) {
 		runOnUiThread(new Runnable() {
+			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
 				mNewsPageView.initialize(createNewsPages(newsInfos), 0);
@@ -108,7 +109,7 @@ public class NewsPageActivity extends Activity implements OnBackListener,
 		
 		for (int i = 0; i < newsInfos.size(); i++) {
 			NewsInfo newsInfo = newsInfos.get(i);
-			String id = newsInfo.getID();
+			String id = newsInfo.getId() + "";
 			News news;
 			if (mNewsMap.containsKey(id)) {
 				news = mNewsMap.get(id);

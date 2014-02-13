@@ -10,7 +10,7 @@ import org.json.JSONObject;
  */
 public class NewsInfo {
 	/** The news ID. */
-	private final String mID;
+	private final int mId;
 	/** The title. */
 	private final String mTitle;
 	/** The image URL. */
@@ -23,7 +23,7 @@ public class NewsInfo {
 	/**
 	 * Construct a new instance.
 	 * 
-	 * @param ID
+	 * @param id
 	 *            The news ID.
 	 * @param title
 	 *            The title.
@@ -34,9 +34,9 @@ public class NewsInfo {
 	 * @param time
 	 *            The add time.
 	 */
-	private NewsInfo(String ID, String title, String imageURL, String URL,
+	private NewsInfo(int id, String title, String imageURL, String URL,
 			String time) {
-		mID = ID;
+		mId = id;
 		mTitle = title;
 		mImageURL = imageURL;
 		mNewsURL = URL;
@@ -65,7 +65,7 @@ public class NewsInfo {
 	 * @author Luo Yinzhuo
 	 */
 	public static NewsInfo parse(JSONObject json) throws JSONException {
-		return new NewsInfo(json.getString(KEY_NEWS_ID),
+		return new NewsInfo(json.getInt(KEY_NEWS_ID),
 				json.getString(KEY_TITLE), json.getString(KEY_IMAGE_URL),
 				json.getString(KEY_URL), json.getString(KEY_ADD_TIME));
 	}
@@ -76,8 +76,8 @@ public class NewsInfo {
 	 * @return The news ID.
 	 * @author Luo Yinzhuo
 	 */
-	public String getID() {
-		return mID;
+	public int getId() {
+		return mId;
 	}
 
 	/**
@@ -87,12 +87,12 @@ public class NewsInfo {
 	 * @author Luo Yinzhuo
 	 */
 	public News getNews() {
-		return new News(mID, mTitle, mImageURL, mNewsURL, mTime);
+		return new News(mId, mTitle, mImageURL, mNewsURL, mTime);
 	}
 
 	@Override
     public String toString() {
-	    return "NewsInfo [mID=" + mID + ", mTitle=" + mTitle + ", mImageURL=" + mImageURL
+	    return "NewsInfo [mID=" + mId + ", mTitle=" + mTitle + ", mImageURL=" + mImageURL
 	            + ", mNewsURL=" + mNewsURL + ", mTime=" + mTime + "]";
     }
 }

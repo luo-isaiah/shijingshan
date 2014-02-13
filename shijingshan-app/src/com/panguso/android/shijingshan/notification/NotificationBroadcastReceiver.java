@@ -1,7 +1,6 @@
 package com.panguso.android.shijingshan.notification;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;

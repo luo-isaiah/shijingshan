@@ -1809,8 +1809,6 @@ public final class NetworkService {
 
 		/** The key to get xCode. */
 		private static final String KEY_XCODE = "xCode";
-		/** The key to get xData. */
-		private static final String KEY_XDATA = "xData";
 
 		@Override
 		public void run() {

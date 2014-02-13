@@ -63,7 +63,7 @@ public class News {
 	}
 
 	/** The news id. */
-	private final String mID;
+	private final int mId;
 	/** The news title. */
 	private final String mTitle;
 	/** The image URL. */
@@ -90,8 +90,8 @@ public class News {
 	 * @param time
 	 *            The news time.
 	 */
-	News(String id, String title, String imageURL, String newsURL, String time) {
-		mID = id;
+	News(int id, String title, String imageURL, String newsURL, String time) {
+		mId = id;
 		mTitle = title;
 		mImageURL = imageURL;
 		mNewsURL = newsURL;

@@ -175,7 +175,6 @@ public class ColumnPageActivity extends Activity implements
 	 * @author Luo Yinzhuo
 	 */
 	private void displayColumnPages(List<Column> columns) {
-		String account = AccountManager.getAccount();
 		if (AccountManager.isLogin()) {
 			columns.add(AddColumn.getInstance(this));
 			mLog.setImageResource(R.drawable.login);
