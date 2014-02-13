@@ -502,7 +502,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	@LargeTest
+	@SmallTest
 	public void testChangePassword() {
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
@@ -548,16 +548,6 @@ public class NetworkServiceTest extends AndroidTestCase {
 
 					@Override
 					public void onChangePasswordResponseOldPasswordNewPasswordSame(
-							String errorMessage) {
-						assertTrue("Change Password Failed!", false);
-						// Let main thread finish.
-						synchronized (LOCK) {
-							LOCK.notify();
-						}
-					}
-
-					@Override
-					public void onChangePasswordResponseNoDataError(
 							String errorMessage) {
 						assertTrue("Change Password Failed!", false);
 						// Let main thread finish.
