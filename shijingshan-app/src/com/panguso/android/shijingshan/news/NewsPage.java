@@ -3,7 +3,7 @@ package com.panguso.android.shijingshan.news;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.panguso.android.shijingshan.net.NetworkService.ImageRequestListener;
+import com.panguso.android.shijingshan.net.NetworkService.NewsImageRequestListener;
 
 import android.R.integer;
 import android.graphics.Canvas;
@@ -154,12 +154,13 @@ public class NewsPage {
 	 * 
 	 * @param canvas
 	 *            The {@link NewsPageView}'s canvas.
+	 * @param page
+	 *            The {@link NewsPage} index.
 	 * @param listener
 	 *            The request listener.
 	 * @author Luo Yinzhuo
 	 */
-	public void draw(Canvas canvas, ImageRequestListener listener) {
-		Log.d("NewsPage", "draw");
+	public void draw(Canvas canvas, int page, NewsImageRequestListener listener) {
 		// Check whether the last news complete a single line.
 		final int count = mNews.size();
 		if (count > 0) {
@@ -202,7 +203,7 @@ public class NewsPage {
 		}
 
 		for (int i = 0; i < count; i++) {
-			mNews.get(i).draw(canvas, mRects.get(i), listener);
+			mNews.get(i).draw(canvas, mRects.get(i), page, listener);
 		}
 	}
 

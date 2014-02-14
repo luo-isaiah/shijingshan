@@ -1,7 +1,7 @@
 package com.panguso.android.shijingshan.news;
 
 import com.panguso.android.shijingshan.net.NetworkService;
-import com.panguso.android.shijingshan.net.NetworkService.ImageRequestListener;
+import com.panguso.android.shijingshan.net.NetworkService.NewsImageRequestListener;
 
 import android.content.Context;
 import android.content.Intent;
@@ -62,8 +62,6 @@ public class News {
 		NO_IMAGE_FONT_COLOR = noImageFontColor;
 	}
 
-	/** The news id. */
-	private final int mId;
 	/** The news title. */
 	private final String mTitle;
 	/** The image URL. */
@@ -72,15 +70,13 @@ public class News {
 	private final String mNewsURL;
 	/** The news time. */
 	private final String mTime;
-	
+
 	/** The key to store news URL. */
 	public static final String KEY_NEWS_URL = "news_url";
 
 	/**
 	 * Construct a new instance.
 	 * 
-	 * @param id
-	 *            The news id.
 	 * @param title
 	 *            The news title.
 	 * @param imageURL
@@ -90,8 +86,7 @@ public class News {
 	 * @param time
 	 *            The news time.
 	 */
-	News(int id, String title, String imageURL, String newsURL, String time) {
-		mId = id;
+	News(String title, String imageURL, String newsURL, String time) {
 		mTitle = title;
 		mImageURL = imageURL;
 		mNewsURL = newsURL;
@@ -115,14 +110,16 @@ public class News {
 	 *            The {@link NewsPageView}'s canvas.
 	 * @param rect
 	 *            The news rectangle.
+	 * @param page
+	 *            The {@link NewsPage} index.
 	 * @param listener
 	 *            The image request listener.
 	 * @author Luo Yinzhuo
 	 */
-	public void draw(Canvas canvas, Rect rect, ImageRequestListener listener) {
-		Log.d("News", "draw image URL length:" + mImageURL.length());
+	public void draw(Canvas canvas, Rect rect, int page,
+			NewsImageRequestListener listener) {
 		if (mImageURL.length() > 0) {
-			Bitmap bitmap = NetworkService.getImage(mImageURL, listener);
+			Bitmap bitmap = NetworkService.getNewsImage(page, mImageURL, listener);
 			if (bitmap != null) {
 				synchronized (bitmap) {
 					if (!bitmap.isRecycled()) {

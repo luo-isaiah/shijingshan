@@ -10,7 +10,7 @@ import org.json.JSONObject;
  */
 public class NewsInfo {
 	/** The news ID. */
-	private final int mId;
+	private final String mId;
 	/** The title. */
 	private final String mTitle;
 	/** The image URL. */
@@ -34,7 +34,7 @@ public class NewsInfo {
 	 * @param time
 	 *            The add time.
 	 */
-	private NewsInfo(int id, String title, String imageURL, String URL,
+	private NewsInfo(String id, String title, String imageURL, String URL,
 			String time) {
 		mId = id;
 		mTitle = title;
@@ -55,6 +55,21 @@ public class NewsInfo {
 	private static final String KEY_ADD_TIME = "addtime";
 
 	/**
+	 * Check if the JSON object is a news info JSON object.
+	 * 
+	 * @param json
+	 *            The JSON object.
+	 * @return True if the JSON object is a news info JSON object, otherwise
+	 *         false.
+	 * @author Luo Yinzhuo
+	 */
+	public static boolean isNewsInfo(JSONObject json) {
+		return json != null && json.has(KEY_NEWS_ID) && json.has(KEY_TITLE)
+				&& json.has(KEY_IMAGE_URL) && json.has(KEY_URL)
+				&& json.has(KEY_ADD_TIME);
+	}
+
+	/**
 	 * Parse a news info from its JSON format.
 	 * 
 	 * @param json
@@ -65,7 +80,7 @@ public class NewsInfo {
 	 * @author Luo Yinzhuo
 	 */
 	public static NewsInfo parse(JSONObject json) throws JSONException {
-		return new NewsInfo(json.getInt(KEY_NEWS_ID),
+		return new NewsInfo(json.getString(KEY_NEWS_ID),
 				json.getString(KEY_TITLE), json.getString(KEY_IMAGE_URL),
 				json.getString(KEY_URL), json.getString(KEY_ADD_TIME));
 	}
@@ -76,7 +91,7 @@ public class NewsInfo {
 	 * @return The news ID.
 	 * @author Luo Yinzhuo
 	 */
-	public int getId() {
+	public String getId() {
 		return mId;
 	}
 
@@ -87,12 +102,13 @@ public class NewsInfo {
 	 * @author Luo Yinzhuo
 	 */
 	public News getNews() {
-		return new News(mId, mTitle, mImageURL, mNewsURL, mTime);
+		return new News(mTitle, mImageURL, mNewsURL, mTime);
 	}
 
 	@Override
-    public String toString() {
-	    return "NewsInfo [mID=" + mId + ", mTitle=" + mTitle + ", mImageURL=" + mImageURL
-	            + ", mNewsURL=" + mNewsURL + ", mTime=" + mTime + "]";
-    }
+	public String toString() {
+		return "NewsInfo [mID=" + mId + ", mTitle=" + mTitle + ", mImageURL="
+				+ mImageURL + ", mNewsURL=" + mNewsURL + ", mTime=" + mTime
+				+ "]";
+	}
 }

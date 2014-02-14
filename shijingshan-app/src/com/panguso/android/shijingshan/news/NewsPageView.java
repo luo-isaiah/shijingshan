@@ -3,7 +3,8 @@ package com.panguso.android.shijingshan.news;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.panguso.android.shijingshan.net.NetworkService.ImageRequestListener;
+import com.panguso.android.shijingshan.net.NetworkService;
+import com.panguso.android.shijingshan.net.NetworkService.NewsImageRequestListener;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -21,7 +22,7 @@ import android.view.View;
  * 
  * @author Luo Yinzhuo
  */
-public class NewsPageView extends View {
+public class NewsPageView extends View implements NewsImageRequestListener {
 	/** The news page manager. */
 	private final NewsPageManager mNewsPageManager;
 	/** The gesture detector. */
@@ -42,6 +43,16 @@ public class NewsPageView extends View {
 				this.mNewsPageManager);
 	}
 
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		NewsPage.initialize(w, h);
+	}
+
+	/** The {@link NewsPage} list. */
+	private final List<NewsPage> mNewsPages = new ArrayList<NewsPage>();
+	/** The news page position. */
+	private float mNewsPagePosition = 0.0f;
+
 	/**
 	 * Initialize the {@link NewsPageManager}.
 	 * 
@@ -52,19 +63,59 @@ public class NewsPageView extends View {
 	 * @author Luo Yinzhuo
 	 */
 	public void initialize(List<NewsPage> newsPages, int newsPagePosition) {
-		this.mNewsPageManager.initialize(newsPages, newsPagePosition);
+		// this.mNewsPageManager.initialize(newsPages, newsPagePosition);
+		mNewsPages.clear();
+		mNewsPages.addAll(newsPages);
+		mNewsPagePosition = newsPagePosition;
 		this.invalidate();
-	}
-
-	@Override
-	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-		NewsPage.initialize(w, h);
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		canvas.drawColor(Color.WHITE);
-		mNewsPageManager.draw(canvas);
+
+		// TODO: If there's animation, update mNewsPagePosition
+
+		if (this.mNewsPages.size() > 0) {
+			final int left = (int) Math.floor(mNewsPagePosition);
+			float offsetX = (left - mNewsPagePosition)
+					* NewsPageView.this.getWidth();
+			canvas.save();
+			canvas.translate(offsetX, 0);
+
+			if (left >= 0 && left < this.mNewsPages.size()) {
+				NewsPage leftPage = this.mNewsPages.get(left);
+				leftPage.draw(canvas, left, this);
+			}
+
+			final int right = left + 1;
+			if (right < this.mNewsPages.size()) {
+				NewsPage rightPage = this.mNewsPages.get(right);
+				canvas.translate(NewsPageView.this.getWidth(), 0);
+				rightPage.draw(canvas, right, this);
+			}
+
+			canvas.restore();
+		}
+
+		// if (this.mNewsPagePositionManager.hasAnimation()) {
+		// Log.d("NewsPageManager", "draw has animation.");
+		// NewsPageView.this.invalidate();
+		// }
+	}
+
+	@Override
+	public void onNewsImageResponseSuccess(int page) {
+		if (Math.abs(mNewsPagePosition - page) < 1) {
+			postInvalidate();
+		}
+	}
+
+	@Override
+	public void onNewsImageResponseFailed(int page, String imageURL) {
+		if (Math.abs(mNewsPagePosition - page) < 1) {
+			NetworkService.getNewsImage(page, imageURL, this);
+		}
 	}
 
 	@Override
@@ -72,8 +123,12 @@ public class NewsPageView extends View {
 		return mGestureDetector.onTouchEvent(event);
 	}
 
-	private class NewsPageManager implements ImageRequestListener,
-			OnGestureListener {
+	/**
+	 * Manage the {@link NewsPage} list and
+	 * 
+	 * @author luoyinzhuo
+	 */
+	private class NewsPageManager implements OnGestureListener {
 		/** The news page list. */
 		private final List<NewsPage> mNewsPages = new ArrayList<NewsPage>();
 		/** The news page position manager. */
@@ -94,45 +149,6 @@ public class NewsPageView extends View {
 			this.mNewsPages.clear();
 			this.mNewsPages.addAll(newsPages);
 			this.mNewsPagePositionManager.setNewsPagePosition(newsPagePosition);
-		}
-
-		/**
-		 * Draw the news pages to the canvas.
-		 * 
-		 * @param canvas
-		 *            The {@link NewsPageView}'s canvas.
-		 * @author Luo Yinzhuo
-		 */
-		public void draw(Canvas canvas) {
-			final float newsPagePosition = this.mNewsPagePositionManager
-					.getNewsPagePosition();
-
-			if (this.mNewsPages.size() > 0) {
-				final int left = (int) Math.floor(newsPagePosition);
-				float offsetX = (left - newsPagePosition)
-						* NewsPageView.this.getWidth();
-				canvas.save();
-				canvas.translate(offsetX, 0);
-
-				if (left >= 0 && left < this.mNewsPages.size()) {
-					NewsPage leftPage = this.mNewsPages.get(left);
-					leftPage.draw(canvas, this);
-				}
-
-				final int right = left + 1;
-				if (right < this.mNewsPages.size()) {
-					NewsPage rightPage = this.mNewsPages.get(right);
-					canvas.translate(NewsPageView.this.getWidth(), 0);
-					rightPage.draw(canvas, this);
-				}
-
-				canvas.restore();
-			}
-
-			if (this.mNewsPagePositionManager.hasAnimation()) {
-				Log.d("NewsPageManager", "draw has animation.");
-				NewsPageView.this.invalidate();
-			}
 		}
 
 		/**
@@ -504,18 +520,6 @@ public class NewsPageView extends View {
 			public void onSingleTapUp() {
 				mNews.onSingleTapUp(NewsPageView.this.getContext());
 			}
-		}
-
-		@Override
-		public void onImageResponseSuccess(Bitmap bitmap) {
-			Log.d("NewsPageManager", "onImageResponseSuccess.");
-			postInvalidate();
-		}
-
-		@Override
-		public void onImageResponseFailed() {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override

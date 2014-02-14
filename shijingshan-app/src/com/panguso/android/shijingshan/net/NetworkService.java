@@ -2,6 +2,7 @@ package com.panguso.android.shijingshan.net;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -43,6 +44,7 @@ import org.json.JSONObject;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.util.Log;
 
 import com.panguso.android.shijingshan.column.ColumnInfo;
@@ -1417,8 +1419,10 @@ public final class NetworkService {
 							.getJSONArray(KEY_XDATA);
 					List<NewsInfo> newsInfos = new ArrayList<NewsInfo>();
 					for (int i = 0; i < jsonNewsInfo.length(); i++) {
-						newsInfos.add(NewsInfo.parse(jsonNewsInfo
-								.getJSONObject(i)));
+						JSONObject newsInfo = jsonNewsInfo.getJSONObject(i);
+						if (NewsInfo.isNewsInfo(newsInfo)) {
+							newsInfos.add(NewsInfo.parse(newsInfo));
+						}
 					}
 
 					List<ColumnInfo> childColumnInfos = new ArrayList<ColumnInfo>();
@@ -1895,49 +1899,67 @@ public final class NetworkService {
 	};
 
 	/**
-	 * Interface definition for a callback to be invoked when a image request is
-	 * executed.
+	 * Used to record the accepted image request to prevent re-accept same image
+	 * request.
+	 */
+	private static final Set<String> IMAGE_REQUEST_SET = new HashSet<String>();
+
+	/**
+	 * Interface definition for a callback to be invoked when a news image
+	 * request is executed.
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	public interface ImageRequestListener {
+	public interface NewsImageRequestListener {
 		/**
-		 * Called when the image request execution is successful.
+		 * Called when the news image request execution is successful.
 		 * 
+		 * @param page
+		 *            The {@link NewsPage} index.
 		 * @param bitmap
 		 *            The image's bitmap.
 		 * @author Luo Yinzhuo
 		 */
-		public void onImageResponseSuccess(Bitmap bitmap);
+		public void onNewsImageResponseSuccess(int page);
 
 		/**
 		 * Called when the image request execution is failed.
 		 * 
+		 * @param page
+		 *            The {@link NewsPage} index.
+		 * @param imageURL
+		 *            The image URL.
 		 * @author Luo Yinzhuo
 		 */
-		public void onImageResponseFailed();
+		public void onNewsImageResponseFailed(int page, String imageURL);
 	}
 
 	/**
-	 * Specified for execute image request.
+	 * Specified for execute news image request.
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	private static class ImageCommand implements Runnable {
+	private static class NewsImageCommand implements Runnable {
+		/** The {@link NewsPage} index. */
+		private final int mPage;
 		/** The image URL. */
 		private final String mImageURL;
 		/** The request listener. */
-		private final ImageRequestListener mListener;
+		private final NewsImageRequestListener mListener;
 
 		/**
 		 * Construct a new instance.
 		 * 
+		 * @param page
+		 *            The {@link NewsPage} index.
 		 * @param imageURL
 		 *            The image URL.
 		 * @param listener
 		 *            The request listener.
 		 */
-		private ImageCommand(String imageURL, ImageRequestListener listener) {
+		private NewsImageCommand(int page, String imageURL,
+				NewsImageRequestListener listener) {
+			mPage = page;
 			mImageURL = imageURL;
 			mListener = listener;
 		}
@@ -1946,41 +1968,63 @@ public final class NetworkService {
 		public void run() {
 			HttpGet request = new HttpGet(mImageURL);
 
-			ByteArrayBuffer byteArrayBuffer = new ByteArrayBuffer(1024);
 			try {
 				HttpResponse response = HTTP_CLIENT.execute(request);
 				BufferedInputStream bufferedInputStream = new BufferedInputStream(
 						response.getEntity().getContent());
+
+				ByteArrayBuffer byteArrayBuffer = new ByteArrayBuffer(1024);
 				int current = bufferedInputStream.read();
 				while (current != -1) {
 					byteArrayBuffer.append(current);
 					current = bufferedInputStream.read();
 				}
+
+				Bitmap bitmap = BitmapFactory.decodeByteArray(
+						byteArrayBuffer.toByteArray(), 0,
+						byteArrayBuffer.length());
+				if (bitmap != null) {
+					saveImageToExternalStorage(mImageURL,
+							byteArrayBuffer.toByteArray());
+
+					BITMAP_LRU_CACHE.put(mImageURL, bitmap);
+					mListener.onNewsImageResponseSuccess(mPage);
+				} else {
+					mListener.onNewsImageResponseFailed(mPage, mImageURL);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				mListener.onImageResponseFailed();
+				mListener.onNewsImageResponseFailed(mPage, mImageURL);
 				return;
+			} finally {
+				IMAGE_REQUEST_SET.remove(mImageURL);
 			}
+		}
+	}
 
-			Bitmap bitmap = BitmapFactory.decodeByteArray(
-					byteArrayBuffer.toByteArray(), 0, byteArrayBuffer.length());
-			if (bitmap != null) {
-				BITMAP_LRU_CACHE.put(mImageURL, bitmap);
+	/** The external storage folder to store downloaded images. */
+	private static final String EXTERNAL_STORAGE_FOLDER = "Shijingshan";
+
+	private static void saveImageToExternalStorage(String imageURL, byte[] data) {
+		if (Environment.MEDIA_MOUNTED.equals(Environment
+				.getExternalStorageState())) {
+			File externalStorage = new File(
+					Environment.getExternalStorageDirectory(),
+					EXTERNAL_STORAGE_FOLDER);
+			
+			if (!externalStorage.exists()) {
+				externalStorage.mkdirs();
 			}
-			IMAGE_REQUEST_SET.remove(mImageURL);
-			mListener.onImageResponseSuccess(bitmap);
+			
+			
 		}
 	}
 
 	/**
-	 * Used to record the accepted image request to prevent re-accept same image
-	 * request.
-	 */
-	private static final Set<String> IMAGE_REQUEST_SET = new HashSet<String>();
-
-	/**
-	 * Get the image.
+	 * Get the news image.
 	 * 
+	 * @param page
+	 *            The {@link NewsPage} index.
 	 * @param imageURL
 	 *            The image URL.
 	 * @param listener
@@ -1988,16 +2032,13 @@ public final class NetworkService {
 	 * @return The bitmap requested if exist in the cache, otherwise null.
 	 * @author Luo Yinzhuo
 	 */
-	public static Bitmap getImage(String imageURL, ImageRequestListener listener) {
+	public static Bitmap getNewsImage(int page, String imageURL,
+			NewsImageRequestListener listener) {
 		Bitmap bitmap = BITMAP_LRU_CACHE.get(imageURL);
-		if (bitmap != null) {
-			return bitmap;
-		} else {
-			if (!IMAGE_REQUEST_SET.contains(imageURL)) {
-				IMAGE_REQUEST_SET.add(imageURL);
-				EXECUTOR.execute(new ImageCommand(imageURL, listener));
-			}
-			return null;
+		if (bitmap == null && !IMAGE_REQUEST_SET.contains(imageURL)) {
+			IMAGE_REQUEST_SET.add(imageURL);
+			EXECUTOR.execute(new NewsImageCommand(page, imageURL, listener));
 		}
+		return bitmap;
 	}
 }
