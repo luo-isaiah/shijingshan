@@ -5,11 +5,11 @@ import java.util.List;
 
 import com.panguso.android.shijingshan.column.ColumnInfo;
 import com.panguso.android.shijingshan.net.NetworkService.ChangePasswordRequestListener;
+import com.panguso.android.shijingshan.net.NetworkService.NewsImageRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.SaveSubscribeInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.BusinessInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.ColumnInfoListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.EnterpriseInfoListRequestListener;
-import com.panguso.android.shijingshan.net.NetworkService.ImageRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.LoginRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.NewsListRequestListener;
 import com.panguso.android.shijingshan.net.NetworkService.RegisterRequestListener;
@@ -21,7 +21,6 @@ import com.panguso.android.shijingshan.register.enterprise.EnterpriseInfo;
 import com.panguso.android.shijingshan.register.usertype.UserTypeInfo;
 import com.panguso.android.shijingshan.subscribe.SubscribeInfo;
 
-import android.graphics.Bitmap;
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.test.suitebuilder.annotation.SmallTest;
@@ -871,38 +870,40 @@ public class NetworkServiceTest extends AndroidTestCase {
 	}
 
 /**
-	 * Test {@link NetworkService#getImage(String, ImageRequestListener)
+	 * Test {@link NetworkService#getNewsImage(String, NewsImageRequestListener)
 	 * 
 	 * @author Luo Yinzhuo
 	 */
 	@SmallTest
-	public void testGetImage() {
+	public void testGetNewsImage() {
 		/** The image URL. */
 		final String IMAGE_URL = "http://s-94379.gotocdn.com/sjs//html/100/2013/11/2013_11_9228.jpg";
+		/** The page index. */
+		final int PAGE = 0;
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
-		NetworkService.getImage(IMAGE_URL, new ImageRequestListener() {
+		NetworkService.getNewsImage(PAGE, IMAGE_URL,
+				new NewsImageRequestListener() {
 
-			@Override
-			public void onImageResponseSuccess(Bitmap bitmap) {
-				assertNotNull("Bitmap is null!", bitmap);
-				assertEquals("Bitmap width error!", 450, bitmap.getWidth());
-				assertEquals("Bitmap height error!", 299, bitmap.getHeight());
-				// Let main thread finish.
-				synchronized (LOCK) {
-					LOCK.notify();
-				}
-			}
+					@Override
+					public void onNewsImageResponseSuccess(int page) {
+						assertEquals("Page index not match!", page, PAGE);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
 
-			@Override
-			public void onImageResponseFailed() {
-				assertTrue("Get Image Failed!", false);
-				// Let main thread finish.
-				synchronized (LOCK) {
-					LOCK.notify();
-				}
-			}
-		});
+					@Override
+					public void onNewsImageResponseFailed(int page,
+							String imageURL) {
+						assertTrue("Get Image Failed!", false);
+						// Let main thread finish.
+						synchronized (LOCK) {
+							LOCK.notify();
+						}
+					}
+				});
 
 		// Wait for the executor thread finish job.
 		synchronized (LOCK) {
