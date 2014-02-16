@@ -20,10 +20,25 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
 
-        <com.panguso.android.shijingshan.setting.SettingButton
-            android:id="@+id/clear_cache"
+        <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content" >
+
+            <com.panguso.android.shijingshan.setting.SettingButton
+                android:id="@+id/clear_cache"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/clear_cache_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="22dp"
+                android:textColor="@color/clear_cache_text"
+                android:textSize="18sp" />
+        </RelativeLayout>
 
         <com.panguso.android.shijingshan.setting.SettingButton
             android:id="@+id/suggestion"

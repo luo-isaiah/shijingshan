@@ -3,6 +3,8 @@ package com.panguso.android.shijingshan.news;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.res.Resources;
+
 /**
  * Specific for store a {@link News}'s information.
  * 
@@ -98,11 +100,17 @@ public class NewsInfo {
 	/**
 	 * Get the {@link News} based on the {@link NewsInfo}.
 	 * 
+	 * @param resources
+	 *            The resources.
 	 * @return The {@link News}.
 	 * @author Luo Yinzhuo
 	 */
-	public News getNews() {
-		return new News(mTitle, mImageURL, mNewsURL, mTime);
+	public News getNews(Resources resources) {
+		if (mImageURL.length() > 0) {
+			return new ImageNews(resources, mTitle, mImageURL, mNewsURL);
+		} else {
+			return new OneCellTextNews(resources, mTitle, mTime, mNewsURL);
+		}
 	}
 
 	@Override

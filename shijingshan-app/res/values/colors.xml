@@ -29,8 +29,14 @@
     <!-- news page activity -->
     <color name="news_page_title_bar_background">#FFFFFF</color>
     <color name="news_page_title_bar_title">#007DFF</color>
-    <color name="news_image_text">#FFFFFF</color>
-    <color name="news_no_image_text">#000000</color>
+    
+    <!-- text news -->
+    <color name="text_news_title">#000000</color>
+    <color name="text_news_time">#999999</color>
+    <color name="text_news_background_press">#007DFF</color>
+    
+    <!-- image news -->
+    <color name="image_news_title">#FFFFFF</color>
 
     <!-- log activity -->
     <color name="log_background">#FFFFFF</color>
@@ -62,6 +68,7 @@
 
     <!-- setting activity -->
     <color name="setting_background">#FFFFFF</color>
+    <color name="clear_cache_text">#007DFF</color>
 
     <!-- change password activity -->
     <color name="change_password_background">#FFFFFF</color>

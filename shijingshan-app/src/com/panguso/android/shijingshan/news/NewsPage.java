@@ -3,13 +3,13 @@ package com.panguso.android.shijingshan.news;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.net.NetworkService.NewsImageRequestListener;
 
-import android.R.integer;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.MotionEvent;
 
 /**
@@ -29,7 +29,7 @@ public class NewsPage {
 	private static int CELL_HEIGHT;
 
 	/**
-	 * Initialize the news cell width and height.
+	 * Set the news cell width and height.
 	 * 
 	 * @param width
 	 *            The {@link NewsPageView} width.
@@ -37,23 +37,33 @@ public class NewsPage {
 	 *            The {@link NewsPageView} height.
 	 * @author Luo Yinzhuo
 	 */
-	public static void initialize(int width, int height) {
+	public static void setSize(int width, int height) {
 		CELL_WIDTH = width / COLUMN_COUNT;
 		CELL_HEIGHT = height / ROW_COUNT;
 	}
 
 	/** The cells. */
 	private final int[][] mCells = new int[ROW_COUNT][COLUMN_COUNT];
+	/** The delimiter color. */
+	private final int mDelimiterColor;
+	/** The delimiter stroke width. */
+	private final float mDelimiterStrokeWidth;
 
 	/**
 	 * Construct a new instance.
+	 * 
+	 * @param Resources
+	 *            The resources.
 	 */
-	public NewsPage() {
+	public NewsPage(Resources resources) {
 		for (int row = 0; row < ROW_COUNT; row++) {
 			for (int column = 0; column < COLUMN_COUNT; column++) {
 				mCells[row][column] = -1;
 			}
 		}
+
+		mDelimiterColor = resources.getColor(R.color.delimiter);
+		mDelimiterStrokeWidth = resources.getDimension(R.dimen.delimiter);
 	}
 
 	/** The news list. */
@@ -135,19 +145,6 @@ public class NewsPage {
 	/** The paint shared by all the news pages. */
 	private static final Paint PAINT = new Paint(Paint.ANTI_ALIAS_FLAG
 			| Paint.DITHER_FLAG);
-	/** The delimiter color. */
-	private static int DELIMITER;
-
-	/**
-	 * Initialize the news delimiter color.
-	 * 
-	 * @param delimiter
-	 *            The news delimiter color.
-	 * @author Luo Yinzhuo
-	 */
-	public static void initialize(int delimiter) {
-		DELIMITER = delimiter;
-	}
 
 	/**
 	 * Draw the news page.
@@ -179,8 +176,8 @@ public class NewsPage {
 			}
 		}
 
-		PAINT.setColor(DELIMITER);
-		PAINT.setStrokeWidth(1);
+		PAINT.setColor(mDelimiterColor);
+		PAINT.setStrokeWidth(mDelimiterStrokeWidth);
 
 		// Draw horizontal delimiters.
 		for (int i = 1; i < ROW_COUNT; i++) {

@@ -3,8 +3,6 @@ package com.panguso.android.shijingshan;
 import java.util.UUID;
 
 import com.panguso.android.shijingshan.column.ColumnPage;
-import com.panguso.android.shijingshan.news.News;
-import com.panguso.android.shijingshan.news.NewsPage;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -44,14 +42,5 @@ public class Application extends android.app.Application {
 		        resources.getDimension(R.dimen.column_offset_top),
 		        resources.getDimension(R.dimen.column_margin),
 		        resources.getDimension(R.dimen.column_size));
-		/** Initialize {@link NewsPage}'s parameters. */
-		NewsPage.initialize(resources.getColor(R.color.delimiter));
-		/** Initialize {@link News}'s parameters. */
-		News.initialize(resources.getDimension(R.dimen.news_margin_horizontal),
-		        resources.getDimension(R.dimen.news_margin_vertical),
-		        resources.getDimension(R.dimen.news_image_font_size),
-		        resources.getDimension(R.dimen.news_no_image_font_size),
-		        resources.getColor(R.color.news_image_text),
-		        resources.getColor(R.color.news_no_image_text));
 	}
 }

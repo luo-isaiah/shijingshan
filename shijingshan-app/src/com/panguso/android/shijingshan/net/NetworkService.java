@@ -1,8 +1,12 @@
 package com.panguso.android.shijingshan.net;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -19,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -133,26 +138,35 @@ public final class NetworkService {
 	 * @param response
 	 *            The HTTP response.
 	 * @return The response's content.
-	 * @throws IOException
-	 *             If an I/O error occurs.
-	 * @throws IllegalStateException
-	 *             If the response is in illegal state.
-	 * @throws UnsupportedEncodingException
-	 *             If the device doesn't support UTF-8 encode.
 	 * @author Luo Yinzhuo
 	 */
-	public static String getContent(HttpResponse response)
-			throws UnsupportedEncodingException, IllegalStateException,
-			IOException {
+	public static String getContent(HttpResponse response) {
 		StringBuffer sb = new StringBuffer();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				response.getEntity().getContent(), "UTF-8"));
-		for (String temp = reader.readLine(); temp != null; temp = reader
-				.readLine()) {
-			sb.append(temp);
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new InputStreamReader(response
+					.getEntity().getContent(), "UTF-8"));
+			for (String temp = reader.readLine(); temp != null; temp = reader
+					.readLine()) {
+				sb.append(temp);
+			}
+			return sb.toString();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
-		reader.close();
-		return sb.toString();
+		return "";
 	}
 
 	/** The xCode to identify the response is successful. */
@@ -1346,11 +1360,9 @@ public final class NetworkService {
 		/**
 		 * Called when the news list request execution is failed.
 		 * 
-		 * @param columnID
-		 *            The request column ID.
 		 * @author Luo Yinzhuo
 		 */
-		public void onNewsListResponseFailed(int columnID);
+		public void onNewsListResponseFailed();
 	}
 
 	/**
@@ -1408,7 +1420,7 @@ public final class NetworkService {
 				content = NetworkService.getContent(response);
 			} catch (IOException e) {
 				e.printStackTrace();
-				mListener.onNewsListResponseFailed(mColumnID);
+				mListener.onNewsListResponseFailed();
 				return;
 			}
 
@@ -1446,7 +1458,7 @@ public final class NetworkService {
 				e.printStackTrace();
 			}
 			Log.e("NewsListCommand", content);
-			mListener.onNewsListResponseFailed(mColumnID);
+			mListener.onNewsListResponseFailed();
 		}
 	}
 
@@ -1966,58 +1978,197 @@ public final class NetworkService {
 
 		@Override
 		public void run() {
-			HttpGet request = new HttpGet(mImageURL);
+			ByteArrayBuffer byteArrayBuffer = readImageFromExternalStorage(mImageURL);
 
-			try {
-				HttpResponse response = HTTP_CLIENT.execute(request);
-				BufferedInputStream bufferedInputStream = new BufferedInputStream(
-						response.getEntity().getContent());
+			if (byteArrayBuffer == null) {
+				HttpGet request = new HttpGet(mImageURL);
 
-				ByteArrayBuffer byteArrayBuffer = new ByteArrayBuffer(1024);
-				int current = bufferedInputStream.read();
-				while (current != -1) {
-					byteArrayBuffer.append(current);
-					current = bufferedInputStream.read();
+				try {
+					HttpResponse response = HTTP_CLIENT.execute(request);
+					byteArrayBuffer = readImageFromHttpResponse(response);
+				} catch (ClientProtocolException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
+			}
 
+			if (byteArrayBuffer != null) {
 				Bitmap bitmap = BitmapFactory.decodeByteArray(
 						byteArrayBuffer.toByteArray(), 0,
 						byteArrayBuffer.length());
 				if (bitmap != null) {
-					saveImageToExternalStorage(mImageURL,
+					writeImageToExternalStorage(mImageURL,
 							byteArrayBuffer.toByteArray());
 
 					BITMAP_LRU_CACHE.put(mImageURL, bitmap);
 					mListener.onNewsImageResponseSuccess(mPage);
-				} else {
-					mListener.onNewsImageResponseFailed(mPage, mImageURL);
+					IMAGE_REQUEST_SET.remove(mImageURL);
+					return;
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				mListener.onNewsImageResponseFailed(mPage, mImageURL);
-				return;
-			} finally {
-				IMAGE_REQUEST_SET.remove(mImageURL);
 			}
+			IMAGE_REQUEST_SET.remove(mImageURL);
+			mListener.onNewsImageResponseFailed(mPage, mImageURL);
 		}
 	}
 
 	/** The external storage folder to store downloaded images. */
 	private static final String EXTERNAL_STORAGE_FOLDER = "Shijingshan";
 
-	private static void saveImageToExternalStorage(String imageURL, byte[] data) {
+	/**
+	 * Write the image to external storage for reuse.
+	 * 
+	 * @param imageURL
+	 *            The image URL.
+	 * @param data
+	 *            The image data.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private static void writeImageToExternalStorage(String imageURL, byte[] data) {
 		if (Environment.MEDIA_MOUNTED.equals(Environment
 				.getExternalStorageState())) {
 			File externalStorage = new File(
 					Environment.getExternalStorageDirectory(),
 					EXTERNAL_STORAGE_FOLDER);
-			
+
 			if (!externalStorage.exists()) {
 				externalStorage.mkdirs();
 			}
-			
-			
+
+			int suffixIndex = imageURL.lastIndexOf(".");
+			String suffix = "";
+			if (suffixIndex != -1) {
+				suffix = imageURL.substring(suffixIndex);
+			}
+
+			File image = new File(externalStorage, Integer.toHexString(imageURL
+					.hashCode()) + suffix);
+			if (image.exists()) {
+				image.delete();
+			}
+
+			BufferedOutputStream bufferedOutputStream = null;
+			try {
+				bufferedOutputStream = new BufferedOutputStream(
+						new FileOutputStream(image));
+				bufferedOutputStream.write(data);
+				bufferedOutputStream.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (bufferedOutputStream != null) {
+					try {
+						bufferedOutputStream.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
 		}
+	}
+
+	/** The image file expired time. */
+	private static final long IMAGE_EXPIRED = 7 * 24 * 60 * 60 * 1000;
+
+	/**
+	 * Read the image from external storage.
+	 * 
+	 * @param imageURL
+	 *            The image URL.
+	 * @return The image data if exist, otherwise null.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private static ByteArrayBuffer readImageFromExternalStorage(String imageURL) {
+		String externalStorageState = Environment.getExternalStorageState();
+		if (Environment.MEDIA_MOUNTED.equals(externalStorageState)
+				|| Environment.MEDIA_MOUNTED_READ_ONLY
+						.equals(externalStorageState)) {
+			File externalStorage = new File(
+					Environment.getExternalStorageDirectory(),
+					EXTERNAL_STORAGE_FOLDER);
+
+			int suffixIndex = imageURL.lastIndexOf(".");
+			String suffix = "";
+			if (suffixIndex != -1) {
+				suffix = imageURL.substring(suffixIndex);
+			}
+
+			File image = new File(externalStorage, Integer.toHexString(imageURL
+					.hashCode()) + suffix);
+			if (image.exists()
+					&& System.currentTimeMillis() - image.lastModified() < IMAGE_EXPIRED) {
+
+				BufferedInputStream bufferedInputStream = null;
+				try {
+					bufferedInputStream = new BufferedInputStream(
+							new FileInputStream(image));
+
+					ByteArrayBuffer byteArrayBuffer = new ByteArrayBuffer(1024);
+					int current = bufferedInputStream.read();
+					while (current != -1) {
+						byteArrayBuffer.append(current);
+						current = bufferedInputStream.read();
+					}
+					return byteArrayBuffer;
+
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					if (bufferedInputStream != null) {
+						try {
+							bufferedInputStream.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Read the image data from HTTP response.
+	 * 
+	 * @param response
+	 *            The HTTP response.
+	 * @return The image data if exist, otherwise null.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private static ByteArrayBuffer readImageFromHttpResponse(
+			HttpResponse response) {
+		BufferedInputStream bufferedInputStream = null;
+		try {
+			bufferedInputStream = new BufferedInputStream(response.getEntity()
+					.getContent());
+
+			ByteArrayBuffer byteArrayBuffer = new ByteArrayBuffer(1024);
+			int current = bufferedInputStream.read();
+			while (current != -1) {
+				byteArrayBuffer.append(current);
+				current = bufferedInputStream.read();
+			}
+			return byteArrayBuffer;
+
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (bufferedInputStream != null) {
+				try {
+					bufferedInputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -2041,4 +2192,53 @@ public final class NetworkService {
 		}
 		return bitmap;
 	}
+
+	/**
+	 * Get the external storage used space.
+	 * 
+	 * @return The external storage total space.
+	 * @author Luo Yinzhuo
+	 */
+	public static long getExternalStorageUsedSpace() {
+		String externalStorageState = Environment.getExternalStorageState();
+		if (Environment.MEDIA_MOUNTED.equals(externalStorageState)
+				|| Environment.MEDIA_MOUNTED_READ_ONLY
+						.equals(externalStorageState)) {
+			File externalStorage = new File(
+					Environment.getExternalStorageDirectory(),
+					EXTERNAL_STORAGE_FOLDER);
+
+			if (externalStorage.exists()) {
+				File[] files = externalStorage.listFiles();
+				long usedSpace = 0;
+				for (File file : files) {
+					usedSpace += file.length();
+				}
+				return usedSpace;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Clear the external storage.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public static void clearExternalStorage() {
+		if (Environment.MEDIA_MOUNTED.equals(Environment
+				.getExternalStorageState())) {
+			File externalStorage = new File(
+					Environment.getExternalStorageDirectory(),
+					EXTERNAL_STORAGE_FOLDER);
+
+			if (externalStorage.exists()) {
+				File[] files = externalStorage.listFiles();
+				for (File file : files) {
+					file.delete();
+				}
+			}
+		}
+	}
+
 }

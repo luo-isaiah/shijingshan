@@ -8,13 +8,17 @@
     <dimen name="column_offset_left">26dp</dimen>
     <dimen name="column_size">106dp</dimen>
     <dimen name="column_margin">6dp</dimen>
-    
+
     <!-- NewsPageView -->
     <dimen name="news_margin_horizontal">10dp</dimen>
     <dimen name="news_margin_vertical">12dp</dimen>
-    <dimen name="news_image_font_size">16sp</dimen>
-    <dimen name="news_no_image_font_size">14sp</dimen>
- 
+    
+    <dimen name="image_news_title">16sp</dimen>
+    <dimen name="one_cell_text_news_title">14sp</dimen>
+    <dimen name="one_line_text_news_title">16sp</dimen>
+    <dimen name="text_news_time">10sp</dimen>
+    <dimen name="delimiter">1dp</dimen>
+
     <!--  -->
     <dimen name="register_edittext_width">200dp</dimen>
 

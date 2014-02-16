@@ -1,13 +1,13 @@
 package com.panguso.android.shijingshan.news;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.column.ColumnInfo;
 import com.panguso.android.shijingshan.column.Column;
+import com.panguso.android.shijingshan.dialog.MessageDialog;
+import com.panguso.android.shijingshan.dialog.MessageDialog.OnMessageDialogListener;
 import com.panguso.android.shijingshan.dialog.WaitingDialog;
 import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.NewsListRequestListener;
@@ -17,7 +17,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.SparseArray;
 
 /**
  * The news page activity.
@@ -25,7 +24,7 @@ import android.util.SparseArray;
  * @author Luo Yinzhuo
  */
 public class NewsPageActivity extends Activity implements OnBackListener,
-		NewsListRequestListener {
+		NewsListRequestListener, OnMessageDialogListener {
 	/** The waiting dialog ID. */
 	private static final int DIALOG_WAITING = 0;
 	/** The retry dialog ID. */
@@ -36,6 +35,11 @@ public class NewsPageActivity extends Activity implements OnBackListener,
 		switch (id) {
 		case DIALOG_WAITING:
 			return new WaitingDialog(this);
+		case DIALOG_RETRY:
+			return new MessageDialog(this, DIALOG_RETRY,
+					getString(R.string.retry_title),
+					getString(R.string.retry_text),
+					getString(R.string.retry_button), this);
 		default:
 			return null;
 		}
@@ -45,6 +49,8 @@ public class NewsPageActivity extends Activity implements OnBackListener,
 	private NewsPageTitleBar mTitleBar;
 	/** The news page view. */
 	private NewsPageView mNewsPageView;
+	/** The column id. */
+	private int mColumnId;
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -61,9 +67,9 @@ public class NewsPageActivity extends Activity implements OnBackListener,
 
 		mNewsPageView = (NewsPageView) findViewById(R.id.news_page);
 
-		final int columnID = intent.getIntExtra(Column.KEY_ID, 0);
+		mColumnId = intent.getIntExtra(Column.KEY_ID, 0);
 		NetworkService.getNewsList(getResources()
-				.getString(R.string.server_url), columnID, this);
+				.getString(R.string.server_url), mColumnId, this);
 	}
 
 	@Override
@@ -73,63 +79,54 @@ public class NewsPageActivity extends Activity implements OnBackListener,
 
 	@Override
 	public void onNewsListRequestFailed() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
-	public void onNewsListResponseSuccess(final List<NewsInfo> newsInfos,
+	public void onNewsListResponseSuccess(List<NewsInfo> newsInfos,
 			List<ColumnInfo> childColumnInfos) {
+		final List<News> newses = new ArrayList<News>();
+		for (NewsInfo newsInfo : newsInfos) {
+			newses.add(newsInfo.getNews(getResources()));
+		}
+
 		runOnUiThread(new Runnable() {
 			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
-				mNewsPageView.initialize(createNewsPages(newsInfos), 0);
+				mNewsPageView.initialize(newses);
 				dismissDialog(DIALOG_WAITING);
 			}
 		});
 	}
 
 	@Override
-	public void onNewsListResponseFailed(int columnID) {
-		NetworkService.getNewsList(getResources()
-				.getString(R.string.server_url), columnID, this);
+	public void onNewsListResponseFailed() {
+		runOnUiThread(new Runnable() {
+			@SuppressWarnings("deprecation")
+			@Override
+			public void run() {
+				dismissDialog(DIALOG_WAITING);
+				showDialog(DIALOG_RETRY);
+			}
+		});
 	}
 
-	/** The news cache. */
-	private final Map<String, News> mNewsCache = new HashMap<String, News>();
+	@Override
+	public void onMessageDialogBack(int id) {
+		finish();
+	}
 
-	/**
-	 * Create the list of {@link NewsPage} from list of {@link NewsInfo}.
-	 * 
-	 * @param newsInfos
-	 *            The list of {@link NewsInfo}.
-	 * @return The list of {@link NewsPage} with current column.
-	 * @author Luo Yinzhuo
-	 */
-	private List<NewsPage> createNewsPages(List<NewsInfo> newsInfos) {
-		List<NewsPage> newsPages = new ArrayList<NewsPage>();
-		NewsPage page = new NewsPage();
-		newsPages.add(page);
-
-		for (int i = 0; i < newsInfos.size(); i++) {
-			NewsInfo newsInfo = newsInfos.get(i);
-			String id = newsInfo.getId();
-
-			News news;
-			if (mNewsCache.containsKey(id)) {
-				news = mNewsCache.get(id);
-			} else {
-				news = newsInfo.getNews();
-				mNewsCache.put(id, news);
-			}
-
-			if (!page.addNews(news)) {
-				page = new NewsPage();
-				newsPages.add(page);
-				page.addNews(news);
-			}
+	@SuppressWarnings("deprecation")
+	@Override
+	public void onMessageDialogConfirmed(int id) {
+		switch (id) {
+		case DIALOG_RETRY:
+			dismissDialog(DIALOG_RETRY);
+			showDialog(DIALOG_WAITING);
+			NetworkService.getNewsList(
+					getResources().getString(R.string.server_url), mColumnId,
+					this);
+			break;
 		}
-		return newsPages;
 	}
 }
