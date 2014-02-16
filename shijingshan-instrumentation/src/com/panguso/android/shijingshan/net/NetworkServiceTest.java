@@ -850,7 +850,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 					}
 
 					@Override
-					public void onNewsListResponseFailed(int columnID) {
+					public void onNewsListResponseFailed() {
 						assertTrue("Get News Info List Failed!", false);
 						// Let main thread finish.
 						synchronized (LOCK) {
@@ -915,4 +915,13 @@ public class NetworkServiceTest extends AndroidTestCase {
 		}
 	}
 
+	/**
+	 * Test {@link NetworkService#getExternalStorageUsedSpace()}.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public void testGetExternalStorageUsedSpace() {
+		assertTrue("Get external storage used space failed!",
+				NetworkService.getExternalStorageUsedSpace() >= 0);
+	}
 }
