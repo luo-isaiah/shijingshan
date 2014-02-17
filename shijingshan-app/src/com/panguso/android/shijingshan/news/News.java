@@ -4,6 +4,7 @@ import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.NewsImageRequestListener;
 
+import android.R.integer;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -11,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.Log;
 
 /**
  * Represent a piece of news.
@@ -40,7 +40,6 @@ abstract class News {
 		mNewsURL = newsURL;
 		mMarginHorizontal = marginHorizontal;
 		mMarginVertical = marginVertical;
-		Log.d("News", "Margin horizontal:" + mMarginHorizontal);
 	}
 
 	/**
@@ -92,6 +91,8 @@ abstract class News {
 	/** The shared {@link Paint} for reuse. */
 	protected static final Paint PAINT = new Paint(Paint.ANTI_ALIAS_FLAG
 			| Paint.DITHER_FLAG);
+	/** The ellipsis. */
+	protected static final String ELLIPSIS = "...";
 
 	/**
 	 * Invoked by {@link NewsPage} to draw the news on it.
@@ -152,7 +153,7 @@ abstract class TextNews extends News {
 		super(newsURL, resources.getDimension(R.dimen.news_margin_horizontal),
 				resources.getDimension(R.dimen.news_margin_vertical));
 		mTitle = title;
-		mTime = time;
+		mTime = time.substring(0, time.indexOf(" "));
 		mTitleTextSize = titleTextSize;
 
 		mTitleColor = resources.getColor(R.color.text_news_title);
@@ -176,7 +177,7 @@ abstract class TextNews extends News {
 			PAINT.setColor(mBackgroundPress);
 			canvas.drawRect(rect, PAINT);
 		}
-		
+
 		PAINT.setColor(mTitleColor);
 		PAINT.setTextSize(mTitleTextSize);
 
@@ -198,7 +199,12 @@ abstract class TextNews extends News {
 			start = end - 1;
 			line++;
 		}
-		// TODO: Draw time.
+
+		PAINT.setColor(mTimeColor);
+		PAINT.setTextSize(mTimeTextSize);
+		canvas.drawText(mTime,
+				rect.right - mMarginHorizontal - PAINT.measureText(mTime),
+				rect.bottom - mMarginVertical, PAINT);
 	}
 }
 
@@ -311,9 +317,20 @@ final class ImageNews extends News {
 		PAINT.setColor(mTitleColor);
 		PAINT.setTextSize(mTitleTextSize);
 
-		// TODO: Need to ellipsis
-		canvas.drawText(mTitle, rect.left + mMarginHorizontal, rect.bottom
-				- mMarginVertical, PAINT);
+		final float maxWidth = rect.width() - 2 * mMarginHorizontal;
+		if (PAINT.measureText(mTitle) > maxWidth) {
+			int end = mTitle.length() - 2;
+			float ellipsisWidth = PAINT.measureText(ELLIPSIS);
+			while (PAINT.measureText(mTitle.substring(0, end)) + ellipsisWidth > maxWidth) {
+				end--;
+			}
+			canvas.drawText(mTitle.substring(0, end).concat(ELLIPSIS),
+					rect.left + mMarginHorizontal, rect.bottom
+							- mMarginVertical, PAINT);
+		} else {
+			canvas.drawText(mTitle, rect.left + mMarginHorizontal, rect.bottom
+					- mMarginVertical, PAINT);
+		}
 	}
 
 }
