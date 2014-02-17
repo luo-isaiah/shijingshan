@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
 
 /**
  * Represent a piece of news.
@@ -39,6 +40,7 @@ abstract class News {
 		mNewsURL = newsURL;
 		mMarginHorizontal = marginHorizontal;
 		mMarginVertical = marginVertical;
+		Log.d("News", "Margin horizontal:" + mMarginHorizontal);
 	}
 
 	/**

@@ -80,11 +80,23 @@ public class NewsPageView extends View implements NewsImageRequestListener,
 		invalidate();
 	}
 
+	/** The invalidate interval. */
+	private static final int INVALIDATE_INTERVAL = 50;
+	/** The animation. */
+	private NewsPageAnimation mNewsPageAnimation;
+
 	@Override
 	protected void onDraw(Canvas canvas) {
 		canvas.drawColor(Color.WHITE);
 
-		// TODO: If there's animation, update mNewsPagePosition
+		if (mNewsPageAnimation != null) {
+			mNewsPagePosition = mNewsPageAnimation.getPagePosition();
+			if (mNewsPageAnimation.mComplete) {
+				mNewsPageAnimation = null;
+			} else {
+				postInvalidateDelayed(INVALIDATE_INTERVAL);
+			}
+		}
 
 		if (this.mNewsPages.size() > 0) {
 			final int left = (int) Math.floor(mNewsPagePosition);
@@ -107,11 +119,6 @@ public class NewsPageView extends View implements NewsImageRequestListener,
 
 			canvas.restore();
 		}
-
-		// if (this.mNewsPagePositionManager.hasAnimation()) {
-		// Log.d("NewsPageManager", "draw has animation.");
-		// NewsPageView.this.invalidate();
-		// }
 	}
 
 	@Override
@@ -130,15 +137,21 @@ public class NewsPageView extends View implements NewsImageRequestListener,
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		return mGestureDetector.onTouchEvent(event);
+		return mGestureDetector.onTouchEvent(event) || onUp(event);
 	}
 
 	/** The pressing news. */
 	private News mPressingNews;
+	/** The page position when {@link onDown(MotionEvent)} invoked. */
+	private float mOnDownPagePosition;
 
 	@Override
 	public boolean onDown(MotionEvent e) {
-		// TODO: stop the animation.
+		if (mNewsPageAnimation != null) {
+			mNewsPagePosition = mNewsPageAnimation.getPagePosition();
+			mNewsPageAnimation = null;
+		}
+		mOnDownPagePosition = mNewsPagePosition;
 
 		int page = (int) Math.floor(mNewsPagePosition + 0.5f);
 		if (Math.abs(mNewsPagePosition - page) < 1E-6
@@ -155,10 +168,6 @@ public class NewsPageView extends View implements NewsImageRequestListener,
 	}
 
 	@Override
-	public void onShowPress(MotionEvent e) {
-	}
-
-	@Override
 	public boolean onSingleTapUp(MotionEvent e) {
 		if (mPressingNews != null) {
 			mPressingNews.setStatus(Status.NORMAL);
@@ -169,185 +178,215 @@ public class NewsPageView extends View implements NewsImageRequestListener,
 		return false;
 	}
 
-//	/**
-//	 * Specified for manage the news page animation.
-//	 * 
-//	 * @author Luo Yinzhuo
-//	 */
-//	private class NewsPageAnimation {
-//		
-//		
-//		/** The no bounce. */
-//		private static final int BOUNCE_NONE = 0;
-//		/** The left bounce. */
-//		private static final int BOUNCE_LEFT = 1;
-//		/** The right bounce. */
-//		private static final int BOUNCE_RIGHT = 2;
-//
-//		/** The animation start time. */
-//		private long mStartTime = 0L;
-//		/** The animation start page position. */
-//		private float mStartPagePosition = 0f;
-//		/** The target page position. */
-//		private int mTargetPagePosition = 0;
-//		/** The bounce. */
-//		private int mBouncing = BOUNCE_NONE;
-//
-//		/** The duration. */
-//		private long mDuration;
-//
-//		/**
-//		 * Construct a new instance.
-//		 * 
-//		 * @param direction
-//		 *            True to animate to the left page, otherwise to the
-//		 *            right page.
-//		 * @param bouncing
-//		 *            True to add bounce effect if need, otherwise
-//		 *            false.
-//		 */
-//		public NewsPageAnimation(boolean direction, boolean bouncing) {
-//			this.mStartTime = System.currentTimeMillis();
-//			this.mStartPagePosition = NewsPagePositionManager.this.mNewsPagePosition;
-//			this.mDuration = DURATION_BASE;
-//			if (direction) {
-//				this.mTargetPagePosition = (int) Math
-//						.floor(this.mStartPagePosition + 0.5f) - 1;
-//				if (this.mTargetPagePosition < 0) {
-//					this.mTargetPagePosition = 0;
-//					if (bouncing) {
-//						this.mBouncing = BOUNCE_LEFT;
-//					}
-//				}
-//			} else {
-//				this.mTargetPagePosition = (int) Math
-//						.floor(this.mStartPagePosition + 0.5f) + 1;
-//				final int maxColumnPagePosition = NewsPageManager.this.mNewsPages
-//						.size() - 1;
-//				if (this.mTargetPagePosition > maxColumnPagePosition) {
-//					this.mTargetPagePosition = maxColumnPagePosition;
-//					if (bouncing) {
-//						this.mBouncing = BOUNCE_RIGHT;
-//					}
-//				}
-//			}
-//		}
-//
-//		/**
-//		 * Construct a new instance.
-//		 * 
-//		 * @param targetPagePosition
-//		 *            The target page position.
-//		 */
-//		public NewsPageAnimation(int targetPagePosition) {
-//			this.mStartTime = System.currentTimeMillis();
-//			this.mStartPagePosition = NewsPagePositionManager.this.mNewsPagePosition;
-//			this.mDuration = (long) (DURATION_BASE * Math
-//					.abs(this.mTargetPagePosition
-//							- this.mStartPagePosition));
-//			this.mTargetPagePosition = targetPagePosition;
-//		}
-//
-//		/**
-//		 * Append one more animate action based on the original one.
-//		 * 
-//		 * @param direction
-//		 *            The new animate action direction, True to animate
-//		 *            to the left page, otherwise to the right page.
-//		 * @param bouncing
-//		 *            True to add bounce effect if need, otherwise
-//		 *            false.
-//		 * @author Luo Yinzhuo
-//		 */
-//		public void animate(boolean direction, boolean bouncing) {
-//			this.mStartTime = System.currentTimeMillis();
-//			this.mStartPagePosition = NewsPagePositionManager.this.mNewsPagePosition;
-//			this.mDuration = DURATION_BASE;
-//			if (direction) {
-//				this.mTargetPagePosition--;
-//				if (this.mTargetPagePosition < 0) {
-//					this.mTargetPagePosition = 0;
-//					if (bouncing) {
-//						this.mBouncing = BOUNCE_LEFT;
-//					}
-//				}
-//			} else {
-//				this.mTargetPagePosition++;
-//				final int maxColumnPagePosition = NewsPageManager.this.mNewsPages
-//						.size() - 1;
-//				if (this.mTargetPagePosition > maxColumnPagePosition) {
-//					this.mTargetPagePosition = maxColumnPagePosition;
-//					if (bouncing) {
-//						this.mBouncing = BOUNCE_RIGHT;
-//					}
-//				}
-//			}
-//		}
-//
-//		/**
-//		 * Get the current news page position.
-//		 * 
-//		 * @return The current news page position.
-//		 * @author Luo Yinzhuo
-//		 */
-//		public float getNewsPagePosition() {
-//			long passTime = System.currentTimeMillis()
-//					- this.mStartTime;
-//			if (passTime >= this.mDuration) {
-//				NewsPagePositionManager.this.onAnimationFinished();
-//				return this.mTargetPagePosition;
-//			} else {
-//				float estimateNewsPagePosition;
-//				if (this.mBouncing == BOUNCE_RIGHT) {
-//					estimateNewsPagePosition = (this.mTargetPagePosition
-//							+ 2 * BOUNCING - this.mStartPagePosition)
-//							* passTime
-//							/ this.mDuration
-//							+ this.mStartPagePosition;
-//					if (estimateNewsPagePosition > this.mTargetPagePosition
-//							+ BOUNCING) {
-//						estimateNewsPagePosition = 2
-//								* (this.mTargetPagePosition + BOUNCING)
-//								- estimateNewsPagePosition;
-//					}
-//				} else if (this.mBouncing == BOUNCE_LEFT) {
-//					estimateNewsPagePosition = (this.mTargetPagePosition
-//							- 2 * BOUNCING - this.mStartPagePosition)
-//							* passTime
-//							/ this.mDuration
-//							+ this.mStartPagePosition;
-//					if (estimateNewsPagePosition < this.mTargetPagePosition
-//							- BOUNCING) {
-//						estimateNewsPagePosition = 2
-//								* (this.mTargetPagePosition - BOUNCING)
-//								- estimateNewsPagePosition;
-//					}
-//				} else {
-//					estimateNewsPagePosition = (this.mTargetPagePosition - this.mStartPagePosition)
-//							* passTime
-//							/ this.mDuration
-//							+ this.mStartPagePosition;
-//				}
-//				return estimateNewsPagePosition;
-//			}
-//		}
-//	}
-	
+	/** The mount of bouncing value. */
+	private static final float BOUNCING = 0.3f;
+
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
 			float distanceY) {
-		// TODO Auto-generated method stub
-		return false;
+		if (mPressingNews != null) {
+			mPressingNews.setStatus(Status.NORMAL);
+			mPressingNews = null;
+		}
+
+		final float leftEdge = 0;
+		final float rightEdge = mNewsPages.size() > 0 ? mNewsPages.size() - 1
+				: 0;
+
+		final float estimateColumnPagePosition;
+		if (mNewsPagePosition < leftEdge || mNewsPagePosition > rightEdge) {
+			estimateColumnPagePosition = mNewsPagePosition + distanceX
+					/ getWidth() * BOUNCING;
+		} else {
+			estimateColumnPagePosition = mNewsPagePosition + distanceX
+					/ getWidth();
+		}
+
+		final float leftBorder = -BOUNCING;
+		final float rightBorder = rightEdge + BOUNCING;
+
+		if (distanceX > 0) {
+			mNewsPagePosition = Math
+					.max(estimateColumnPagePosition, leftBorder);
+		} else {
+			mNewsPagePosition = Math.min(estimateColumnPagePosition,
+					rightBorder);
+		}
+		invalidate();
+		return true;
 	}
 
-	@Override
-	public void onLongPress(MotionEvent e) {
+	/** The animation basic duration time. */
+	private static final long DURATION_BASE = 300L;
+
+	/**
+	 * The animation specified for {@link NewsPageView}.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private static class NewsPageAnimation {
+		/**
+		 * The bounce type enumeration.
+		 * 
+		 * @author Luo Yinzhuo
+		 */
+		private enum Bounce {
+			NONE, LEFT, RIGHT
+		}
+
+		/** The bounce type. */
+		private final Bounce mBounce;
+		/** The animation start time. */
+		private final long mStartTime;
+		/** The animation start page position. */
+		private final float mStartPagePosition;
+		/** The target page position. */
+		private final int mTargetPagePosition;
+		/** The duration. */
+		private final long mDuration;
+
+		/**
+		 * Construct a new instance.
+		 * 
+		 * @param startPagePosition
+		 *            The page position when animation start.
+		 * @param onDownPagePosition
+		 *            The page position when {@link onDown(MotionEvent)}
+		 *            invoked.
+		 * @param direction
+		 *            The animation direction.
+		 * @param minTargetPagePosition
+		 *            The minimum page position could be target.
+		 * @param maxTargetPagePosition
+		 *            The maximum page position could be target.
+		 */
+		public NewsPageAnimation(float startPagePosition,
+				float onDownPagePosition, boolean direction,
+				int minTargetPagePosition, int maxTargetPagePosition) {
+			mStartTime = System.currentTimeMillis();
+			mStartPagePosition = startPagePosition;
+			mDuration = DURATION_BASE;
+
+			int targetPagePosition;
+			if (direction) {
+				targetPagePosition = (int) Math.floor(onDownPagePosition) - 1;
+				if (targetPagePosition < minTargetPagePosition) {
+					targetPagePosition = minTargetPagePosition;
+					mBounce = Bounce.LEFT;
+				} else {
+					mBounce = Bounce.NONE;
+				}
+			} else {
+				targetPagePosition = (int) Math.floor(onDownPagePosition) + 1;
+				if (targetPagePosition > maxTargetPagePosition) {
+					targetPagePosition = maxTargetPagePosition;
+					mBounce = Bounce.RIGHT;
+				} else {
+					mBounce = Bounce.NONE;
+				}
+			}
+			mTargetPagePosition = targetPagePosition;
+		}
+
+		/**
+		 * Construct a new instance.
+		 * 
+		 * @param startPagePosition
+		 *            The page position when animation start.
+		 * @param targetPagePosition
+		 *            The page position which animation target for.
+		 */
+		public NewsPageAnimation(float startPagePosition, int targetPagePosition) {
+			mBounce = Bounce.NONE;
+			mStartTime = System.currentTimeMillis();
+			mStartPagePosition = startPagePosition;
+			mTargetPagePosition = targetPagePosition;
+			mDuration = (long) (DURATION_BASE * Math.abs(mTargetPagePosition
+					- mStartPagePosition));
+		}
+
+		/** The animation complete flag. */
+		private boolean mComplete = false;
+
+		/**
+		 * Get the current page position.
+		 * 
+		 * @return The current page position.
+		 * @author Luo Yinzhuo
+		 */
+		public float getPagePosition() {
+			long passTime = System.currentTimeMillis() - mStartTime;
+			if (passTime >= mDuration) {
+				mComplete = true;
+				return mTargetPagePosition;
+			} else {
+				float estimateNewsPagePosition;
+				if (mBounce == Bounce.RIGHT) {
+					estimateNewsPagePosition = (mTargetPagePosition + 2
+							* BOUNCING - mStartPagePosition)
+							* passTime / mDuration + mStartPagePosition;
+					if (estimateNewsPagePosition > mTargetPagePosition
+							+ BOUNCING) {
+						estimateNewsPagePosition = 2
+								* (mTargetPagePosition + BOUNCING)
+								- estimateNewsPagePosition;
+					}
+				} else if (mBounce == Bounce.LEFT) {
+					estimateNewsPagePosition = (mTargetPagePosition - 2
+							* BOUNCING - mStartPagePosition)
+							* passTime / mDuration + mStartPagePosition;
+					if (estimateNewsPagePosition < mTargetPagePosition
+							- BOUNCING) {
+						estimateNewsPagePosition = 2
+								* (mTargetPagePosition - BOUNCING)
+								- estimateNewsPagePosition;
+					}
+				} else {
+					estimateNewsPagePosition = (mTargetPagePosition - mStartPagePosition)
+							* passTime / mDuration + mStartPagePosition;
+				}
+				return estimateNewsPagePosition;
+			}
+		}
 	}
+
+	/**
+	 * Invoked when the {@link MotionEvent#ACTION_UP} motion event is not
+	 * handled.
+	 * 
+	 * @param e
+	 *            The event.
+	 * @return True if handled, otherwise false.
+	 */
+	private boolean onUp(MotionEvent e) {
+		mNewsPageAnimation = new NewsPageAnimation(mNewsPagePosition,
+				(int) Math.floor(mNewsPagePosition + 0.5f));
+		invalidate();
+		return true;
+	}
+
+	/** The threshold to determine whether a fling leads to an animation. */
+	private final static float ANIMATION_VELOCITY_THRESHOLD = 500;
 
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 			float velocityY) {
-		// TODO Auto-generated method stub
-		return false;
+		if (Math.abs(velocityX) > ANIMATION_VELOCITY_THRESHOLD) {
+			mNewsPageAnimation = new NewsPageAnimation(mNewsPagePosition,
+					mOnDownPagePosition, velocityX > 0, 0,
+					mNewsPages.size() - 1);
+			invalidate();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public void onShowPress(MotionEvent e) {
+	}
+
+	@Override
+	public void onLongPress(MotionEvent e) {
 	}
 }
