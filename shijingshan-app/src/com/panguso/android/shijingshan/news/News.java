@@ -4,7 +4,6 @@ import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.NewsImageRequestListener;
 
-import android.R.integer;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -178,6 +177,12 @@ abstract class TextNews extends News {
 			canvas.drawRect(rect, PAINT);
 		}
 
+		PAINT.setColor(mTimeColor);
+		PAINT.setTextSize(mTimeTextSize);
+		canvas.drawText(mTime,
+				rect.right - mMarginHorizontal - PAINT.measureText(mTime),
+				rect.bottom - mMarginVertical, PAINT);
+
 		PAINT.setColor(mTitleColor);
 		PAINT.setTextSize(mTitleTextSize);
 
@@ -185,14 +190,13 @@ abstract class TextNews extends News {
 		int end = 1;
 		final float maxWidth = rect.width() - 2 * mMarginHorizontal;
 		int line = 0;
-		final int maxLine = 3;
+		final int maxLine = 2;
 		while (end < mTitle.length() && line < maxLine) {
 			float width = PAINT.measureText(mTitle, start, end);
 			while (width < maxWidth && end < mTitle.length()) {
 				end++;
 				width = PAINT.measureText(mTitle, start, end);
 			}
-
 			canvas.drawText(mTitle.substring(start, end - 1), rect.left
 					+ mMarginHorizontal, rect.top
 					+ (mMarginVertical + mTitleTextSize) * (line + 1), PAINT);
@@ -200,11 +204,24 @@ abstract class TextNews extends News {
 			line++;
 		}
 
-		PAINT.setColor(mTimeColor);
-		PAINT.setTextSize(mTimeTextSize);
-		canvas.drawText(mTime,
-				rect.right - mMarginHorizontal - PAINT.measureText(mTime),
-				rect.bottom - mMarginVertical, PAINT);
+		if (end < mTitle.length()) {
+			end = mTitle.length();
+			float width = PAINT.measureText(mTitle, start, end);
+			if (width > maxWidth) {
+				float ellipsisWidth = PAINT.measureText(ELLIPSIS);
+				while (width + ellipsisWidth > maxWidth) {
+					end--;
+					width = PAINT.measureText(mTitle, start, end);
+				}
+				canvas.drawText(mTitle.substring(start, end) + ELLIPSIS,
+						rect.left + mMarginHorizontal, rect.top
+								+ (mMarginVertical + mTitleTextSize) * 3, PAINT);
+			} else {
+				canvas.drawText(mTitle.substring(start, end), rect.left
+						+ mMarginHorizontal, rect.top
+						+ (mMarginVertical + mTitleTextSize) * 3, PAINT);
+			}
+		}
 	}
 }
 
