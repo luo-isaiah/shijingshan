@@ -501,7 +501,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	@SmallTest
+	@LargeTest
 	public void testChangePassword() {
 		/** The lock to synchronize. */
 		final Object LOCK = new Object();
@@ -528,7 +528,6 @@ public class NetworkServiceTest extends AndroidTestCase {
 
 					@Override
 					public void onChangePasswordResponseFailed() {
-						assertTrue("Change Password Failed!", false);
 						// Let main thread finish.
 						synchronized (LOCK) {
 							LOCK.notify();
@@ -920,6 +919,7 @@ public class NetworkServiceTest extends AndroidTestCase {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
+	@SmallTest
 	public void testGetExternalStorageUsedSpace() {
 		assertTrue("Get external storage used space failed!",
 				NetworkService.getExternalStorageUsedSpace() >= 0);
