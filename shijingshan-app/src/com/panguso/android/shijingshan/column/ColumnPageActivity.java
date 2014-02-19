@@ -7,7 +7,6 @@ import org.json.JSONException;
 
 import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.account.AccountManager;
-import com.panguso.android.shijingshan.column.StartDialog.OnStartDialogListener;
 import com.panguso.android.shijingshan.dialog.MessageDialog;
 import com.panguso.android.shijingshan.dialog.MessageDialog.OnMessageDialogListener;
 import com.panguso.android.shijingshan.dialog.WaitingDialog;
@@ -23,6 +22,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,8 +36,7 @@ import android.widget.ImageButton;
  * @date 2013-8-7
  */
 public class ColumnPageActivity extends Activity implements
-		ColumnInfoListRequestListener, OnClickListener, OnStartDialogListener,
-		OnMessageDialogListener {
+		ColumnInfoListRequestListener, OnClickListener, OnMessageDialogListener {
 	/** The initialize flag. */
 	private boolean mInitialized = false;
 	/** The waiting dialog. */
@@ -61,7 +61,7 @@ public class ColumnPageActivity extends Activity implements
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case DIALOG_START:
-			return new StartDialog(this, this);
+			return new StartDialog(this);
 		case DIALOG_WAITING:
 			mWaitingDialog = new WaitingDialog(this);
 			return mWaitingDialog;
@@ -103,11 +103,35 @@ public class ColumnPageActivity extends Activity implements
 	/** The notice button. */
 	private ImageButton mNotice;
 
+	private static final int MESSAGE_START_DIALOG_TIMEOUT = 0;
+	/** The start dialog timeout. */
+	private static final int START_DIALOG_TIMEOUT = 5000;
+
+	/** The start dialog handler. */
+	private Handler mStartDialogHandler;
+	/** The start dialog timeout flag. */
+	private boolean mStartDialogTimeout = false;
+
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		showDialog(DIALOG_START);
+		mStartDialogHandler = new Handler(getMainLooper()) {
+			@Override
+			public void handleMessage(Message msg) {
+				switch (msg.what) {
+				case MESSAGE_START_DIALOG_TIMEOUT:
+					Log.d("ColumnPageActivity", "Handle time out message!");
+					mStartDialogTimeout = true;
+					onStartDialogTimeout();
+					break;
+				}
+			}
+		};
+
+		mStartDialogHandler.sendEmptyMessageDelayed(
+				MESSAGE_START_DIALOG_TIMEOUT, START_DIALOG_TIMEOUT);
 
 		setContentView(R.layout.column_page_activity);
 		mLog = (ImageButton) findViewById(R.id.log);
@@ -135,7 +159,7 @@ public class ColumnPageActivity extends Activity implements
 							AccountManager.getAccount());
 					intent.putExtra(LoginActivity.KEY_PASSWORD,
 							AccountManager.getPassword());
-					AccountManager.logout();
+					AccountManager.logout(this);
 					startActivityForResult(intent, REQUEST_CODE_LOGIN);
 					return;
 				} else {
@@ -148,6 +172,15 @@ public class ColumnPageActivity extends Activity implements
 
 		NetworkService.getColumnInfoList(getString(R.string.server_url),
 				AccountManager.getAccount(), this);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		if (mStartDialogTimeout) {
+			onStartDialogTimeout();
+		}
 	}
 
 	@Override
@@ -343,15 +376,14 @@ public class ColumnPageActivity extends Activity implements
 	}
 
 	@SuppressWarnings("deprecation")
-	@Override
-	public void onTimeout() {
+	private void onStartDialogTimeout() {
 		if (mUnsupportedDialog != null) {
 			return;
 		} else {
-			Log.d("StartDialog", "Activity dismiss dialog!");
+			Log.d("ColumnPageActivity", "Activity dismiss dialog!");
 			dismissDialog(DIALOG_START);
-			if ((mRetryDialog == null || !mRetryDialog.isShowing())
-					&& !mInitialized) {
+			if (!mInitialized
+					&& (mRetryDialog == null || !mRetryDialog.isShowing())) {
 				showDialog(DIALOG_WAITING);
 			}
 		}
@@ -383,7 +415,7 @@ public class ColumnPageActivity extends Activity implements
 			break;
 		case DIALOG_LOGOUT:
 			saveColumnPages();
-			AccountManager.logout();
+			AccountManager.logout(this);
 
 			Editor editor = getPreferences(MODE_PRIVATE).edit();
 			try {

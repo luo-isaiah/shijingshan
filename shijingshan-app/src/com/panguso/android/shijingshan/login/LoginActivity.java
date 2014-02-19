@@ -304,7 +304,7 @@ public class LoginActivity extends Activity implements OnBackListener,
 			public void run() {
 				try {
 					String jsonAccount = AccountManager
-							.login(account, password);
+							.login(LoginActivity.this, account, password);
 					SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 					Editor editor = sharedPreferences.edit();
 					editor.putString(KEY_LAST_LOGIN_ACCOUNT, jsonAccount);

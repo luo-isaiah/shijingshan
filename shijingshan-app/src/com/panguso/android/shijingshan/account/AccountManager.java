@@ -3,6 +3,16 @@ package com.panguso.android.shijingshan.account;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.panguso.android.shijingshan.R;
+import com.panguso.android.shijingshan.notification.NotificationBroadcastReceiver;
+
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+
 /**
  * Manage current {@link Account} state.
  * 
@@ -13,6 +23,9 @@ public final class AccountManager {
 	private static Account ACCOUNT = NoAccount.getInstance();
 	/** The login time. */
 	private static long LOGIN_TIME = 0;
+
+	/** The request code for {@link NotificationBroadcastReceiver}. */
+	private static final int REQUEST_CODE_NOTIFICATION_BROADCAST_RECEIVER = 0;
 
 	/**
 	 * A new account login.
@@ -27,11 +40,32 @@ public final class AccountManager {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	public static String login(String account, String password)
+	public static String login(Context context, String account, String password)
 			throws JSONException {
 		ACCOUNT = new Account(account, password);
 		LOGIN_TIME = System.currentTimeMillis();
+		
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
+				REQUEST_CODE_NOTIFICATION_BROADCAST_RECEIVER, new Intent(
+						context, NotificationBroadcastReceiver.class),
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		AlarmManager alarmManager = (AlarmManager) context
+				.getSystemService(Context.ALARM_SERVICE);
+		alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP,
+				System.currentTimeMillis(),
+				AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent);
 		return ACCOUNT.getJson();
+	}
+	
+	private static int NOTIFICATION_COUNT = 0;
+	
+	public static void onNotification(Context context) {
+		Notification notification = new Notification(R.drawable.icon, "Hello World", System.currentTimeMillis());
+		notification.setLatestEventInfo(context, "Hello World Title", "Hello World Content", null);
+		notification.flags = Notification.DEFAULT_ALL;
+		
+		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager.notify(NOTIFICATION_COUNT++, notification);
 	}
 
 	/**
@@ -39,7 +73,14 @@ public final class AccountManager {
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	public static void logout() {
+	public static void logout(Context context) {
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
+				REQUEST_CODE_NOTIFICATION_BROADCAST_RECEIVER, new Intent(
+						context, NotificationBroadcastReceiver.class),
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		AlarmManager alarmManager = (AlarmManager) context
+				.getSystemService(Context.ALARM_SERVICE);
+		alarmManager.cancel(pendingIntent);
 		ACCOUNT = NoAccount.getInstance();
 	}
 

@@ -47,11 +47,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Log;
 
+import com.panguso.android.shijingshan.R;
+import com.panguso.android.shijingshan.account.AccountManager;
 import com.panguso.android.shijingshan.column.ColumnInfo;
 import com.panguso.android.shijingshan.news.NewsInfo;
 import com.panguso.android.shijingshan.register.business.BusinessInfo;
@@ -1883,6 +1886,62 @@ public final class NetworkService {
 			String contact, String content, SuggestionRequestListener listener) {
 		EXECUTOR.execute(new SuggestionCommand(serverURL, account, contact,
 				content, listener));
+	}
+
+	/**
+	 * Specified for execute notification request.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private static class NotificationCommand implements Runnable {
+		/** The context. */
+		private final Context mContext;
+
+		/**
+		 * Construct a new instance.
+		 * 
+		 * @param context
+		 *            The context.
+		 */
+		private NotificationCommand(Context context) {
+			mContext = context;
+		}
+
+		/** The key to get xCode. */
+		private static final String KEY_XCODE = "xCode";
+
+		@Override
+		public void run() {
+			try {
+				HttpPost request = RequestFactory.createNotificationRequest(
+						mContext.getString(R.string.server_url),
+						AccountManager.getAccount());
+				HttpResponse response = HTTP_CLIENT.execute(request);
+				String content = NetworkService.getContent(response);
+				Log.d("NotificationCommand", content);
+
+				JSONObject jsonResponse = new JSONObject(content);
+				int xCode = jsonResponse.getInt(KEY_XCODE);
+				switch (xCode) {
+				case XCODE_SUCCESS:
+					AccountManager.onNotification(mContext);
+					break;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Get notification.
+	 * 
+	 * @param context The context.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public static void getNotification(Context context) {
+		EXECUTOR.execute(new NotificationCommand(context));
 	}
 
 	/** The image LRU cache. */
