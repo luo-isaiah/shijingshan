@@ -57,6 +57,7 @@ import com.panguso.android.shijingshan.R;
 import com.panguso.android.shijingshan.account.AccountManager;
 import com.panguso.android.shijingshan.column.ColumnInfo;
 import com.panguso.android.shijingshan.news.NewsInfo;
+import com.panguso.android.shijingshan.notification.NotificationInfo;
 import com.panguso.android.shijingshan.register.business.BusinessInfo;
 import com.panguso.android.shijingshan.register.enterprise.EnterpriseInfo;
 import com.panguso.android.shijingshan.register.usertype.UserTypeInfo;
@@ -1896,6 +1897,8 @@ public final class NetworkService {
 	private static class NotificationCommand implements Runnable {
 		/** The context. */
 		private final Context mContext;
+		/** The account. */
+		private final String mAccount;
 
 		/**
 		 * Construct a new instance.
@@ -1905,27 +1908,41 @@ public final class NetworkService {
 		 */
 		private NotificationCommand(Context context) {
 			mContext = context;
+			mAccount = AccountManager.getAccount();
 		}
 
 		/** The key to get xCode. */
 		private static final String KEY_XCODE = "xCode";
+		/** The key to get xData. */
+		private static final String KEY_XDATA = "xData";
 
 		@Override
 		public void run() {
 			try {
 				HttpPost request = RequestFactory.createNotificationRequest(
-						mContext.getString(R.string.server_url),
-						AccountManager.getAccount());
+						mContext.getString(R.string.server_url), mAccount);
 				HttpResponse response = HTTP_CLIENT.execute(request);
 				String content = NetworkService.getContent(response);
-				Log.d("NotificationCommand", content);
+				
+				if (!mAccount.equals(AccountManager.getAccount())) {
+					return;
+				}
 
 				JSONObject jsonResponse = new JSONObject(content);
-				int xCode = jsonResponse.getInt(KEY_XCODE);
-				switch (xCode) {
-				case XCODE_SUCCESS:
-					AccountManager.onNotification(mContext);
-					break;
+				if (jsonResponse.getInt(KEY_XCODE) == XCODE_SUCCESS) {
+					JSONArray jsonNotificationsInfo = jsonResponse
+							.getJSONArray(KEY_XDATA);
+					List<NotificationInfo> notificationInfos = new ArrayList<NotificationInfo>();
+					for (int i = 0; i < jsonNotificationsInfo.length(); i++) {
+						JSONObject notificationInfo = jsonNotificationsInfo
+								.getJSONObject(i);
+						if (NotificationInfo
+								.isNotificationInfo(notificationInfo)) {
+							notificationInfos.add(NotificationInfo
+									.parse(notificationInfo));
+						}
+					}
+					AccountManager.onNotification(mContext, notificationInfos);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1936,7 +1953,8 @@ public final class NetworkService {
 	/**
 	 * Get notification.
 	 * 
-	 * @param context The context.
+	 * @param context
+	 *            The context.
 	 * 
 	 * @author Luo Yinzhuo
 	 */

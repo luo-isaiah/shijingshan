@@ -38,6 +38,7 @@ public class NewsPageView extends View implements NewsImageRequestListener,
 	public NewsPageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mGestureDetector = new GestureDetector(context, this);
+		mGestureDetector.setIsLongpressEnabled(false);
 	}
 
 	@Override

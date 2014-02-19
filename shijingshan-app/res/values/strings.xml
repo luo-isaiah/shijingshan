@@ -137,6 +137,9 @@
     <string name="confirm_new_password">确认新密码</string>
     <string name="confirm_new_password_hint">6&#8211;20位字母或数字</string>
     
+    <!-- notification list activity -->
+    <string name="notification_title">通知</string>
+    
     <!-- suggestion activity -->
     <string name="suggestion_title">意见反馈</string>
     <string name="suggestion_content">反馈内容</string>

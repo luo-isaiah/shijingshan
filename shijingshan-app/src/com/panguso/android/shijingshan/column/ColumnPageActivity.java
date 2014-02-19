@@ -13,6 +13,7 @@ import com.panguso.android.shijingshan.dialog.WaitingDialog;
 import com.panguso.android.shijingshan.login.LoginActivity;
 import com.panguso.android.shijingshan.net.NetworkService;
 import com.panguso.android.shijingshan.net.NetworkService.ColumnInfoListRequestListener;
+import com.panguso.android.shijingshan.notification.NotificationListActivity;
 import com.panguso.android.shijingshan.setting.SettingActivity;
 import com.panguso.android.shijingshan.subscribe.SubscribeActivity;
 
@@ -98,36 +99,36 @@ public class ColumnPageActivity extends Activity implements
 	private ImageButton mSetting;
 	/** The subscribe button. */
 	private ImageButton mSubscribe;
-	/** The notice button. */
-	private ImageButton mNotice;
+	/** The notification button. */
+	private ImageButton mNotification;
 
-	private static final int MESSAGE_START_DIALOG_TIMEOUT = 0;
+	private static final int MESSAGE_START_TIMEOUT = 0;
 	/** The start dialog timeout. */
-	private static final int START_DIALOG_TIMEOUT = 5000;
+	private static final int START_TIMEOUT = 5000;
 
 	/** The start dialog handler. */
-	private Handler mStartDialogHandler;
+	private Handler mStartHandler;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.column_page_activity);
-		
+
 		mStart = (RelativeLayout) findViewById(R.id.start);
-		mStartDialogHandler = new Handler(getMainLooper()) {
+		mStartHandler = new Handler(getMainLooper()) {
 			@Override
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
-				case MESSAGE_START_DIALOG_TIMEOUT:
+				case MESSAGE_START_TIMEOUT:
 					onStartDialogTimeout();
 					break;
 				}
 			}
 		};
 
-		mStartDialogHandler.sendEmptyMessageDelayed(
-				MESSAGE_START_DIALOG_TIMEOUT, START_DIALOG_TIMEOUT);
-		
+		mStartHandler.sendEmptyMessageDelayed(MESSAGE_START_TIMEOUT,
+				START_TIMEOUT);
+
 		mLog = (ImageButton) findViewById(R.id.log);
 		mLog.setOnClickListener(this);
 
@@ -136,9 +137,10 @@ public class ColumnPageActivity extends Activity implements
 
 		mSubscribe = (ImageButton) findViewById(R.id.subscribe);
 		mSubscribe.setOnClickListener(this);
-		mSubscribe.setVisibility(View.INVISIBLE);
 
-		mNotice = (ImageButton) findViewById(R.id.notice);
+		mNotification = (ImageButton) findViewById(R.id.notification);
+		mNotification.setOnClickListener(this);
+
 		mColumnPageView = (ColumnPageView) findViewById(R.id.column_page);
 
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
@@ -156,8 +158,6 @@ public class ColumnPageActivity extends Activity implements
 					AccountManager.logout(this);
 					startActivityForResult(intent, REQUEST_CODE_LOGIN);
 					return;
-				} else {
-					mSubscribe.setVisibility(View.VISIBLE);
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -197,9 +197,11 @@ public class ColumnPageActivity extends Activity implements
 			columns.add(AddColumn.getInstance(this));
 			mLog.setImageResource(R.drawable.login);
 			mSubscribe.setVisibility(View.VISIBLE);
+			mNotification.setVisibility(View.VISIBLE);
 		} else {
 			mLog.setImageResource(R.drawable.logout);
 			mSubscribe.setVisibility(View.INVISIBLE);
+			mNotification.setVisibility(View.INVISIBLE);
 		}
 
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
@@ -313,6 +315,9 @@ public class ColumnPageActivity extends Activity implements
 				startActivityForResult(new Intent(this, LoginActivity.class),
 						REQUEST_CODE_LOGIN);
 			}
+			break;
+		case R.id.notification:
+			startActivity(new Intent(this, NotificationListActivity.class));
 			break;
 		case R.id.subscribe:
 			subscribe();
