@@ -24,10 +24,10 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 
 /**
  * The column page activity.
@@ -46,22 +46,18 @@ public class ColumnPageActivity extends Activity implements
 	/** The unsupported dialog. */
 	private MessageDialog mUnsupportedDialog;
 
-	/** The start dialog ID. */
-	private static final int DIALOG_START = 0;
 	/** The waiting dialog ID. */
-	private static final int DIALOG_WAITING = 1;
+	private static final int DIALOG_WAITING = 0;
 	/** The retry dialog ID. */
-	private static final int DIALOG_RETRY = 2;
+	private static final int DIALOG_RETRY = 1;
 	/** The unsupported dialog ID. */
-	private static final int DIALOG_UNSUPPORTED = 3;
+	private static final int DIALOG_UNSUPPORTED = 2;
 	/** The logout dialog ID. */
-	private static final int DIALOG_LOGOUT = 4;
+	private static final int DIALOG_LOGOUT = 3;
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
-		case DIALOG_START:
-			return new StartDialog(this);
 		case DIALOG_WAITING:
 			mWaitingDialog = new WaitingDialog(this);
 			return mWaitingDialog;
@@ -92,6 +88,8 @@ public class ColumnPageActivity extends Activity implements
 	/** The key to get the last displayed {@link ColumnPage}'s data. */
 	private static final String KEY_COLUMN_PAGES = "_column_page";
 
+	/** The start view. */
+	private RelativeLayout mStart;
 	/** The column page view. */
 	private ColumnPageView mColumnPageView;
 	/** The log button. */
@@ -109,21 +107,18 @@ public class ColumnPageActivity extends Activity implements
 
 	/** The start dialog handler. */
 	private Handler mStartDialogHandler;
-	/** The start dialog timeout flag. */
-	private boolean mStartDialogTimeout = false;
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		showDialog(DIALOG_START);
+		setContentView(R.layout.column_page_activity);
+		
+		mStart = (RelativeLayout) findViewById(R.id.start);
 		mStartDialogHandler = new Handler(getMainLooper()) {
 			@Override
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 				case MESSAGE_START_DIALOG_TIMEOUT:
-					Log.d("ColumnPageActivity", "Handle time out message!");
-					mStartDialogTimeout = true;
 					onStartDialogTimeout();
 					break;
 				}
@@ -132,8 +127,7 @@ public class ColumnPageActivity extends Activity implements
 
 		mStartDialogHandler.sendEmptyMessageDelayed(
 				MESSAGE_START_DIALOG_TIMEOUT, START_DIALOG_TIMEOUT);
-
-		setContentView(R.layout.column_page_activity);
+		
 		mLog = (ImageButton) findViewById(R.id.log);
 		mLog.setOnClickListener(this);
 
@@ -172,15 +166,6 @@ public class ColumnPageActivity extends Activity implements
 
 		NetworkService.getColumnInfoList(getString(R.string.server_url),
 				AccountManager.getAccount(), this);
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-		if (mStartDialogTimeout) {
-			onStartDialogTimeout();
-		}
 	}
 
 	@Override
@@ -380,8 +365,7 @@ public class ColumnPageActivity extends Activity implements
 		if (mUnsupportedDialog != null) {
 			return;
 		} else {
-			Log.d("ColumnPageActivity", "Activity dismiss dialog!");
-			dismissDialog(DIALOG_START);
+			mStart.setVisibility(View.GONE);
 			if (!mInitialized
 					&& (mRetryDialog == null || !mRetryDialog.isShowing())) {
 				showDialog(DIALOG_WAITING);
