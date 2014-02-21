@@ -15,6 +15,6 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		NetworkService.getNotification(context);
+		NetworkService.getNotificationInfoList(context);
 	}
 }

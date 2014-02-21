@@ -138,7 +138,10 @@
     <string name="confirm_new_password_hint">6&#8211;20位字母或数字</string>
     
     <!-- notification list activity -->
-    <string name="notification_title">通知</string>
+    <string name="notification_list_title">通知</string>
+    
+    <!-- notification activity -->
+    <string name="notification_title">通知详情</string>
     
     <!-- suggestion activity -->
     <string name="suggestion_title">意见反馈</string>

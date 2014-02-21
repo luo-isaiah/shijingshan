@@ -18,10 +18,10 @@
     <!-- underline button background color -->
     <color name="underline_button_background_press">#007DFF</color>
     <color name="underline_button_background_normal">#FFFFFF</color>
-    
+
     <!-- message dialog text color -->
     <color name="message_dialog_text">#545454</color>
-    
+
     <!-- column page activity -->
     <color name="column_subscribe">#BF005AC8</color>
     <color name="column_public">#BFFF5000</color>
@@ -29,12 +29,12 @@
     <!-- news page activity -->
     <color name="news_page_title_bar_background">#FFFFFF</color>
     <color name="news_page_title_bar_title">#007DFF</color>
-    
+
     <!-- text news -->
     <color name="text_news_title">#000000</color>
     <color name="text_news_time">#999999</color>
     <color name="text_news_background_press">#007DFF</color>
-    
+
     <!-- image news -->
     <color name="image_news_title">#FFFFFF</color>
 
@@ -49,10 +49,10 @@
     <color name="register_table_text">#545454</color>
     <color name="register_table_edit_hint">#BBBBBB</color>
     <color name="register_arrow_button_background_pressed">#83B8F0</color>
-    
+
     <!-- business dialog -->
     <color name="business_button_background_pressed">#83B8F0</color>
-    
+
     <!-- new enterprise dialog -->
     <color name="new_enterprise_title_background">#007DFF</color>
     <color name="new_enterprise_title">#FFFFFF</color>
@@ -61,7 +61,7 @@
 
     <!-- user type dialog -->
     <color name="user_type_button_background_pressed">#83B8F0</color>
-    
+
     <!-- subscribe activity -->
     <color name="subscribe_button_background_pressed">#83B8F0</color>
     <color name="subscribe_background">#FFFFFF</color>
@@ -74,12 +74,16 @@
     <color name="change_password_background">#FFFFFF</color>
     <color name="change_password_table_text">#545454</color>
     <color name="change_password_table_edit_hint">#BBBBBB</color>
-    
+
+    <!-- notification button -->
+    <color name="notification_button_title">#000000</color>
+    <color name="notification_button_time">#999999</color>
+
     <!-- suggestion activity -->
     <color name="suggestion_background">#FFFFFF</color>
     <color name="suggestion_text">#545454</color>
     <color name="suggestion_edit_hint">#BBBBBB</color>
-    
+
     <!-- about activity -->
     <color name="about_background">#FFFFFF</color>
     <color name="about_text">#000000</color>

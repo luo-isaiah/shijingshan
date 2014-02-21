@@ -1,25 +1,14 @@
 package com.panguso.android.shijingshan.account;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.panguso.android.shijingshan.R;
-import com.panguso.android.shijingshan.column.ColumnPageActivity;
 import com.panguso.android.shijingshan.notification.NotificationBroadcastReceiver;
-import com.panguso.android.shijingshan.notification.NotificationInfo;
 
 import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 
 /**
  * Manage current {@link Account} state.
@@ -59,96 +48,10 @@ public final class AccountManager {
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		AlarmManager alarmManager = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
-		alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP,
-				System.currentTimeMillis(), 10000, pendingIntent);
+		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+				System.currentTimeMillis(),
+				AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent);
 		return ACCOUNT.getJson();
-	}
-
-	/** The key to get notifications data. */
-	private static final String KEY_NOTIFICATIONS = "_notifications";
-	/** The key to get notification data. */
-	private static final String KEY_NOTIFICATION = "_notification";
-
-	/**
-	 * Called when {@link NotificationBroadcastReceiver} execute.
-	 * 
-	 * @param context
-	 *            The context.
-	 * @param notificationInfos
-	 *            The {@link NotificationInfo} list.
-	 * @author Luo Yinzhuo
-	 */
-	public static void onNotification(Context context,
-			List<NotificationInfo> notificationInfos) {
-		SharedPreferences sharedPreferences = context.getSharedPreferences(
-				AccountManager.class.getName(), Context.MODE_PRIVATE);
-
-		// First check if there's new notification and get one of the newest to
-		// build a {@link Notification}.
-		final String oldNotificationIds = sharedPreferences.getString(
-				getAccount() + KEY_NOTIFICATIONS, "");
-		List<NotificationInfo> newNotificationInfos = new ArrayList<NotificationInfo>();
-		boolean newNotification = false;
-		for (NotificationInfo notificationInfo : notificationInfos) {
-			final String notificationId = notificationInfo.getId();
-			if (!oldNotificationIds.contains(notificationId)) {
-				newNotificationInfos.add(notificationInfo);
-
-				if (!newNotification) {
-					newNotification = true;
-					buildNotification(context, notificationId,
-							notificationInfo.getTitle(),
-							notificationInfo.getSummary());
-				}
-			}
-		}
-
-		// Second save the new notifications into the {@link SharedPrefereces}.
-		try {
-			JSONArray notificationIds = new JSONArray(oldNotificationIds);
-			Editor editor = sharedPreferences.edit();
-			for (NotificationInfo notificationInfo : newNotificationInfos) {
-				final String notificationId = notificationInfo.getId();
-				notificationIds.put(notificationId);
-				editor.putString(notificationId + KEY_NOTIFICATION,
-						notificationInfo.getJson());
-			}
-			editor.putString(getAccount() + KEY_NOTIFICATIONS,
-					notificationIds.toString());
-			editor.commit();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Build a {@link Notification}.
-	 * 
-	 * @param context
-	 *            The context.
-	 * @param id
-	 *            The notification id.
-	 * @param title
-	 *            The notification title.
-	 * @param summary
-	 *            The notification summary.
-	 * @author Luo Yinzhuo
-	 */
-	@SuppressWarnings("deprecation")
-	private static void buildNotification(Context context, String id,
-			String title, String summary) {
-		Notification notification = new Notification(R.drawable.icon, title,
-				System.currentTimeMillis());
-		PendingIntent pendingIntent = PendingIntent.getActivity(context,
-				REQUEST_CODE_NOTIFICATION_BROADCAST_RECEIVER, new Intent(
-						context, ColumnPageActivity.class),
-				PendingIntent.FLAG_ONE_SHOT);
-		notification.setLatestEventInfo(context, title, summary, pendingIntent);
-		notification.flags = Notification.DEFAULT_ALL;
-
-		NotificationManager notificationManager = (NotificationManager) context
-				.getSystemService(Context.NOTIFICATION_SERVICE);
-		notificationManager.notify(id.hashCode(), notification);
 	}
 
 	/**

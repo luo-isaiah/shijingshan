@@ -77,6 +77,8 @@ public class Column {
 	private final int mBackgroundColor;
 	/** The column's icon. */
 	private final Drawable mIcon;
+	/** The column's icon offset from bottom. */
+	private final float mIconOffsetBottom;
 	/** The delete mark. */
 	private final Drawable mDelete;
 
@@ -169,6 +171,9 @@ public class Column {
 		mSubscribe = subscribe;
 
 		Resources resources = context.getResources();
+		mIconOffsetBottom = resources
+				.getDimension(R.dimen.column_icon_offset_bottom);
+
 		mTextSize = resources.getDimension(R.dimen.column_font_size);
 		mTextOffsetBottom = resources
 				.getDimension(R.dimen.column_font_offset_bottom);
@@ -189,12 +194,12 @@ public class Column {
 
 		int icon = COLUMN_ICON_ARRAY.get(mId);
 		if (icon == 0) {
-			mIcon = null;
+			mIcon = resources.getDrawable(R.drawable.column_default);
 		} else {
 			mIcon = resources.getDrawable(icon);
-			mIcon.setBounds(0, 0, mIcon.getIntrinsicWidth(),
-					mIcon.getIntrinsicHeight());
 		}
+		mIcon.setBounds(0, 0, mIcon.getIntrinsicWidth(),
+				mIcon.getIntrinsicHeight());
 	}
 
 	public String getName() {
@@ -233,7 +238,8 @@ public class Column {
 		if (mIcon != null) {
 			canvas.save();
 			canvas.translate(rect.centerX() - mIcon.getIntrinsicWidth() / 2,
-					rect.centerY() - mIcon.getIntrinsicHeight() / 2);
+					rect.centerY() - mIcon.getIntrinsicHeight() / 2
+							- mIconOffsetBottom);
 			mIcon.draw(canvas);
 			canvas.restore();
 		}

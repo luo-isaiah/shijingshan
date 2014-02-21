@@ -409,13 +409,46 @@ public final class RequestFactory {
 	 *             If device doesn't support UTF-8 encode.
 	 * @author Luo Yinzhuo
 	 */
-	public static HttpPost createNotificationRequest(String serverURL, String account)
-			throws JSONException, UnsupportedEncodingException {
+	public static HttpPost createNotificationInfoListRequest(String serverURL,
+			String account) throws JSONException, UnsupportedEncodingException {
 		HttpPost post = new HttpPost(serverURL);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair(TRANS_CODE, "501"));
 		JSONObject param = new JSONObject();
 		param.put(ACCOUNT, account);
+		params.add(new BasicNameValuePair(PARAM, param.toString()));
+		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+		return post;
+	}
+
+	/** The notification id. */
+	private static final String NOTIFICATION_ID = "newsid";
+
+	/**
+	 * Create a notification request.
+	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param account
+	 *            The account name.
+	 * @param id
+	 *            The notification id.
+	 * @return The notification request.
+	 * @throws JSONException
+	 *             If an error occurs when create JSON parameters.
+	 * @throws UnsupportedEncodingException
+	 *             If device doesn't support UTF-8 encode.
+	 * @author Luo Yinzhuo
+	 */
+	public static HttpPost createAcknowledgeNotificationRequest(
+			String serverURL, String account, String id) throws JSONException,
+			UnsupportedEncodingException {
+		HttpPost post = new HttpPost(serverURL);
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair(TRANS_CODE, "503"));
+		JSONObject param = new JSONObject();
+		param.put(ACCOUNT, account);
+		param.put(NOTIFICATION_ID, id);
 		params.add(new BasicNameValuePair(PARAM, param.toString()));
 		post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
 		return post;

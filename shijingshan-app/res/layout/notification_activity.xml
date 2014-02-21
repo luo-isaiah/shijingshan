@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.panguso.android.shijingshan.widget.BlueTitleBar
+        android:id="@+id/title_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="48dp" />
+
+    <WebView
+        android:id="@+id/notification_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!--
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white" >
+
+        <com.panguso.android.shijingshan.notification.NotificationMarqueeTextView
+            android:id="@+id/notification_title"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:ellipsize="marquee"
+            android:gravity="center"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:paddingLeft="19dp"
+            android:paddingRight="19dp"
+            android:paddingTop="6dp"
+            android:singleLine="true"
+            android:textColor="@color/notification_button_title"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/delimiter"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/notification_title"
+            android:contentDescription="@null"
+            android:src="@color/delimiter" />
+
+        <TextView
+            android:id="@+id/notification_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/delimiter"
+            android:gravity="center"
+            android:textColor="@color/notification_button_time"
+            android:textSize="14sp" />
+
+        <WebView
+            android:id="@+id/notification_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/notification_time"
+            android:layout_margin="12dp"
+            android:background="@drawable/round_border" />
+    </RelativeLayout>
+    -->
+
+</LinearLayout>

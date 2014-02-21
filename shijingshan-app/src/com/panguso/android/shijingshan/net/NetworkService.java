@@ -58,6 +58,7 @@ import com.panguso.android.shijingshan.account.AccountManager;
 import com.panguso.android.shijingshan.column.ColumnInfo;
 import com.panguso.android.shijingshan.news.NewsInfo;
 import com.panguso.android.shijingshan.notification.NotificationInfo;
+import com.panguso.android.shijingshan.notification.NotificationInfoManager;
 import com.panguso.android.shijingshan.register.business.BusinessInfo;
 import com.panguso.android.shijingshan.register.enterprise.EnterpriseInfo;
 import com.panguso.android.shijingshan.register.usertype.UserTypeInfo;
@@ -1890,11 +1891,11 @@ public final class NetworkService {
 	}
 
 	/**
-	 * Specified for execute notification request.
+	 * Specified for execute notification info list request.
 	 * 
 	 * @author Luo Yinzhuo
 	 */
-	private static class NotificationCommand implements Runnable {
+	private static class NotificationInfoListCommand implements Runnable {
 		/** The context. */
 		private final Context mContext;
 		/** The account. */
@@ -1906,7 +1907,7 @@ public final class NetworkService {
 		 * @param context
 		 *            The context.
 		 */
-		private NotificationCommand(Context context) {
+		private NotificationInfoListCommand(Context context) {
 			mContext = context;
 			mAccount = AccountManager.getAccount();
 		}
@@ -1919,11 +1920,14 @@ public final class NetworkService {
 		@Override
 		public void run() {
 			try {
-				HttpPost request = RequestFactory.createNotificationRequest(
-						mContext.getString(R.string.server_url), mAccount);
+				HttpPost request = RequestFactory
+						.createNotificationInfoListRequest(
+								mContext.getString(R.string.server_url),
+								mAccount);
 				HttpResponse response = HTTP_CLIENT.execute(request);
 				String content = NetworkService.getContent(response);
-				
+				Log.d("NotificationInfoListCommand", content);
+
 				if (!mAccount.equals(AccountManager.getAccount())) {
 					return;
 				}
@@ -1942,8 +1946,64 @@ public final class NetworkService {
 									.parse(notificationInfo));
 						}
 					}
-					AccountManager.onNotification(mContext, notificationInfos);
+					NotificationInfoManager.onNotification(mContext,
+							notificationInfos);
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Get notification info list.
+	 * 
+	 * @param context
+	 *            The context.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	public static void getNotificationInfoList(Context context) {
+		EXECUTOR.execute(new NotificationInfoListCommand(context));
+	}
+
+	/**
+	 * Specified for execute acknowledge notification request.
+	 * 
+	 * @author Luo Yinzhuo
+	 */
+	private static class AcknowledgeNotificationCommand implements Runnable {
+		/** The server URL. */
+		private final String mServerURL;
+		/** The account. */
+		private final String mAccount;
+		/** The notification id. */
+		private final String mId;
+
+		/**
+		 * Construct a new instance.
+		 * 
+		 * @param serverURL
+		 *            The server URL.
+		 * @param account
+		 *            The account.
+		 * @param id
+		 *            The notification id.
+		 */
+		private AcknowledgeNotificationCommand(String serverURL,
+				String account, String id) {
+			mServerURL = serverURL;
+			mAccount = account;
+			mId = id;
+		}
+
+		@Override
+		public void run() {
+			try {
+				HttpPost request = RequestFactory
+						.createAcknowledgeNotificationRequest(mServerURL,
+								mAccount, mId);
+				HTTP_CLIENT.execute(request);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -1953,13 +2013,18 @@ public final class NetworkService {
 	/**
 	 * Get notification.
 	 * 
-	 * @param context
-	 *            The context.
-	 * 
+	 * @param serverURL
+	 *            The server URL.
+	 * @param account
+	 *            The account name.
+	 * @param id
+	 *            The notification id.
 	 * @author Luo Yinzhuo
 	 */
-	public static void getNotification(Context context) {
-		EXECUTOR.execute(new NotificationCommand(context));
+	public static void acknowledgeNotification(String serverURL,
+			String account, String id) {
+		EXECUTOR.execute(new AcknowledgeNotificationCommand(serverURL, account,
+				id));
 	}
 
 	/** The image LRU cache. */
