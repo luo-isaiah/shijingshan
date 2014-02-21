@@ -311,14 +311,14 @@ public class RequestFactoryTest extends AndroidTestCase {
 	}
 
 	/**
-	 * Test {@link RequestFactory#createNotificationRequest(String, String)}
+	 * Test {@link RequestFactory#createNotificationInfoListRequest(String, String)}
 	 * 
 	 * @author Luo Yinzhuo
 	 */
 	public void testNotificationRequest() {
 		final String EXPECT_CONTENT = "transCode=501&param={\"account\":\"panguso\"}";
 		try {
-			HttpPost request = RequestFactory.createNotificationRequest(
+			HttpPost request = RequestFactory.createNotificationInfoListRequest(
 					SERVER_URL, ACCOUNT);
 			assertNotNull(request);
 			String content = readContent(request.getEntity().getContent());
