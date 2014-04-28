@@ -191,7 +191,7 @@ abstract class TextNews extends News {
 		final float maxWidth = rect.width() - 2 * mMarginHorizontal;
 		int line = 0;
 		final int maxLine = 2;
-		while (end < mTitle.length() && line < maxLine) {
+		while (end <= mTitle.length() && line < maxLine) {
 			float width = PAINT.measureText(mTitle, start, end);
 			while (width < maxWidth && end < mTitle.length()) {
 				end++;
@@ -211,10 +211,14 @@ abstract class TextNews extends News {
 						PAINT);
 				start = end;
 			}
+			
+			if (start == mTitle.length()) {
+				break;
+			}
 			line++;
 		}
 
-		if (end < mTitle.length()) {
+		if (start != mTitle.length() && end <= mTitle.length()) {
 			end = mTitle.length();
 			float width = PAINT.measureText(mTitle, start, end);
 			if (width > maxWidth) {
