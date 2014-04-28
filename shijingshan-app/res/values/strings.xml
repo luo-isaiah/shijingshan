@@ -156,6 +156,6 @@
     <string name="about_text">石景山区企业服务平台1.0......</string>
 
     <!-- server request url -->
-    <string name="server_url">http://s-94379.gotocdn.com/sjs/JsonAction</string>
+    <string name="server_url">http://61.49.1.124/sjs/JsonAction</string>
 
 </resources>

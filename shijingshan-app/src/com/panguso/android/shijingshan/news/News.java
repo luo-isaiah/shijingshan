@@ -197,10 +197,20 @@ abstract class TextNews extends News {
 				end++;
 				width = PAINT.measureText(mTitle, start, end);
 			}
-			canvas.drawText(mTitle.substring(start, end - 1), rect.left
-					+ mMarginHorizontal, rect.top
-					+ (mMarginVertical + mTitleTextSize) * (line + 1), PAINT);
-			start = end - 1;
+
+			if (width > maxWidth) {
+				canvas.drawText(mTitle.substring(start, end - 1), rect.left
+						+ mMarginHorizontal, rect.top
+						+ (mMarginVertical + mTitleTextSize) * (line + 1),
+						PAINT);
+				start = end - 1;
+			} else {
+				canvas.drawText(mTitle.substring(start, end), rect.left
+						+ mMarginHorizontal, rect.top
+						+ (mMarginVertical + mTitleTextSize) * (line + 1),
+						PAINT);
+				start = end;
+			}
 			line++;
 		}
 
